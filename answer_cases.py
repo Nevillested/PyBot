@@ -1,0 +1,152 @@
+﻿import random
+import os
+import queries_to_bd
+import cezar
+import keyboards_buttons
+import telebot
+import speech_recognization
+import openai
+
+class cases_class(Exception):
+
+    def cases_trigger(cur_message, last_msg_bot, bot):
+        
+        content_type_out = ""
+        result_out = ""
+        reply_out = telebot.types.ReplyKeyboardMarkup()
+
+        last_msg_user = ""
+        if cur_message.content_type == "text":
+             last_msg_user = cur_message.text.lower()
+        elif cur_message.content_type == "voice":
+            last_msg_user = (speech_recognization.voice_processing(cur_message, bot, "ru" )).lower()
+        
+        if last_msg_user == "/start" or  last_msg_user == "/help":
+                content_type_out = "text"
+                s0 =  "Помощь немощу, сам же догадаться не можешь интуитивно да:\n"
+                s1 =  "/stick - рандомный стикер с Шинобу\n"
+                s2 =  "/pikcha - рандомная пикча с Шинобу\n"
+                s3 =  "/maid - шикарные несколько артов горничных\n"
+                s4 =  "/anekdot - рандомный анекдот из сборника, честно спизженного с просторов нашего необъятного\n"
+                s5 =  "/rand - реши свою судьбу: да/нет\n"
+                s6 =  "/encrypt - зашифруй данные по ключу\n"
+                s7 =  "/decrypt - расшифруй данные по ключу\n"
+                s8 =  "/delete_space - я не знаю зачем, но пусть будет - удаляет пробелы\n"
+                s9 =  "/get_translate_jp - поиск слова в японском словаре\n"
+                s10 =  "/get_kanji - учим кандзи по хитрому файлу\n"
+                s11 = "/che_skazal - попробую распознать текст\n"
+                result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11
+                reply_out = keyboards_buttons.keyboards_class.main_menu()
+        elif last_msg_user == "/stick":
+                content_type_out = "sticker"
+                result_out = "https://cdn.tlgrm.app/stickers/34e/704/34e704f5-0115-3c1e-954e-74d2b180751d/192/" + str(random.randint(1,12)) + ".webp"
+                reply_out = keyboards_buttons.keyboards_class.main_menu()
+        elif last_msg_user == "/pikcha":
+                content_type_out = "photo"
+                shinobu_dir = r"C:\assets_data\shinobu"
+                result_out = shinobu_dir +"\\"+ random.choice(os.listdir(shinobu_dir))
+                reply_out = keyboards_buttons.keyboards_class.main_menu()
+        elif last_msg_user == "/maid":
+                content_type_out = "photo"
+                maids_dir = r"C:\assets_data\maids"
+                result_out = maids_dir +"\\"+ random.choice(os.listdir(maids_dir))
+                reply_out = keyboards_buttons.keyboards_class.main_menu()
+        elif last_msg_user == "/anekdot":
+                content_type_out = "text"
+                result_out = queries_to_bd.queries_class.get_joke()
+                result_out = result_out.replace("it_is_new_row", "\n")
+                reply_out = keyboards_buttons.keyboards_class.main_menu()
+        elif last_msg_user == "/rand":
+                content_type_out = "text"
+                if random.randint(0,9) < 5:
+                    result_out = "Да!"
+                else:
+                    result_out = "Нет!"
+                reply_out = keyboards_buttons.keyboards_class.main_menu()
+        elif last_msg_user == "/encrypt" or last_msg_user == "/decrypt":
+                content_type_out = "text"
+                result_out = "Язык вводимого текста? en / ru"
+                reply_out = keyboards_buttons.keyboards_class.ru_en()
+                queries_to_bd.queries_class.create_session_cezar(cur_message)
+        elif last_msg_bot == "Язык вводимого текста? en / ru":
+                queries_to_bd.queries_class.update_lang_session_cezar(cur_message)
+                content_type_out = "text"
+                if cur_message.text.lower() == "en":
+                    result_out = "Введи ключ в пределах от 0 до 26."
+                    reply_out = keyboards_buttons.keyboards_class.en_key()
+                elif cur_message.text.lower() == "ru":
+                    result_out = "Введи ключ в пределах от 0 до 32."
+                    reply_out = keyboards_buttons.keyboards_class.ru_key()
+                else:
+                    result_out = "Я для таких идиотов как ты даже кнопки сделал. ЛИБО EN, ЛИБО RU"
+        elif last_msg_bot == "Введи ключ в пределах от 0 до 26." or last_msg_bot == "Введи ключ в пределах от 0 до 32.":
+                content_type_out = "text"
+                if last_msg_user.isnumeric() and ( (last_msg_bot == "Введи ключ в пределах от 0 до 26." and int(last_msg_user)>=0 and int(last_msg_user)<26) or (last_msg_bot == "Введи ключ в пределах от 0 до 32." and int(last_msg_user)>=0 and int(last_msg_user)<32)):
+                    queries_to_bd.queries_class.update_key_session_cezar(cur_message)
+                    result_out = "Введи обрабатываемый текст"
+                else:
+                   result_out = "Я для таких идиотов как ты даже кнопки сделал. Вводи число в соответствующем диапазоне."
+                reply_out = telebot.types.ReplyKeyboardRemove()
+        elif last_msg_bot == "Введи обрабатываемый текст":
+                queries_to_bd.queries_class.update_messaage_in_session_cezar(cur_message)
+                lang, key, method, messaage_in = queries_to_bd.queries_class.get_data_cezar(cur_message)
+                content_type_out = "text"
+                result_out = cezar.cezar_class.encrypt_decrypt(method, key, lang, messaage_in)
+                reply_out = keyboards_buttons.keyboards_class.main_menu()
+        elif last_msg_user == "/delete_space":
+                content_type_out = "text"
+                result_out = "Введи то, где надо удалить все пробелы:"
+                reply_out = telebot.types.ReplyKeyboardRemove()
+        elif last_msg_bot =="Введи то, где надо удалить все пробелы:":
+                content_type_out = "text"
+                result_out = last_msg_user.replace(" ", "")
+                reply_out = keyboards_buttons.keyboards_class.main_menu()
+        elif last_msg_user.__contains__("лучшая девочка") or last_msg_user.__contains__("шинобу"):
+                sentences = ["Шинобу лучшая девочка, товарищ старший лейтенант!", "Шинобу.", "Однозначно Шинобу!", "Лучшая девочка-та, ради кого я создан, это Шинобу!", "Шинобу", "Солышко мое Шинобу", "А я уже кидал пикчу с Шинобу?", "А я уже кидал стикос с Шинобу?"]
+                value = random.randint(0,len(sentences))
+                content_type_out = "text"
+                result_out = sentences[value]
+                reply_out = keyboards_buttons.keyboards_class.main_menu()
+        elif last_msg_user =="/che_skazal":
+                content_type_out = "text"
+                result_out = "Выбери язык распознавания текста"
+                reply_out = keyboards_buttons.keyboards_class.ru_en()
+        elif last_msg_bot == "Выбери язык распознавания текста":
+                content_type_out = "text"
+                if cur_message.text.lower() == "en" or cur_message.text.lower() == "ru":
+                    queries_to_bd.queries_class.create_session_voice(cur_message)
+                    result_out = "Присылай войс для распознавания"
+                    reply_out = telebot.types.ReplyKeyboardRemove()
+                else:
+                    result_out = "Я для таких идиотов как ты даже кнопки сделал. ЛИБО EN, ЛИБО RU"
+                    reply_out = keyboards_buttons.keyboards_class.main_menu()
+        elif last_msg_bot =="Присылай войс для распознавания":
+                content_type_out = "text"
+                if cur_message.content_type == "voice":
+                    lang = (queries_to_bd.queries_class.get_lang_voice(cur_message)).lower()
+                    result_out = r"'" + speech_recognization.voice_processing(cur_message, bot, lang )+ r"'" #вызов функции конвертации
+                    queries_to_bd.queries_class.insert_result_recognize_speech(cur_message, result_out)
+                else:
+                    result_out = "Что-то не похоже на войс, попробуй еще разок"
+                reply_out = keyboards_buttons.keyboards_class.main_menu()
+        
+        if len(result_out) == 0:
+            content_type_out = "text"
+            
+            openai.api_key = "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"
+            model_engine = "text-davinci-003"
+            prompt = last_msg_user
+            completion = openai.Completion.create(
+                engine=model_engine,
+                prompt=prompt,
+                max_tokens=1024,
+                n=1,
+                stop=None,
+                temperature=0.5,
+            )
+            
+            result_out = completion.choices[0].text
+            reply_out = keyboards_buttons.keyboards_class.main_menu()
+            #result_out = queries_to_bd.queries_class.get_other_answer(last_msg_user)
+            
+        return content_type_out, result_out, reply_out

@@ -1,0 +1,100 @@
+﻿import telebot
+
+class keyboards_class(Exception):
+
+    #клавиатура основного меню
+    def main_menu():
+        reply_to = telebot.types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+        help = telebot.types.KeyboardButton(text="/help")
+        stick = telebot.types.KeyboardButton(text="/stick")
+        pikcha = telebot.types.KeyboardButton(text="/pikcha")
+        maid = telebot.types.KeyboardButton(text="/maid")
+        anekdot = telebot.types.KeyboardButton(text="/anekdot")
+        rand = telebot.types.KeyboardButton(text="/rand")
+        encrypt = telebot.types.KeyboardButton(text="/encrypt")
+        decrypt = telebot.types.KeyboardButton(text="/decrypt")
+        delete_space = telebot.types.KeyboardButton(text="/delete_space")
+        che_skazal = telebot.types.KeyboardButton(text="/che_skazal")
+        get_translate_jp = telebot.types.KeyboardButton(text="/get_translate_jp")
+        get_kanji = telebot.types.KeyboardButton(text="/get_kanji")
+        adminka = telebot.types.KeyboardButton(text="/adminka")
+        reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, delete_space, che_skazal, get_translate_jp, get_kanji, adminka)
+        return reply_to
+
+    #клавиатура для шифрования - выбор языка
+    def ru_en():
+        reply_to = telebot.types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
+        EN = telebot.types.KeyboardButton(text="EN")
+        RU = telebot.types.KeyboardButton(text="RU")
+        reply_to.add(EN, RU)
+        return reply_to
+
+    #клавиатура для шифрования - русские ключи
+    def ru_key():
+        reply_to = telebot.types.ReplyKeyboardMarkup(row_width=6, resize_keyboard=True, one_time_keyboard=True)
+        zero = telebot.types.KeyboardButton(text="0")
+        one = telebot.types.KeyboardButton(text="1")
+        two = telebot.types.KeyboardButton(text="2")
+        three = telebot.types.KeyboardButton(text="3")
+        four = telebot.types.KeyboardButton(text="4")
+        five = telebot.types.KeyboardButton(text="5")
+        six = telebot.types.KeyboardButton(text="6")
+        seven = telebot.types.KeyboardButton(text="7")
+        eight = telebot.types.KeyboardButton(text="8")
+        nine = telebot.types.KeyboardButton(text="9")
+        ten = telebot.types.KeyboardButton(text="10")
+        eleven = telebot.types.KeyboardButton(text="11")
+        twelve = telebot.types.KeyboardButton(text="12")
+        thirteen = telebot.types.KeyboardButton(text="13")
+        fourteen = telebot.types.KeyboardButton(text="14")
+        fifteen = telebot.types.KeyboardButton(text="15")
+        sixteen = telebot.types.KeyboardButton(text="16")
+        seventeen = telebot.types.KeyboardButton(text="17")
+        eighteen = telebot.types.KeyboardButton(text="18")
+        nineteen = telebot.types.KeyboardButton(text="19")
+        twenty = telebot.types.KeyboardButton(text="20")
+        twenty_one = telebot.types.KeyboardButton(text="21")
+        twenty_two = telebot.types.KeyboardButton(text="22")
+        twenty_three = telebot.types.KeyboardButton(text="23")
+        twenty_four = telebot.types.KeyboardButton(text="24")
+        twenty_five = telebot.types.KeyboardButton(text="25")
+        twenty_six = telebot.types.KeyboardButton(text="26")
+        twenty_seven = telebot.types.KeyboardButton(text="27")
+        twenty_eight = telebot.types.KeyboardButton(text="28")
+        twenty_nine = telebot.types.KeyboardButton(text="29")
+        thirty = telebot.types.KeyboardButton(text="30")
+        thirty_one = telebot.types.KeyboardButton(text="31")
+        reply_to.add(zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty_one, twenty_two, twenty_three, twenty_four, twenty_five, twenty_six, twenty_seven, twenty_eight, twenty_nine, thirty, thirty_one)
+        return reply_to
+    
+    #клавиатура для шифрования - английские ключи
+    def en_key():
+        reply_to = telebot.types.ReplyKeyboardMarkup(row_width=6, resize_keyboard=True, one_time_keyboard=True)
+        zero = telebot.types.KeyboardButton(text="0")
+        one = telebot.types.KeyboardButton(text="1")
+        two = telebot.types.KeyboardButton(text="2")
+        three = telebot.types.KeyboardButton(text="3")
+        four = telebot.types.KeyboardButton(text="4")
+        five = telebot.types.KeyboardButton(text="5")
+        six = telebot.types.KeyboardButton(text="6")
+        seven = telebot.types.KeyboardButton(text="7")
+        eight = telebot.types.KeyboardButton(text="8")
+        nine = telebot.types.KeyboardButton(text="9")
+        ten = telebot.types.KeyboardButton(text="10")
+        eleven = telebot.types.KeyboardButton(text="11")
+        twelve = telebot.types.KeyboardButton(text="12")
+        thirteen = telebot.types.KeyboardButton(text="13")
+        fourteen = telebot.types.KeyboardButton(text="14")
+        fifteen = telebot.types.KeyboardButton(text="15")
+        sixteen = telebot.types.KeyboardButton(text="16")
+        seventeen = telebot.types.KeyboardButton(text="17")
+        eighteen = telebot.types.KeyboardButton(text="18")
+        nineteen = telebot.types.KeyboardButton(text="19")
+        twenty = telebot.types.KeyboardButton(text="20")
+        twenty_one = telebot.types.KeyboardButton(text="21")
+        twenty_two = telebot.types.KeyboardButton(text="22")
+        twenty_three = telebot.types.KeyboardButton(text="23")
+        twenty_four = telebot.types.KeyboardButton(text="24")
+        twenty_five = telebot.types.KeyboardButton(text="25")
+        reply_to.add(zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty_one, twenty_two, twenty_three, twenty_four, twenty_five)
+        return reply_to

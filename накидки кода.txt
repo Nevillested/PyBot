@@ -1,0 +1,385 @@
+﻿import cx_Oracle
+dsn_tns = cx_Oracle.makedsn('localhost', '1521', service_name='XEPDB1')
+conn = cx_Oracle.connect(user=r'john', password='abcd1234', dsn=dsn_tns)
+
+c = conn.cursor()
+c.execute('select text_joke from (select * from jokes order by dbms_random.value) where rownum = 1')
+result_msg = ''
+for row in c:
+    result_msg = row[0]
+conn.close()
+
+
+
+
+
+import getpass
+import oracledb
+
+pw = getpass.getpass("Enter password: ")
+
+connection = oracledb.connect(
+    user="demopython",
+    password=pw,
+    dsn="localhost/xepdb1")
+
+print("Successfully connected to Oracle Database")
+
+cursor = connection.cursor()
+
+# Create a table
+
+cursor.execute("""
+    begin
+        execute immediate 'drop table todoitem';
+        exception when others then if sqlcode <> -942 then raise; end if;
+    end;""")
+
+cursor.execute("""
+    create table todoitem (
+        id number generated always as identity,
+        description varchar2(4000),
+        creation_ts timestamp with time zone default current_timestamp,
+        done number(1,0),
+        primary key (id))""")
+
+# Insert some data
+
+rows = [ ("Task 1", 0 ),
+         ("Task 2", 0 ),
+         ("Task 3", 1 ),
+         ("Task 4", 0 ),
+         ("Task 5", 1 ) ]
+
+cursor.executemany("insert into todoitem (description, done) values(:1, :2)", rows)
+print(cursor.rowcount, "Rows Inserted")
+
+connection.commit()
+
+# Now query the rows back
+for row in cursor.execute('select description, done from todoitem'):
+    if (row[1]):
+        print(row[0], "is done")
+    else:
+        print(row[0], "is NOT done")
+
+
+
+using System;
+using System.Reflection;
+using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
+
+namespace ararararargibot
+{
+    internal class reply_cases
+    {
+        public static async void Send_answer_for_cur_reply(Telegram.Bot.Types.Message msg)
+        {
+            string method_name = "Send_answer_for_cur_reply";
+            try
+            {
+                //триггеры с текстовым содержимым
+                if (msg.Type == MessageType.Text)
+                {
+                    string msg_text = "";
+                    msg_text = msg.Text.ToLower();
+
+                    //триггер на удаление пробелов
+                    if (msg.ReplyToMessage.Text.Contains("Введи то, где надо убрать все пробелы"))
+                    {
+                        string delete_space = msg.Text.Replace(" ", "");
+
+                        await Program.bot.SendTextMessageAsync(msg.Chat.Id, delete_space, replyMarkup: buttons.get_main_menu());
+
+                    }
+
+                    //триггер на шифрование по Цезарю
+                    if (msg.ReplyToMessage.Text.Contains("Введите шифруемый текст на кириллице") || msg.ReplyToMessage.Text.Contains("Введите числовой ключ в диапазоне от 1 до 32  для шифровки"))
+                    {
+                        if (msg.ReplyToMessage.Text.Contains("Введите шифруемый текст на кириллице"))
+                        {
+                            //вставка шифруемого текста
+                            cezar.save_user_msg(msg.Chat.Id, msg_text);
+                            await Program.bot.SendTextMessageAsync(msg.Chat.Id, "Введите числовой ключ в диапазоне от 1 до 32  для шифровки", replyMarkup: new ForceReplyMarkup { Selective = true });
+                        }
+                        else if (msg.ReplyToMessage.Text.Contains("Введите числовой ключ в диапазоне от 1 до 32  для шифровки"))
+                        {
+                            cezar.save_key(msg.Chat.Id, Convert.ToInt32(msg_text));
+                            //отдача результата
+                            await Program.bot.SendTextMessageAsync(msg.Chat.Id, "Зашифрованный текст:\r\n" + cezar.encrypt(msg.Chat.Id), replyToMessageId: msg.MessageId, replyMarkup: buttons.get_main_menu());
+                        }
+                    }
+
+                    //триггер на дешифрование по Цезарю
+                    if (msg.ReplyToMessage.Text.Contains("Введите дешифруемый текст на кириллице") || msg.ReplyToMessage.Text.Contains("Введите числовой ключ в диапазоне от 1 до 32  для дешифровки"))
+                    {
+                        if (msg.ReplyToMessage.Text.Contains("Введите дешифруемый текст на кириллице"))
+                        {
+                            //вставка шифруемого текста
+                            cezar.save_user_msg(msg.Chat.Id, msg_text);
+                            await Program.bot.SendTextMessageAsync(msg.Chat.Id, "Введите числовой ключ в диапазоне от 1 до 32  для дешифровки", replyMarkup: new ForceReplyMarkup { Selective = true });
+                        }
+                        else if (msg.ReplyToMessage.Text.Contains("Введите числовой ключ в диапазоне от 1 до 32  для дешифровки"))
+                        {
+                            cezar.save_key(msg.Chat.Id, Convert.ToInt32(msg_text));
+                            //отдача результата
+                            await Program.bot.SendTextMessageAsync(msg.Chat.Id, "Расшифрованный текст:\r\n" + cezar.decrypt(msg.Chat.Id), replyToMessageId: msg.MessageId, replyMarkup: buttons.get_main_menu());
+                        }
+                    }
+
+                    //триггер на поиск слова в словаре
+                    if (msg.ReplyToMessage.Text.Contains("Поищем что есть в словаре похожее."))
+                    {
+                        string result_dict = queries_to_bd.get_translate(msg_text);
+
+                        //C# не может сделать рейплейс \\r\\n на \r\n в строке, пришедшей из ораклы, тк там иероглифы, поэтому прогоняем по циклу и создаем новую
+                        string result = "";
+                        char q = Convert.ToChar("%");
+                        for (int c = 0; c < result_dict.Length; c++)
+                        {
+                            result += result_dict[c];
+                            if (result_dict[c] == q)
+                            {
+                                result += "\r\n";
+                            }
+                        }
+                        //убираем из результата особый знак %, который означает перенос строки 
+                        result = result.Replace("%", "");
+
+                        await Program.bot.SendTextMessageAsync(msg.Chat.Id, "Вот шо мы нашли:\r\n\r\n" + result, replyToMessageId: msg.MessageId, replyMarkup: buttons.get_main_menu());
+                    }
+
+                    //триггер на поиск кандзи по номеру десятки
+                    if (msg.ReplyToMessage.Text == "Какой номер десятка кандзи?")
+                    {
+                        int number_kanji = Convert.ToInt32(msg_text);
+                        string result = queries_to_bd.get_kanji(number_kanji);
+
+                        await Program.bot.SendTextMessageAsync(msg.Chat.Id, result, replyToMessageId: msg.MessageId, replyMarkup: buttons.get_main_menu());
+                    }
+
+                    //отправка сообщений админом от имени бота
+                    if (msg.ReplyToMessage.Text.Contains("Кому пишем?")|| msg.ReplyToMessage.Text == "Что пишем?")
+                    {
+                        if(msg.ReplyToMessage.Text.Contains("Кому пишем?"))
+                        {
+                            queries_to_bd.write_date_for_send_owner_msg(msg_text.Replace("@", ""), null);
+                            await Program.bot.SendTextMessageAsync(resend_to_owner.id_owner, "Что пишем?", replyMarkup: new ForceReplyMarkup());
+                        }
+                        else if (msg.ReplyToMessage.Text == "Что пишем?")
+                        {
+                            queries_to_bd.write_date_for_send_owner_msg(null, msg_text);
+
+                            long chat_id_to;
+                            string msg_to;
+
+                            queries_to_bd.get_data_for_send_owner_msg(out chat_id_to, out msg_to);
+                            await Program.bot.SendTextMessageAsync(chat_id_to, msg_to); 
+                            await Program.bot.SendTextMessageAsync(resend_to_owner.id_owner, "Отправлено", replyMarkup: buttons.get_admin_menu());
+                        }
+                    }
+                }
+
+                //триггеры с войсовым содержимым
+                else if (msg.Type == MessageType.Voice)
+                {
+                    //триггер на распознавание текста в войсе
+                    if (msg.ReplyToMessage.Text.Contains("Запиши голосовое сообщение и я переведу его в текст."))
+                    {
+                        python_help.recognize_text_from_voice(msg);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine("Ошибка в " + method_name);
+                queries_to_bd.insert_error(1, Newtonsoft.Json.JsonConvert.SerializeObject(msg), exception);
+            }
+        }
+    }
+}
+
+using System;
+using Telegram.Bot;
+using System.IO;
+using Telegram.Bot.Types.ReplyMarkups;
+using System.Reflection;
+using Telegram.Bot.Types.Enums;
+using System.Diagnostics;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ararararargibot
+{
+    internal class answer_cases
+    {
+        public static async void Send_answer_for_cur_msg(Telegram.Bot.Types.Message msg)
+        {
+            string method_name = "Send_answer_for_cur_msg";
+            try
+            {
+                //если прилетевшее сообщение текстовое, то ищем подходящий кейс для него
+                if (msg.Type == MessageType.Text)
+                {
+                    string msg_text = msg.Text.ToLower();
+                    Random rand = new Random();
+
+                    if (msg_text.Contains("/help") || msg_text.Contains("/start"))
+                    {
+                        string output_to_user = "Помощь немощу, сам же догадаться не можешь интуитивно да:" +
+                        "\r\n/stick - рандомный стикер с Шинобу" +
+                        "\r\n/pikcha - рандомная пикча с Шинобу" +
+                        "\r\n/maid - шикарные несколько артов горничных" +
+                        "\r\n/encrypt - зашифруй данне по ключу" +
+                        "\r\n/decrypt - расшифруй данные по ключу" +
+                        "\r\n/rand - реши свою судьбу: да/нет" +
+                        "\r\n/anekdot - рандомный анекдот из сборника, честно спизженного с просторов нашего необъятного" +
+                        "\r\n/delete_space - я не знаю зачем, но пусть будет - удаляет пробелы" +
+                        "\r\n/get_translate_jp - поиск слова в японском словаре" +
+                        "\r\n/get_kanji - учим кандзи по хитрому файлу" +
+                        "\r\n/che_skazal - попробую распознать текст";
+
+                        await Program.bot.SendTextMessageAsync(msg.Chat.Id, output_to_user, replyMarkup: buttons.get_main_menu());
+
+                        queries_to_bd.insert_output_message(msg.From.Username.ToString(), msg.Chat.Id, output_to_user.GetType().ToString(), output_to_user);
+                    }
+                    else if (msg_text == "/stick")
+                    {
+                        int val = rand.Next(1, 12);
+                        await Program.bot.SendStickerAsync(chatId: msg.Chat.Id, sticker: "https://cdn.tlgrm.app/stickers/34e/704/34e704f5-0115-3c1e-954e-74d2b180751d/192/" + val + ".webp", replyToMessageId: msg.MessageId);
+                    }
+                    else if (msg_text == "/pikcha")
+                    {
+                        string[] allfiles = Directory.GetFiles(Directory.GetCurrentDirectory() + "/data/arts/shinobu");
+                        int val = rand.Next(0, allfiles.Length);
+                        string path = @allfiles[val];
+                        using (var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        {
+                            await Program.bot.SendPhotoAsync(chatId: msg.Chat.Id, photo: fileStream, caption: "Ну ты и изврат");
+                        }
+                    }
+                    else if (msg_text == "/maid")
+                    {
+                        string[] allfiles = Directory.GetFiles(Directory.GetCurrentDirectory() + "/data/arts/maids");
+                        int val = rand.Next(0, allfiles.Length);
+                        string path = @allfiles[val];
+                        using (var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        {
+                            var imag = await Program.bot.SendPhotoAsync(chatId: msg.Chat.Id, photo: fileStream, caption: val.ToString());
+                        }
+                    }
+                    else if (msg_text == "/rand")
+                    {
+                        int val = rand.Next(0, 10);
+                        if (val < 5)
+                        {
+                            await Program.bot.SendTextMessageAsync(msg.Chat.Id, "Да!");
+                        }
+                        else
+                        {
+                            await Program.bot.SendTextMessageAsync(msg.Chat.Id, "Нет!");
+                        }
+                    }
+                    else if (msg_text == "/anekdot")
+                    {
+                        string joke = queries_to_bd.get_joke();
+                        await Program.bot.SendTextMessageAsync(msg.Chat.Id, joke.Replace("\\r\\n", "\r\n"));
+                    }
+                    else if (msg.Text == "/delete_space")
+                    {
+                        await Program.bot.SendTextMessageAsync(msg.Chat.Id, "Введи то, где надо убрать все пробелы", replyMarkup: new ForceReplyMarkup());
+                    }
+                    else if (msg_text == "/encrypt")
+                    {
+                        await Program.bot.SendTextMessageAsync(msg.Chat.Id, "Введите шифруемый текст на кириллице", replyMarkup: new ForceReplyMarkup());
+                    }
+                    else if (msg_text == "/decrypt")
+                    {
+                        await Program.bot.SendTextMessageAsync(msg.Chat.Id, "Введите дешифруемый текст на кириллице", replyMarkup: new ForceReplyMarkup());
+                    }
+                    else if (msg_text.Contains("лучшая девочка"))
+                    {
+                        string[] shinobu = { "Шинобу лучшая девочка, товарищ старший лейтенант!", "Шинобу.", "Однозначно Шинобу!", "Лучшая девочка-та, ради кого я создан, это Шинобу!", "Шинобу", "Солышко мое Шинобу", "А я уже кидал пикчу с Шинобу?", "А я уже кидал стикос с Шинобу?" };
+                        int value = rand.Next(1, shinobu.Length);
+                        await Program.bot.SendTextMessageAsync(msg.Chat.Id, shinobu[value]);
+                    }
+                    else if (msg_text.Contains("спать"))
+                    {
+                        string[] sleep = { "поспать это хорошо", "ну если @g1ts0 ляжет, то видимо и мне придется", "погнали", "ура, мы идем спать" };
+                        int value = rand.Next(1, sleep.Length);
+                        await Program.bot.SendTextMessageAsync(msg.Chat.Id, sleep[value]);
+                    }
+                    else if (msg_text == "/get_users" && msg.Chat.Id == resend_to_owner.id_owner) //выдает логины всех пользователей
+                    {
+                        string users_name = queries_to_bd.get_users();
+                        users_name = users_name.Replace("\\r\\n", "\r\n");
+                        await Program.bot.SendTextMessageAsync(resend_to_owner.id_owner, users_name);
+                    }
+                    else if (msg_text.Contains("/send") && msg.Chat.Id == resend_to_owner.id_owner) //принимает логин пользователя, ищет ид его чата и отправляет сообщение
+                    {
+                        string users_name = queries_to_bd.get_users();
+                        users_name = users_name.Replace("\\r\\n", "\r\n");
+                        await Program.bot.SendTextMessageAsync(resend_to_owner.id_owner, "Кому пишем?\r\n" + users_name, replyMarkup: new ForceReplyMarkup());
+                    }
+                    else if (msg.Text == "/get_translate_jp")
+                    {
+                        await Program.bot.SendTextMessageAsync(msg.Chat.Id, "Поищем что есть в словаре похожее.\r\nВведите слово на русском.", replyMarkup: new ForceReplyMarkup());
+                    }
+                    else if (msg.Text == "/get_kanji")
+                    {
+                        await Program.bot.SendTextMessageAsync(msg.Chat.Id, "Какой номер десятка кандзи?", replyMarkup: new ForceReplyMarkup());
+                    }
+                    else if (msg.Text == "/админка")
+                    {
+                        if (msg.Chat.Id == resend_to_owner.id_owner)
+                        {
+                            await Program.bot.SendTextMessageAsync(msg.Chat.Id, "Добро пожаловать, криворукий создатель", replyMarkup: buttons.get_admin_menu());
+                        }
+                        else
+                        {
+                            await Program.bot.SendTextMessageAsync(msg.Chat.Id, "Если ты найдешь способ, как конвертнуть на c# войс телеги из .ogg/.oga формата в wav/flac, то я подумаю о пересмотре твоих прав. Писать сюда: @g1ts0", replyMarkup: buttons.get_main_menu());
+                        }
+                    }
+                    else if (msg.Text == "/main_menu")
+                    {
+                        await Program.bot.SendTextMessageAsync(msg.Chat.Id, "Возврат в пользовательское меню", replyMarkup: buttons.get_main_menu());
+                    }
+                    else if (msg.Text == "/che_skazal")
+                    {
+                        await Program.bot.SendTextMessageAsync(msg.Chat.Id, "Запиши голосовое сообщение и я переведу его в текст.\r\nВНИМАНИЕ: пересылка в этот чат войса от другого человека пока не сработает.", replyMarkup: new ForceReplyMarkup());
+                    }
+                    else
+                    {
+                        //удалим лишние знаки, чтобы с большей вероятностью найти в бд текущий вопрос
+                        char[] alphbet_rus = " абвгдеёжзийклмнопрстуфхцчшщъыьэюя".ToCharArray();
+                        string clean_msg = "";
+                        for (int i = 0; i < msg_text.Length; i++)
+                        {
+                            for (int j = 0; j < alphbet_rus.Length; j++)
+                            {
+                                if (msg_text[i] == alphbet_rus[j])
+                                {
+                                    clean_msg += alphbet_rus[j];
+                                }
+                            }
+                        }
+                        await Program.bot.SendTextMessageAsync(msg.Chat.Id, queries_to_bd.get_other_answer(clean_msg));
+                    }
+                }
+                //а если ничего из вышенаписанного не подходит, то...
+                else
+                {
+                    await Program.bot.SendTextMessageAsync(chatId: msg.Chat.Id, "Я пока не понимаю такое", replyMarkup: new ForceReplyMarkup());
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine("Ошибка в " + method_name);
+                Console.WriteLine(exception.ToString());
+                queries_to_bd.insert_error(1, Newtonsoft.Json.JsonConvert.SerializeObject(msg), exception);
+            }
+        }
+    }
+}
