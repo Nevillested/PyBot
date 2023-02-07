@@ -1,0 +1,44 @@
+john
+ipiheb60
+spool on
+spool users.txt
+D:\DB_ORACLE\dbhomeXE\bin
+
+SQL> select dbms_metadata.get_ddl( 'TABLE', TABLE_NAME, OWNER ) from all_tables where owner = 'JOHN';
+
+DBMS_METADATA.GET_DDL('TABLE',TABLE_NAME,OWNER)                                 
+--------------------------------------------------------------------------------
+                                                                                
+  CREATE TABLE "JOHN"."USERS"                                                   
+   (	"ID" NUMBER GENERATED ALWAYS AS IDENTITY MI                                
+                                                                                
+                                                                                
+  CREATE TABLE "JOHN"."USERS_DATA"                                              
+   (	"ID" NUMBER GENERATED ALWAYS AS IDENTI                                     
+                                                                                
+                                                                                
+  CREATE TABLE "JOHN"."JOKES"                                                   
+   (	"ID" NUMBER GENERATED ALWAYS AS IDENTITY MI                                
+
+DBMS_METADATA.GET_DDL('TABLE',TABLE_NAME,OWNER)                                 
+--------------------------------------------------------------------------------
+                                                                                
+                                                                                
+  CREATE TABLE "JOHN"."CEZAR"                                                   
+   (	"ID" NUMBER GENERATED ALWAYS AS IDENTITY MI                                
+                                                                                
+                                                                                
+  CREATE TABLE "JOHN"."OTHER_ANSWERS"                                           
+   (	"ID" NUMBER GENERATED ALWAYS AS IDE                                        
+                                                                                
+                                                                                
+  CREATE TABLE "JOHN"."VOICES"                                                  
+
+DBMS_METADATA.GET_DDL('TABLE',TABLE_NAME,OWNER)                                 
+--------------------------------------------------------------------------------
+   (	"ID" NUMBER GENERATED ALWAYS AS IDENTITY M                                 
+                                                                                
+
+6 rows selected.
+
+SQL> spool C:/users.txt
