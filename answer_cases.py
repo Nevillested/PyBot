@@ -1,12 +1,13 @@
-﻿import random
-import os
+﻿import keyboards_buttons
+import common_methods
 import queries_to_bd
-import cezar
-import keyboards_buttons
-import telebot
-import speech_recognization
-import openai
+import speech_to_text
 import text_to_speech
+import telebot
+import openai
+import random
+import cezar
+import os
 
 class cases_class(Exception):
 
@@ -20,7 +21,7 @@ class cases_class(Exception):
         if cur_message.content_type == "text":
              last_msg_user = cur_message.text.lower()
         elif cur_message.content_type == "voice":
-            last_msg_user = (speech_recognization.voice_processing(cur_message, bot, "ru" )).lower()
+            last_msg_user = (speech_to_text.voice_processing(cur_message, bot, "ru" )).lower()
         
         if last_msg_user == "/start" or  last_msg_user == "/help":
                 content_type_out = "text"
@@ -126,7 +127,7 @@ class cases_class(Exception):
                 content_type_out = "text"
                 if cur_message.content_type == "voice":
                     lang = (queries_to_bd.queries_class.get_lang_voice(cur_message)).lower()
-                    result_out = r"'" + speech_recognization.voice_processing(cur_message, bot, lang )+ r"'" #вызов функции конвертации
+                    result_out = r"'" + speech_to_text.voice_processing(cur_message, bot, lang )+ r"'" #вызов функции конвертации
                     queries_to_bd.queries_class.insert_result_recognize_speech(cur_message, result_out)
                 else:
                     result_out = "Что-то не похоже на войс, попробуй еще разок"
@@ -146,16 +147,25 @@ class cases_class(Exception):
                     result_out = "Я для таких идиотов как ты даже кнопки сделал. ЛИБО EN, ЛИБО RU"
         elif last_msg_bot == "А теперь напиши текст на русском языке, который будет переведен в войс":
                 if cur_message.content_type == "text":
-                    content_type_out = "audio"
-                    result_out = text_to_speech.convert_text_to_speech(last_msg_user,"ru")
+                    if common_methods.check_ru_char_in_string(last_msg_user) == 0:
+                        content_type_out = "audio"
+                        result_out = text_to_speech.convert_text_to_speech(last_msg_user,"ru")
+                    else:
+                        content_type_out = "text"
+                        result_out = "Кажется, твой текст не весь состоит из русских букв.\nПопробуй снова. Допускаются только русские буквы."
                 else:
                     content_type_out = "text"
                     result_out = "Ты тупой или да? Пиши ТЕКСТ"
                 reply_out = keyboards_buttons.keyboards_class.main_menu()
+
         elif last_msg_bot == "А теперь напиши текст на английском языке, который будет переведен в войс":
                 if cur_message.content_type == "text":
-                    content_type_out = "audio"
-                    result_out = text_to_speech.convert_text_to_speech(last_msg_user,"en")
+                    if common_methods.check_en_char_in_string(last_msg_user) == 0:
+                        content_type_out = "audio"
+                        result_out = text_to_speech.convert_text_to_speech(last_msg_user,"en")
+                    else:
+                        content_type_out = "text"
+                        result_out = "Кажется, твой текст не весь состоит из английских букв.\nПопробуй снова. Допускаются только английские буквы."
                 else:
                     content_type_out = "text"
                     result_out = "Ты тупой или да? Пиши ТЕКСТ"

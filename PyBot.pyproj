@@ -23,15 +23,13 @@
   <ItemGroup>
     <Compile Include="answer_cases.py" />
     <Compile Include="cezar.py" />
+    <Compile Include="common_methods.py" />
     <Compile Include="keyboards_buttons.py" />
-    <Compile Include="speech_recognization.py" />
+    <Compile Include="speech_to_text.py" />
     <Compile Include="PyBot.py" />
     <Compile Include="queries_to_bd.py" />
     <Compile Include="resending_to_owner_motherfucker.py" />
     <Compile Include="text_to_speech.py" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="накидки кода.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
