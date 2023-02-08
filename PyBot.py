@@ -21,11 +21,14 @@ def catch_edit_msg(message):
         #добавляет отредактированное сообщение
         queries_to_bd.queries_class.insert_edited_msg(message)
 
-        #получает предпоследнеюю версию сообщения
-        prev_msg = queries_to_bd.queries_class.get_last_ver_msg(message)
+        #получает предпоследнеюю версию сообщения и обрамляет ее в результат
+        result_prev_msg = "Ты думаешь я ничего не видел?\n" + r"|| '" + queries_to_bd.queries_class.get_last_ver_msg(message)+ r"' ||"
         
+        #сохраняет улетевшие данные пользователю
+        queries_to_bd.queries_class.insert_user_story_out("text", result_prev_msg, message.chat.id, message.message_id)
+
         #отправляет результат
-        MypyBot.send_message(message.chat.id, "Ты думаешь я ничего не видел?\n" + r"|| '" + prev_msg + r"' ||", reply_to_message_id  = message.id, parse_mode='MarkdownV2')
+        MypyBot.send_message(message.chat.id, result_prev_msg , reply_to_message_id = message.id, parse_mode='MarkdownV2')
 
     except Exception as e:
         print('Ошибочка в PyBot.edited_message_handler\nОписание: ' + "".join(traceback.format_exception_only(e)).strip())
@@ -35,7 +38,7 @@ def catch_edit_msg(message):
 @MypyBot.message_handler(content_types=CONTENT_TYPES)
 def start_message(message):
 
-    #try:
+    try:
         print(f"Пришло сообщение от: {message.from_user.username}\nТип сообщения: {str(message.content_type)}\nТекст сообщения: {message.text}\n")
 
         #пересылает все прилетевшее боту - админу
@@ -70,8 +73,8 @@ def start_message(message):
             #MypyBot.send_voice(message.chat.id, result_out) #метод send_voice не работает по непонятным причинам апи телеги
             MypyBot.send_audio(chat_id=message.chat.id, audio=open(result_out, 'rb'))
             
-    #except Exception as e:
-        #print('Ошибочка в PyBot.message_handler\nОписание: ' + "".join(traceback.format_exception_only(e)).strip())
-        #MypyBot.send_message(message.chat.id, "Ок, допустим кря\nДопустим, ты сделал ошибку в работе бота\nНо это только ДОПУСТИМ\nИ что дальше ты намерен делать?", reply_markup  = keyboards_buttons.keyboards_class.main_menu())
+    except Exception as e:
+        print('Ошибочка в PyBot.message_handler\nОписание: ' + "".join(traceback.format_exception_only(e)).strip())
+        MypyBot.send_message(message.chat.id, "Ок, допустим кря\nДопустим, ты сделал ошибку в работе бота\nНо это только ДОПУСТИМ\nИ что дальше ты намерен делать?", reply_markup  = keyboards_buttons.keyboards_class.main_menu())
 
 MypyBot.polling() 

@@ -157,7 +157,6 @@ class cases_class(Exception):
                     content_type_out = "text"
                     result_out = "Ты тупой или да? Пиши ТЕКСТ"
                 reply_out = keyboards_buttons.keyboards_class.main_menu()
-
         elif last_msg_bot == "А теперь напиши текст на английском языке, который будет переведен в войс":
                 if cur_message.content_type == "text":
                     if common_methods.check_en_char_in_string(last_msg_user) == 0:
@@ -171,8 +170,7 @@ class cases_class(Exception):
                     result_out = "Ты тупой или да? Пиши ТЕКСТ"
                 reply_out = keyboards_buttons.keyboards_class.main_menu()
 
-
-        
+                
         if len(result_out) == 0:
             content_type_out = "text"
             
