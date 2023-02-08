@@ -28,6 +28,7 @@
     <Compile Include="PyBot.py" />
     <Compile Include="queries_to_bd.py" />
     <Compile Include="resending_to_owner_motherfucker.py" />
+    <Compile Include="text_to_speech.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="накидки кода.txt" />

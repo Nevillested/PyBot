@@ -13,12 +13,12 @@ class keyboards_class(Exception):
         rand = telebot.types.KeyboardButton(text="/rand")
         encrypt = telebot.types.KeyboardButton(text="/encrypt")
         decrypt = telebot.types.KeyboardButton(text="/decrypt")
-        delete_space = telebot.types.KeyboardButton(text="/delete_space")
-        che_skazal = telebot.types.KeyboardButton(text="/che_skazal")
+        speech_to_text = telebot.types.KeyboardButton(text="/speech_to_text")
+        text_to_speech = telebot.types.KeyboardButton(text="/text_to_speech")
         get_translate_jp = telebot.types.KeyboardButton(text="/get_translate_jp")
         get_kanji = telebot.types.KeyboardButton(text="/get_kanji")
-        adminka = telebot.types.KeyboardButton(text="/adminka")
-        reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, delete_space, che_skazal, get_translate_jp, get_kanji, adminka)
+        delete_space = telebot.types.KeyboardButton(text="/delete_space")
+        reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space)
         return reply_to
 
     #клавиатура для шифрования - выбор языка

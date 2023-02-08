@@ -6,6 +6,7 @@ import keyboards_buttons
 import telebot
 import speech_recognization
 import openai
+import text_to_speech
 
 class cases_class(Exception):
 
@@ -34,8 +35,9 @@ class cases_class(Exception):
                 s8 =  "/delete_space - я не знаю зачем, но пусть будет - удаляет пробелы\n"
                 s9 =  "/get_translate_jp - поиск слова в японском словаре\n"
                 s10 =  "/get_kanji - учим кандзи по хитрому файлу\n"
-                s11 = "/che_skazal - попробую распознать текст\n"
-                result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11
+                s11 = "/speech_to_text - переведу войс в текст\n"
+                s12 = "/text_to_speech - переведу текст в войс\n"
+                result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12
                 reply_out = keyboards_buttons.keyboards_class.main_menu()
         elif last_msg_user == "/stick":
                 content_type_out = "sticker"
@@ -107,7 +109,7 @@ class cases_class(Exception):
                 content_type_out = "text"
                 result_out = sentences[value]
                 reply_out = keyboards_buttons.keyboards_class.main_menu()
-        elif last_msg_user =="/che_skazal":
+        elif last_msg_user =="/speech_to_text":
                 content_type_out = "text"
                 result_out = "Выбери язык распознавания текста"
                 reply_out = keyboards_buttons.keyboards_class.ru_en()
@@ -128,6 +130,28 @@ class cases_class(Exception):
                     queries_to_bd.queries_class.insert_result_recognize_speech(cur_message, result_out)
                 else:
                     result_out = "Что-то не похоже на войс, попробуй еще разок"
+                reply_out = keyboards_buttons.keyboards_class.main_menu()
+        elif last_msg_user =="/text_to_speech":
+                content_type_out = "text"
+                result_out = "Выбери язык войса"
+                reply_out = keyboards_buttons.keyboards_class.ru_en()
+        elif last_msg_bot == "Выбери язык войса" and last_msg_user == "ru":
+                content_type_out = "text"
+                result_out = "А теперь напиши текст на русском языке, который будет переведен в войс"
+                reply_out = keyboards_buttons.keyboards_class.main_menu()
+        elif last_msg_bot == "А теперь напиши текст на русском языке, который будет переведен в войс":
+                content_type_out = "audio"
+                if last_msg_user != None or len(last_msg_user) != 0:
+                    result_out = text_to_speech.convert_text_to_speech(last_msg_user,"ru")
+                reply_out = keyboards_buttons.keyboards_class.main_menu()
+        elif last_msg_bot == "Выбери язык войса" and last_msg_user == "en":
+                content_type_out = "text"
+                result_out = "А теперь напиши текст на английском языке, который будет переведен в войс"
+                reply_out = keyboards_buttons.keyboards_class.main_menu()
+        elif last_msg_bot == "А теперь напиши текст на английском языке, который будет переведен в войс":
+                content_type_out = "audio"
+                if last_msg_user != None or len(last_msg_user) != 0:
+                    result_out = text_to_speech.convert_text_to_speech(last_msg_user,"en")
                 reply_out = keyboards_buttons.keyboards_class.main_menu()
         
         if len(result_out) == 0:

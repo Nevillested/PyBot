@@ -51,21 +51,24 @@ def start_message(message):
         last_msg_bot = queries_to_bd.queries_class.get_last_bot_msg(message.chat.id)
         
         #кейсы на ответы пользователю - получение результатов ответа (получение типа контента, который отправляется пользователю, содержимое контента и реплай-контент)
-        content_type, result, reply = answer_cases.cases_class.cases_trigger(message, last_msg_bot, MypyBot)
+        content_type_out, result_out, reply_out = answer_cases.cases_class.cases_trigger(message, last_msg_bot, MypyBot)
         
         #сохраняет улетевшие данные пользователю
-        queries_to_bd.queries_class.insert_user_story_out(content_type, result, message.chat.id, message.message_id)
+        queries_to_bd.queries_class.insert_user_story_out(content_type_out, result_out, message.chat.id, message.message_id)
 
         #отправляет результат
-        if content_type == "text":
-            MypyBot.send_message(message.chat.id, result, reply_markup  = reply)
-        elif content_type == "sticker":
-            MypyBot.send_sticker(message.chat.id, result)
-        elif content_type == "photo":
+        if content_type_out == "text":
+            MypyBot.send_message(message.chat.id, result_out, reply_markup  = reply_out)
+        elif content_type_out == "sticker":
+            MypyBot.send_sticker(message.chat.id, result_out)
+        elif content_type_out == "photo":
             caption_result = ""
             if message.text.lower() == "/pikcha":
                 caption_result = "Ну ты и изврат"
-            MypyBot.send_photo(message.chat.id, photo = open(result, 'rb'), caption = caption_result)
+            MypyBot.send_photo(message.chat.id, photo = open(result_out, 'rb'), caption = caption_result)
+        elif content_type_out == "audio":
+            #MypyBot.send_voice(message.chat.id, result_out) #метод send_voice не работает по непонятным причинам апи телеги
+            MypyBot.send_audio(chat_id=message.chat.id, audio=open(result_out, 'rb'))
             
     except Exception as e:
         print('Ошибочка в PyBot.message_handler\nОписание: ' + "".join(traceback.format_exception_only(e)).strip())
