@@ -153,8 +153,9 @@ class queries_class(Exception):
         connection.commit()
         result_string = ''
 
-        for item in result_tuple:
-            result_string = result_string + str(item)
+        if result_tuple != None:
+            for item in result_tuple:
+                result_string = result_string + str(item)
 
         return result_string
 
