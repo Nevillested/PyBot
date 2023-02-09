@@ -98,3 +98,25 @@ class keyboards_class(Exception):
         twenty_five = telebot.types.KeyboardButton(text="25")
         reply_to.add(zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty_one, twenty_two, twenty_three, twenty_four, twenty_five)
         return reply_to
+
+
+    #клавиатура для поиска номера десятка. Должна быть редактирована в зависимости от увеличения/уменьшения кол-ва кандзи в словаре
+    def kanji_num():
+        reply_to = telebot.types.ReplyKeyboardMarkup(row_width=6, resize_keyboard=True, one_time_keyboard=True)
+        one = telebot.types.KeyboardButton(text="1")
+        two = telebot.types.KeyboardButton(text="2")
+        three = telebot.types.KeyboardButton(text="3")
+        four = telebot.types.KeyboardButton(text="4")
+        five = telebot.types.KeyboardButton(text="5")
+        six = telebot.types.KeyboardButton(text="6")
+        seven = telebot.types.KeyboardButton(text="7")
+        eight = telebot.types.KeyboardButton(text="8")
+        nine = telebot.types.KeyboardButton(text="9")
+        ten = telebot.types.KeyboardButton(text="10")
+        eleven = telebot.types.KeyboardButton(text="11")
+        twelve = telebot.types.KeyboardButton(text="12")
+        thirteen = telebot.types.KeyboardButton(text="13")
+        fourteen = telebot.types.KeyboardButton(text="14")
+        fifteen = telebot.types.KeyboardButton(text="15")
+        reply_to.add(one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen)
+        return reply_to

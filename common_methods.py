@@ -31,3 +31,10 @@ def check_en_char_in_string(string_income):
         return 0
     else:
         return -1
+
+#переводит Tuple в стрингу
+def convertTuple(tup):
+    str = ''
+    for item in tup:
+        str = str + item
+    return str

@@ -35,7 +35,7 @@ class cases_class(Exception):
                 s7 =  "/decrypt - расшифруй данные по ключу\n"
                 s8 =  "/delete_space - я не знаю зачем, но пусть будет - удаляет пробелы\n"
                 s9 =  "/get_translate_jp - поиск слова в японском словаре\n"
-                s10 =  "/get_kanji - учим кандзи по хитрому файлу\n"
+                s10 = "/get_kanji - учим кандзи по хитрому файлу\n"
                 s11 = "/speech_to_text - переведу войс в текст\n"
                 s12 = "/text_to_speech - переведу текст в войс\n"
                 result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12
@@ -169,8 +169,25 @@ class cases_class(Exception):
                     content_type_out = "text"
                     result_out = "Ты тупой или да? Пиши ТЕКСТ"
                 reply_out = keyboards_buttons.keyboards_class.main_menu()
-
-                
+        elif last_msg_user == "/get_translate_jp":
+                content_type_out = "text"
+                result_out = "Какое слово ищем в японском словаре?"
+                reply_out = keyboards_buttons.keyboards_class.main_menu()
+        elif last_msg_bot == "Какое слово ищем в японском словаре?":
+                content_type_out = "text"
+                result_out = queries_to_bd.queries_class.get_translate_jp(last_msg_user)
+                reply_out = keyboards_buttons.keyboards_class.main_menu()
+        elif last_msg_user == "/get_kanji":
+                content_type_out = "text"
+                result_out = "Пришлю десяток кандзи из словаря для изучения. Какой номер десятка?"
+                reply_out = keyboards_buttons.keyboards_class.kanji_num()
+        elif last_msg_bot == "Пришлю десяток кандзи из словаря для изучения. Какой номер десятка?":
+                content_type_out = "text"
+                reply_out = keyboards_buttons.keyboards_class.main_menu()
+                if last_msg_user.isnumeric():
+                    result_out = queries_to_bd.queries_class.get_kanji(last_msg_user)
+                else:
+                    result_out = "Введенное тобой что-то не похоже на число."
         if len(result_out) == 0:
             content_type_out = "text"
             

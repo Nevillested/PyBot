@@ -1,4 +1,5 @@
 ﻿import oracledb
+import common_methods
 
 class queries_class(Exception):
 
@@ -347,3 +348,45 @@ class queries_class(Exception):
                                             where rn = 1
                                           )""", rows)
         connection.commit()
+
+    #возвращает перевод слова из "новые слова"
+    def get_translate_jp(user_word):
+        connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
+        cursor = connection.cursor()
+
+        for row in cursor.execute(""" select coalesce(
+                                                        LISTAGG('С кандзи: '||coalesce(t1.jap_word_with_kanji,'-')||'\nБез кандзи: '||coalesce(t1.jap_word_without_kanji,'-')||'\nПеревод: '||coalesce(t1.rus_word,'-')||'' ,'\n\n')
+                                                      , 'Мы ничего не нашли'
+                                                     ) as result_output 
+                                        from (select jap_word_with_kanji
+                                                   , jap_word_without_kanji
+                                                   , rus_word
+                                                   , '1' as rn
+                                                from jap_dict
+                                             ) t1
+                                       inner
+                                        join (select :cur_user_word as user_word
+                                                   , '1' as rn
+                                                from dual
+                                             ) t2
+                                          on t1.rn = t2.rn
+                                       where lower(t1.rus_word) like '%'||lower(t2.user_word)||'%'""", cur_user_word = user_word):
+            val = row
+        connection.commit()
+        result = common_methods.convertTuple(val)
+        return result
+
+    #возвращает список кандзи по номеру десятка
+    def get_kanji(user_value):
+        connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
+        cursor = connection.cursor()
+
+        for row in cursor.execute("""with t1 as (select :cur_value as value from dual)
+                                       select coalesce((listagg(('Кандзи: '||kanji||'\nПеревод: '||RUS_WORD||'\nЧтения: '||reading||'\nПримеры:\n '||examples),'\n\n')),'Мы ничего не нашли, попробуй изменить номер десятка.')
+                                       from JOHN.JAP_KANJI
+                                      where id < (select (value)*10 from t1)
+                                        and id >= (select (value-1)*10 from t1)""", cur_value = user_value):
+            val = row
+        connection.commit()
+        result = common_methods.convertTuple(val)
+        return result
