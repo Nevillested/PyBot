@@ -3,8 +3,8 @@ import common_methods
 import queries_to_bd
 import speech_to_text
 import text_to_speech
+import ChatGpt
 import telebot
-import openai
 import random
 import cezar
 import os
@@ -177,6 +177,9 @@ class cases_class(Exception):
                 content_type_out = "text"
                 result_out = queries_to_bd.queries_class.get_translate_jp(last_msg_user)
                 reply_out = keyboards_buttons.keyboards_class.main_menu()
+                #если в бд ничего не найдено, то спрашиваем у ChatGPT
+                if result_out == 'Мы ничего не нашли':
+                    result_out = ChatGpt.get_result_from_chatgpt("Переведи на японский язык: " + last_msg_user)
         elif last_msg_user == "/get_kanji":
                 content_type_out = "text"
                 result_out = "Пришлю десяток кандзи из словаря для изучения. Какой номер десятка?"
@@ -188,23 +191,11 @@ class cases_class(Exception):
                     result_out = queries_to_bd.queries_class.get_kanji(last_msg_user)
                 else:
                     result_out = "Введенное тобой что-то не похоже на число."
+
         if len(result_out) == 0:
             content_type_out = "text"
-            
-            openai.api_key = "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"
-            model_engine = "text-davinci-003"
-            prompt = last_msg_user
-            completion = openai.Completion.create(
-                engine=model_engine,
-                prompt=prompt,
-                max_tokens=1024,
-                n=1,
-                stop=None,
-                temperature=0.5,
-            )
-            
-            result_out = completion.choices[0].text
-            reply_out = keyboards_buttons.keyboards_class.main_menu()
+            result_out = ChatGpt.get_result_from_chatgpt(last_msg_user)
             #result_out = queries_to_bd.queries_class.get_other_answer(last_msg_user)
+            reply_out = keyboards_buttons.keyboards_class.main_menu()
             
         return content_type_out, result_out, reply_out

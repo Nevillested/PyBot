@@ -23,6 +23,7 @@
   <ItemGroup>
     <Compile Include="answer_cases.py" />
     <Compile Include="cezar.py" />
+    <Compile Include="ChatGpt.py" />
     <Compile Include="common_methods.py" />
     <Compile Include="keyboards_buttons.py" />
     <Compile Include="speech_to_text.py" />
