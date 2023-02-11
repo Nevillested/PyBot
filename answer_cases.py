@@ -13,7 +13,9 @@ class cases_class(Exception):
 
     def cases_trigger(cur_message, last_msg_bot, bot):
         
+        correct_answer_id_out = ""
         content_type_out = ""
+        answer_desc_out = ""
         result_out = ""
         reply_out = telebot.types.ReplyKeyboardMarkup()
 
@@ -23,6 +25,7 @@ class cases_class(Exception):
         elif cur_message.content_type == "voice":
             last_msg_user = (speech_to_text.voice_processing(cur_message, bot, "ru" )).lower()
         
+
         if last_msg_user == "/start" or  last_msg_user == "/help":
                 content_type_out = "text"
                 s0 =  "Помощь немощу, сам же догадаться не можешь интуитивно да:\n"
@@ -192,10 +195,85 @@ class cases_class(Exception):
                 else:
                     result_out = "Введенное тобой что-то не похоже на число."
 
+
+        elif last_msg_user == "/get_quiz":
+                content_type_out = "text"
+                result_out = "Квиз по всем имеющимся кандзи или по номеру определенного десятка?"
+                reply_out = keyboards_buttons.keyboards_class.kanji_quiz()
+
+
+
+        elif last_msg_bot == "Квиз по всем имеющимся кандзи или по номеру определенного десятка?":
+                content_type_out = "text"
+                if last_msg_user == "по всем имеющимся кандзи!":
+                    content_type_out = "poll"
+                    result_out = []
+                    reply_out = keyboards_buttons.keyboards_class.main_menu()
+                    list_of_rows = queries_to_bd.queries_class.get_all_kanji_quiz() #получаем строки с данными
+                    tuple_row_with_right_answer = list_of_rows[0] #забираем всю первую строку
+                    answer_desc_out = tuple_row_with_right_answer[0] #забираем вопрос из 1 строки, 1 столбца
+                    correct_answer_id_out = tuple_row_with_right_answer[2] #забираем номер правильного ответа из 1 строки, 3 столбца
+                    correct_answer_id_out = correct_answer_id_out - 1
+                    list_of_rows.pop(0) #удаляем первувю строку, тк она больше не нужна
+                    for item in list_of_rows:
+                        result_out.append(item[1])
+
+
+
+                elif last_msg_user == "по номеру десятка!":
+                    result_out = "По какому номеру десятка кандзи будем гонять?"
+                    reply_out = keyboards_buttons.keyboards_class.kanji_num()
+                else:
+                    result_out = "Такого варианта нет, попробуй снова."
+                    reply_out = keyboards_buttons.keyboards_class.main_menu()
+
+
+
+        elif last_msg_bot == "По какому номеру десятка кандзи будем гонять?":
+            
+
+                if last_msg_user.isnumeric():
+                    content_type_out = "poll"
+                    
+                    result_out = []
+                    reply_out = keyboards_buttons.keyboards_class.main_menu()
+
+                    list_of_rows = queries_to_bd.queries_class.get_decade_kanji_quiz(last_msg_user) #получаем строки с данными
+
+                    tuple_row_with_right_answer = list_of_rows[0] #забираем всю первую строку
+
+                    answer_desc_out = tuple_row_with_right_answer[0] #забираем вопрос из 1 строки, 1 столбца
+
+                    correct_answer_id_out = tuple_row_with_right_answer[2] #забираем номер правильного ответа из 1 строки, 3 столбца
+
+                    correct_answer_id_out = correct_answer_id_out - 1
+                    list_of_rows.pop(0) #удаляем первувю строку, тк она больше не нужна
+
+                    for item in list_of_rows:
+                        result_out.append(item[1])
+
+
+                else:
+                    content_type_out = "text"
+                    result_out = "Введенное тобой что-то не похоже на число."
+                    
+
+
+
+
+
+
+
+
+
+
+
+
+
         if len(result_out) == 0:
             content_type_out = "text"
             result_out = ChatGpt.get_result_from_chatgpt(last_msg_user)
             #result_out = queries_to_bd.queries_class.get_other_answer(last_msg_user)
             reply_out = keyboards_buttons.keyboards_class.main_menu()
             
-        return content_type_out, result_out, reply_out
+        return answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out

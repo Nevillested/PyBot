@@ -120,3 +120,11 @@ class keyboards_class(Exception):
         fifteen = telebot.types.KeyboardButton(text="15")
         reply_to.add(one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen)
         return reply_to
+    
+    #клавиатура для метода квиза
+    def kanji_quiz():
+        reply_to = telebot.types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=True)
+        all_kanji = telebot.types.KeyboardButton(text="по всем имеющимся кандзи!")
+        decade_kanji = telebot.types.KeyboardButton(text="по номеру десятка!")
+        reply_to.add(all_kanji, decade_kanji)
+        return reply_to

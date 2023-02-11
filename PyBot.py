@@ -54,8 +54,13 @@ def start_message(message):
         last_msg_bot = queries_to_bd.queries_class.get_last_bot_msg(message.chat.id)
         
         #кейсы на ответы пользователю - получение результатов ответа (получение типа контента, который отправляется пользователю, содержимое контента и реплай-контент)
-        content_type_out, result_out, reply_out = answer_cases.cases_class.cases_trigger(message, last_msg_bot, MypyBot)
+        answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out = answer_cases.cases_class.cases_trigger(message, last_msg_bot, MypyBot)
         
+        #если результат - список, то переведем его в стрингу, для записи в бд
+        result_array_out = result_out
+        if str(type(result_out)) == '<class \'list\'>':
+            result_out =' '.join([str(elem) for elem in result_out])
+
         #сохраняет улетевшие данные пользователю
         queries_to_bd.queries_class.insert_user_story_out(content_type_out, result_out, message.chat.id, message.message_id)
 
@@ -72,6 +77,9 @@ def start_message(message):
         elif content_type_out == "audio":
             #MypyBot.send_voice(message.chat.id, result_out) #метод send_voice не работает по непонятным причинам апи телеги
             MypyBot.send_audio(chat_id=message.chat.id, audio=open(result_out, 'rb'))
+        elif content_type_out == "poll":
+            MypyBot.send_poll(message.chat.id, 'Кандзи: ' + answer_desc_out, options = result_array_out, correct_option_id  = correct_answer_id_out, type = 'quiz') 
+            MypyBot.send_message(message.chat.id, "Еще разок?")
             
     except Exception as e:
         print('Ошибочка в PyBot.message_handler\nОписание: ' + "".join(traceback.format_exception_only(e)).strip())

@@ -390,3 +390,81 @@ class queries_class(Exception):
         connection.commit()
         result = common_methods.convertTuple(val)
         return result
+
+    #возвращает данные для квиза но номеру десятка
+    def get_decade_kanji_quiz(num_decade):
+        connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
+        cursor = connection.cursor()
+        
+        list_of_rows = []
+
+        for row in cursor.execute("""with
+                                     all_vars as (
+                                       select a.kanji
+                                            , a.reading
+                                            , a.rus_word
+                                            , rownum as rn
+                                         from (select a.*
+                                                    , rownum as rn
+                                                 from ( select *
+                                                          from john.jap_kanji
+                                                         where id >=10 * ( :var - 1 )
+                                                           and id < 10 * :var
+                                                         order by dbms_random.value
+                                                      ) a
+                                              ) a
+                                        where rn <= 4
+                                       ),
+                                       
+                                       rand_val as(
+                                         select round(dbms_random.value(1,4)) as rand
+                                           from dual
+                                       )
+                                       /*берем правильный ответ*/
+                                       select kanji, 'Чтение '||reading||'. Перевод '||rus_word,rn from all_vars where rn = (select rand from rand_val)
+                                       /*объединяем со всеми, которые имеются*/
+                                       union all
+                                       select kanji, 'Чтение '||reading||'. Перевод '||rus_word,rn from all_vars """, var = num_decade):
+            list_of_rows.append(row)
+            
+        connection.commit()
+
+        return list_of_rows
+
+    #возвращает данные для квиза по всем имеющимся кадзи
+    def get_all_kanji_quiz():
+        connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
+        cursor = connection.cursor()
+        
+        list_of_rows = []
+
+        for row in cursor.execute("""with
+                                     all_vars as (
+                                       select a.kanji
+                                            , a.reading
+                                            , a.rus_word
+                                            , rownum as rn
+                                         from (select a.*
+                                                    , rownum as rn
+                                                 from ( select *
+                                                          from john.jap_kanji
+                                                         order by dbms_random.value
+                                                      ) a
+                                              ) a
+                                        where rn <= 4
+                                       ),
+                                       
+                                       rand_val as(
+                                         select round(dbms_random.value(1,4)) as rand
+                                           from dual
+                                       )
+                                       /*берем правильный ответ*/
+                                       select kanji, 'Чтение '||reading||'. Перевод '||rus_word,rn from all_vars where rn = (select rand from rand_val)
+                                       /*объединяем со всеми, которые имеются*/
+                                       union all
+                                       select kanji, 'Чтение '||reading||'. Перевод '||rus_word,rn from all_vars """):
+            list_of_rows.append(row)
+            
+        connection.commit()
+
+        return list_of_rows
