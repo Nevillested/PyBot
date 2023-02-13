@@ -7,6 +7,7 @@ import ChatGpt
 import telebot
 import random
 import cezar
+import quiz
 import os
 
 class cases_class(Exception):
@@ -41,7 +42,8 @@ class cases_class(Exception):
                 s10 = "/get_kanji - учим кандзи по хитрому файлу\n"
                 s11 = "/speech_to_text - переведу войс в текст\n"
                 s12 = "/text_to_speech - переведу текст в войс\n"
-                result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12
+                s13 = "/get_quiz - викторина/тест по японским кандзи\n"
+                result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12+s13
                 reply_out = keyboards_buttons.keyboards_class.main_menu()
         elif last_msg_user == "/stick":
                 content_type_out = "sticker"
@@ -194,81 +196,33 @@ class cases_class(Exception):
                     result_out = queries_to_bd.queries_class.get_kanji(last_msg_user)
                 else:
                     result_out = "Введенное тобой что-то не похоже на число."
-
-
         elif last_msg_user == "/get_quiz":
                 content_type_out = "text"
                 result_out = "Квиз по всем имеющимся кандзи или по номеру определенного десятка?"
                 reply_out = keyboards_buttons.keyboards_class.kanji_quiz()
-
-
-
-        elif last_msg_bot == "Квиз по всем имеющимся кандзи или по номеру определенного десятка?":
-                content_type_out = "text"
-                if last_msg_user == "по всем имеющимся кандзи!":
-                    content_type_out = "poll"
-                    result_out = []
-                    reply_out = keyboards_buttons.keyboards_class.main_menu()
-                    list_of_rows = queries_to_bd.queries_class.get_all_kanji_quiz() #получаем строки с данными
-                    tuple_row_with_right_answer = list_of_rows[0] #забираем всю первую строку
-                    answer_desc_out = tuple_row_with_right_answer[0] #забираем вопрос из 1 строки, 1 столбца
-                    correct_answer_id_out = tuple_row_with_right_answer[2] #забираем номер правильного ответа из 1 строки, 3 столбца
-                    correct_answer_id_out = correct_answer_id_out - 1
-                    list_of_rows.pop(0) #удаляем первувю строку, тк она больше не нужна
-                    for item in list_of_rows:
-                        result_out.append(item[1])
-
-
-
-                elif last_msg_user == "по номеру десятка!":
-                    result_out = "По какому номеру десятка кандзи будем гонять?"
-                    reply_out = keyboards_buttons.keyboards_class.kanji_num()
-                else:
-                    result_out = "Такого варианта нет, попробуй снова."
-                    reply_out = keyboards_buttons.keyboards_class.main_menu()
-
-
-
+        elif last_msg_bot == "Квиз по всем имеющимся кандзи или по номеру определенного десятка?" and last_msg_user == "по всем имеющимся кандзи!":
+            answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out = quiz.get_all_kanji_quiz()
+        elif last_msg_bot == "Квиз по всем имеющимся кандзи или по номеру определенного десятка?" and last_msg_user == "по номеру десятка!":
+            content_type_out = "text"
+            result_out = "По какому номеру десятка кандзи будем гонять?"
+            reply_out = keyboards_buttons.keyboards_class.kanji_num()
         elif last_msg_bot == "По какому номеру десятка кандзи будем гонять?":
-            
-
                 if last_msg_user.isnumeric():
-                    content_type_out = "poll"
-                    
-                    result_out = []
-                    reply_out = keyboards_buttons.keyboards_class.main_menu()
-
-                    list_of_rows = queries_to_bd.queries_class.get_decade_kanji_quiz(last_msg_user) #получаем строки с данными
-
-                    tuple_row_with_right_answer = list_of_rows[0] #забираем всю первую строку
-
-                    answer_desc_out = tuple_row_with_right_answer[0] #забираем вопрос из 1 строки, 1 столбца
-
-                    correct_answer_id_out = tuple_row_with_right_answer[2] #забираем номер правильного ответа из 1 строки, 3 столбца
-
-                    correct_answer_id_out = correct_answer_id_out - 1
-                    list_of_rows.pop(0) #удаляем первувю строку, тк она больше не нужна
-
-                    for item in list_of_rows:
-                        result_out.append(item[1])
-
-
+                    answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out = quiz.get_decade_kanji_quiz(last_msg_user)
                 else:
                     content_type_out = "text"
                     result_out = "Введенное тобой что-то не похоже на число."
-                    
-
-
-
-
-
-
-
-
-
-
-
-
+        elif last_msg_bot == "квиз по всем имеющимся кандзи" and last_msg_user == "еще":
+                answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out = quiz.get_all_kanji_quiz()
+        elif last_msg_bot == "квиз по по номеру десятка кандзи" and last_msg_user == "еще":
+            content_type_out = "text"
+            result_out = "По какому номеру десятка кандзи будем гонять?"
+            reply_out = keyboards_buttons.keyboards_class.kanji_num()
+        elif (last_msg_bot == "квиз по по номеру десятка кандзи" or "квиз по всем имеющимся кандзи") and last_msg_user == "в главное меню":
+            content_type_out = "text"
+            result_out = "Ну ок"
+            reply_out = keyboards_buttons.keyboards_class.main_menu()
+            
 
         if len(result_out) == 0:
             content_type_out = "text"

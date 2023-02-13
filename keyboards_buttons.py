@@ -18,7 +18,8 @@ class keyboards_class(Exception):
         get_translate_jp = telebot.types.KeyboardButton(text="/get_translate_jp")
         get_kanji = telebot.types.KeyboardButton(text="/get_kanji")
         delete_space = telebot.types.KeyboardButton(text="/delete_space")
-        reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space)
+        get_quiz = telebot.types.KeyboardButton(text="/get_quiz")
+        reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space, get_quiz)
         return reply_to
 
     #клавиатура для шифрования - выбор языка
@@ -121,10 +122,18 @@ class keyboards_class(Exception):
         reply_to.add(one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen)
         return reply_to
     
-    #клавиатура для метода квиза
+    #клавиатура для выбора квиза
     def kanji_quiz():
         reply_to = telebot.types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=True)
         all_kanji = telebot.types.KeyboardButton(text="по всем имеющимся кандзи!")
         decade_kanji = telebot.types.KeyboardButton(text="по номеру десятка!")
         reply_to.add(all_kanji, decade_kanji)
+        return reply_to
+
+    #клавиатура для повторного вызова квиза
+    def retry_quiz():
+        reply_to = telebot.types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
+        yes = telebot.types.KeyboardButton(text="Еще")
+        no = telebot.types.KeyboardButton(text="В главное меню")
+        reply_to.add(yes, no)
         return reply_to

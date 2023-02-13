@@ -26,6 +26,7 @@
     <Compile Include="ChatGpt.py" />
     <Compile Include="common_methods.py" />
     <Compile Include="keyboards_buttons.py" />
+    <Compile Include="quiz.py" />
     <Compile Include="speech_to_text.py" />
     <Compile Include="PyBot.py" />
     <Compile Include="queries_to_bd.py" />
