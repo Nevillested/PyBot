@@ -160,6 +160,30 @@ class queries_class(Exception):
 
         return result_string
 
+    #получает последний номер десятка кандзи
+    def get_pre_last_user_msg(chat_id):
+        connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
+        cursor = connection.cursor()
+        
+        cursor.execute("""select to_char(message_data_clob_in)
+                            from ( select a.*
+                                        , row_number() OVER(ORDER BY dt_ins DESC) rn
+                                     from john.users_data a
+                                    where chat_id = :cur_chat_id
+                                      and message_data_out = 'квиз по по номеру десятка кандзи'
+                                      and case when REGEXP_LIKE(message_data_clob_in, '^[[:digit:]]+$') then 1 else 0 end = 1
+                                    order by dt_ins desc)
+                           where rn = 1
+                           """, cur_chat_id = chat_id)
+        result_tuple = cursor.fetchone()
+        connection.commit()
+        result_string = ''
+
+        if result_tuple != None:
+            result_string = common_methods.convertTuple(result_tuple)
+
+        return result_string
+
     #получает анекдот
     def get_joke():
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")

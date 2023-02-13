@@ -215,9 +215,8 @@ class cases_class(Exception):
         elif last_msg_bot == "квиз по всем имеющимся кандзи" and last_msg_user == "еще":
                 answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out = quiz.get_all_kanji_quiz()
         elif last_msg_bot == "квиз по по номеру десятка кандзи" and last_msg_user == "еще":
-            content_type_out = "text"
-            result_out = "По какому номеру десятка кандзи будем гонять?"
-            reply_out = keyboards_buttons.keyboards_class.kanji_num()
+                pre_last_msg_user = queries_to_bd.queries_class.get_pre_last_user_msg(cur_message.chat.id)
+                answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out = quiz.get_decade_kanji_quiz(pre_last_msg_user)
         elif (last_msg_bot == "квиз по по номеру десятка кандзи" or "квиз по всем имеющимся кандзи") and last_msg_user == "в главное меню":
             content_type_out = "text"
             result_out = "Ну ок"
