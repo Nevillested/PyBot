@@ -51,8 +51,7 @@ class cases_class(Exception):
                 reply_out = keyboards_buttons.keyboards_class.main_menu()
         elif last_msg_user == "/pikcha":
                 content_type_out = "photo"
-                shinobu_dir = r"C:\assets_data\shinobu"
-                result_out = shinobu_dir +"\\"+ random.choice(os.listdir(shinobu_dir))
+                result_out = common_methods.get_pikcha()
                 reply_out = keyboards_buttons.keyboards_class.main_menu()
         elif last_msg_user == "/maid":
                 content_type_out = "photo"
