@@ -135,7 +135,7 @@ class queries_class(Exception):
         cursor = connection.cursor()
         
         rows = [ (content_type_out, clob_data_out, chat_id, message_id) ]
-        cursor.executemany("""update john.users_data set content_type_out = :1, message_data_out = :2 where chat_id = :3 and message_id = :4""", rows)
+        cursor.executemany("""update john.users_data set content_type_out = :1, message_data_clob_out = :2 where chat_id = :3 and message_id = :4""", rows)
         connection.commit()
 
     #получает последнее свое отправленное сообщение
@@ -143,8 +143,8 @@ class queries_class(Exception):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
         
-        cursor.execute("""select message_data_out
-                            from ( select message_data_out
+        cursor.execute("""select to_char(message_data_clob_out)
+                            from ( select message_data_clob_out
                                         , row_number() OVER(ORDER BY dt_ins DESC) rn
                                      from john.users_data a
                                     where chat_id = :cur_chat_id
@@ -191,7 +191,7 @@ class queries_class(Exception):
                                         , row_number() OVER(ORDER BY dt_ins DESC) rn
                                      from john.users_data a
                                     where chat_id = :cur_chat_id
-                                      and message_data_out = 'квиз по по номеру десятка кандзи'
+                                      and message_data_clob_out = 'квиз по по номеру десятка кандзи'
                                       and case when REGEXP_LIKE(message_data_clob_in, '^[[:digit:]]+$') then 1 else 0 end = 1
                                     order by dt_ins desc)
                            where rn = 1
