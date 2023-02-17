@@ -17,6 +17,7 @@ class cases_class(Exception):
         correct_answer_id_out = ""
         content_type_out = ""
         answer_desc_out = ""
+        parse_mode_out = None
         result_out = ""
         reply_out = telebot.types.ReplyKeyboardMarkup()
 
@@ -43,33 +44,34 @@ class cases_class(Exception):
                 s11 = "/speech_to_text - переведу войс в текст\n"
                 s12 = "/text_to_speech - переведу текст в войс\n"
                 s13 = "/get_quiz - викторина/тест по японским кандзи\n"
-                result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12+s13
-                reply_out = keyboards_buttons.keyboards_class.main_menu()
+                s14 = "/send_to_admin - отправка сообщения админу\n"
+                result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12+s13+s14
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id) 
         elif last_msg_user == "/stick":
                 content_type_out = "sticker"
                 result_out = "https://cdn.tlgrm.app/stickers/34e/704/34e704f5-0115-3c1e-954e-74d2b180751d/192/" + str(random.randint(1,12)) + ".webp"
-                reply_out = keyboards_buttons.keyboards_class.main_menu()
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_user == "/pikcha":
                 content_type_out = "photo"
                 result_out = common_methods.get_pikcha()
-                reply_out = keyboards_buttons.keyboards_class.main_menu()
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_user == "/maid":
                 content_type_out = "photo"
                 maids_dir = r"C:\assets_data\maids"
                 result_out = maids_dir +"\\"+ random.choice(os.listdir(maids_dir))
-                reply_out = keyboards_buttons.keyboards_class.main_menu()
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_user == "/anekdot":
                 content_type_out = "text"
                 result_out = queries_to_bd.queries_class.get_joke()
                 result_out = result_out.replace("it_is_new_row", "\n")
-                reply_out = keyboards_buttons.keyboards_class.main_menu()
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_user == "/rand":
                 content_type_out = "text"
                 if random.randint(0,9) < 5:
                     result_out = "Да!"
                 else:
                     result_out = "Нет!"
-                reply_out = keyboards_buttons.keyboards_class.main_menu()
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_user == "/encrypt" or last_msg_user == "/decrypt":
                 content_type_out = "text"
                 result_out = "Язык вводимого текста? en / ru"
@@ -99,7 +101,7 @@ class cases_class(Exception):
                 lang, key, method, messaage_in = queries_to_bd.queries_class.get_data_cezar(cur_message)
                 content_type_out = "text"
                 result_out = cezar.cezar_class.encrypt_decrypt(method, key, lang, messaage_in)
-                reply_out = keyboards_buttons.keyboards_class.main_menu()
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_user == "/delete_space":
                 content_type_out = "text"
                 result_out = "Введи то, где надо удалить все пробелы:"
@@ -107,13 +109,13 @@ class cases_class(Exception):
         elif last_msg_bot == "Введи то, где надо удалить все пробелы:":
                 content_type_out = "text"
                 result_out = last_msg_user.replace(" ", "")
-                reply_out = keyboards_buttons.keyboards_class.main_menu()
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_user.__contains__("лучшая девочка") or last_msg_user.__contains__("шинобу"):
                 sentences = ["Шинобу лучшая девочка, товарищ старший лейтенант!", "Шинобу.", "Однозначно Шинобу!", "Лучшая девочка-та, ради кого я создан, это Шинобу!", "Шинобу", "Солышко мое Шинобу", "А я уже кидал пикчу с Шинобу?", "А я уже кидал стикос с Шинобу?"]
                 value = random.randint(0,len(sentences))
                 content_type_out = "text"
                 result_out = sentences[value]
-                reply_out = keyboards_buttons.keyboards_class.main_menu()
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_user =="/speech_to_text":
                 content_type_out = "text"
                 result_out = "Выбери язык распознавания текста"
@@ -126,7 +128,7 @@ class cases_class(Exception):
                     reply_out = telebot.types.ReplyKeyboardRemove()
                 else:
                     result_out = "Я для таких идиотов как ты даже кнопки сделал. ЛИБО EN, ЛИБО RU"
-                    reply_out = keyboards_buttons.keyboards_class.main_menu()
+                    reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_bot =="Присылай войс для распознавания":
                 content_type_out = "text"
                 if cur_message.content_type == "voice":
@@ -135,14 +137,14 @@ class cases_class(Exception):
                     queries_to_bd.queries_class.insert_result_recognize_speech(cur_message, result_out)
                 else:
                     result_out = "Что-то не похоже на войс, попробуй еще разок"
-                reply_out = keyboards_buttons.keyboards_class.main_menu()
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_user =="/text_to_speech":
                 content_type_out = "text"
                 result_out = "Выбери язык войса"
                 reply_out = keyboards_buttons.keyboards_class.ru_en()
         elif last_msg_bot == "Выбери язык войса":
                 content_type_out = "text"
-                reply_out = keyboards_buttons.keyboards_class.main_menu()
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
                 if last_msg_user == "ru":
                     result_out = "А теперь напиши текст на русском языке, который будет переведен в войс"
                 elif last_msg_user == "en":
@@ -160,7 +162,7 @@ class cases_class(Exception):
                 else:
                     content_type_out = "text"
                     result_out = "Ты тупой или да? Пиши ТЕКСТ"
-                reply_out = keyboards_buttons.keyboards_class.main_menu()
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_bot == "А теперь напиши текст на английском языке, который будет переведен в войс":
                 if cur_message.content_type == "text":
                     if common_methods.check_en_char_in_string(last_msg_user) == 0:
@@ -172,15 +174,15 @@ class cases_class(Exception):
                 else:
                     content_type_out = "text"
                     result_out = "Ты тупой или да? Пиши ТЕКСТ"
-                reply_out = keyboards_buttons.keyboards_class.main_menu()
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_user == "/get_translate_jp":
                 content_type_out = "text"
                 result_out = "Какое слово ищем в японском словаре?"
-                reply_out = keyboards_buttons.keyboards_class.main_menu()
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_bot == "Какое слово ищем в японском словаре?":
                 content_type_out = "text"
                 result_out = queries_to_bd.queries_class.get_translate_jp(last_msg_user)
-                reply_out = keyboards_buttons.keyboards_class.main_menu()
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
                 #если в бд ничего не найдено, то спрашиваем у ChatGPT
                 if result_out == 'Мы ничего не нашли':
                     result_out = ChatGpt.get_result_from_chatgpt("Переведи на японский язык: " + last_msg_user)
@@ -190,7 +192,7 @@ class cases_class(Exception):
                 reply_out = keyboards_buttons.keyboards_class.kanji_num()
         elif last_msg_bot == "Пришлю десяток кандзи из словаря для изучения. Какой номер десятка?":
                 content_type_out = "text"
-                reply_out = keyboards_buttons.keyboards_class.main_menu()
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
                 if last_msg_user.isnumeric():
                     result_out = queries_to_bd.queries_class.get_kanji(last_msg_user)
                 else:
@@ -219,13 +221,70 @@ class cases_class(Exception):
         elif (last_msg_bot == "квиз по по номеру десятка кандзи" or "квиз по всем имеющимся кандзи") and last_msg_user == "в главное меню":
             content_type_out = "text"
             result_out = "Ну ок"
-            reply_out = keyboards_buttons.keyboards_class.main_menu()
-            
+            reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
+        elif last_msg_user == "/send_to_admin":
+                content_type_out = "text"
+                result_out = "Что хотите отправить? Принимаются текст, фото, видео, войсы, видео заметки."
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
+        elif last_msg_bot == "Что хотите отправить? Принимаются текст, фото, видео, войсы, видео заметки.":
+                common_methods.resend_data(cur_message, bot)
+                content_type_out = "text"
+                result_out = "Отправлено"
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
+        elif last_msg_user == "/adminka":
+            if cur_message.chat.id == common_methods.id_owner:
+                content_type_out = "text"
+                result_out = "Здравствуйте, мой господин"
+                reply_out = keyboards_buttons.keyboards_class.admin_panel()
+            else:
+                content_type_out = "text"
+                result_out = "Что-то не похоже, чтобы ты был админом."
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
+        elif last_msg_user == "/get_users":
+            if cur_message.chat.id == common_methods.id_owner:
+                content_type_out = "text"
+                result_out = queries_to_bd.queries_class.get_users()
+                reply_out = keyboards_buttons.keyboards_class.admin_panel()
+                parse_mode_out = 'MarkdownV2'
+            else:
+                content_type_out = "text"
+                result_out = "Что-то не похоже, чтобы ты был админом."
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
+        elif last_msg_user == "/send_to_user":
+            if cur_message.chat.id == common_methods.id_owner:
+                content_type_out = "text"
+                result_out = 'Блок отправки сообщений пользователю.\nКому отправляем? (chat_id)'
+                reply_out = keyboards_buttons.keyboards_class.admin_panel()
+            else:
+                content_type_out = "text"
+                result_out = "Что-то не похоже, чтобы ты был админом."
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
+        elif last_msg_bot.__contains__("Блок отправки сообщений пользователю."):
+            if last_msg_bot.__contains__("Кому отправляем? (chat_id)"):
+                if cur_message.chat.id == common_methods.id_owner:
+                    content_type_out = "text"
+                    result_out = 'Блок отправки сообщений пользователю.\nЧто отправляем?'
+                    reply_out = keyboards_buttons.keyboards_class.admin_panel()
+                else:
+                    content_type_out = "text"
+                    result_out = "Что-то не похоже, чтобы ты был админом."
+                    reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
+            elif last_msg_bot.__contains__("Что отправляем?"):
+                if cur_message.chat.id == common_methods.id_owner:
+                    common_methods.resend_data(cur_message, bot)
+                    content_type_out = "text"
+                    result_out = "Блок отправки сообщений пользователю.\nОтправлено"
+                    reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
+                else:
+                    content_type_out = "text"
+                    result_out = "Что-то не похоже, чтобы ты был админом."
+                    reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
 
-        if len(result_out) == 0:
+
+        else:
             content_type_out = "text"
             result_out = ChatGpt.get_result_from_chatgpt(last_msg_user)
             #result_out = queries_to_bd.queries_class.get_other_answer(last_msg_user)
-            reply_out = keyboards_buttons.keyboards_class.main_menu()
+            reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
             
-        return answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out
+        return parse_mode_out, answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out

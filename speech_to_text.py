@@ -1,7 +1,6 @@
 ﻿import subprocess
 import speech_recognition as sr
 
-
 def voice_processing(message, bot, lang):
 
     file_info = bot.get_file(message.voice.file_id)

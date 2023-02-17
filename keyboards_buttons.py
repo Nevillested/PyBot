@@ -1,9 +1,10 @@
-﻿import telebot
+﻿import common_methods
+import telebot
 
 class keyboards_class(Exception):
 
     #клавиатура основного меню
-    def main_menu():
+    def main_menu(chat_id):
         reply_to = telebot.types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
         help = telebot.types.KeyboardButton(text="/help")
         stick = telebot.types.KeyboardButton(text="/stick")
@@ -19,7 +20,14 @@ class keyboards_class(Exception):
         get_kanji = telebot.types.KeyboardButton(text="/get_kanji")
         delete_space = telebot.types.KeyboardButton(text="/delete_space")
         get_quiz = telebot.types.KeyboardButton(text="/get_quiz")
-        reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space, get_quiz)
+        send_admin = telebot.types.KeyboardButton(text="/send_to_admin")
+        adminka = telebot.types.KeyboardButton(text="/adminka")
+        
+        if chat_id == common_methods.id_owner:
+            reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space, get_quiz, adminka)
+        else:
+            reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space, get_quiz, send_admin)
+
         return reply_to
 
     #клавиатура для шифрования - выбор языка
@@ -100,7 +108,6 @@ class keyboards_class(Exception):
         reply_to.add(zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty_one, twenty_two, twenty_three, twenty_four, twenty_five)
         return reply_to
 
-
     #клавиатура для поиска номера десятка. Должна быть редактирована в зависимости от увеличения/уменьшения кол-ва кандзи в словаре
     def kanji_num():
         reply_to = telebot.types.ReplyKeyboardMarkup(row_width=6, resize_keyboard=True, one_time_keyboard=True)
@@ -136,4 +143,13 @@ class keyboards_class(Exception):
         yes = telebot.types.KeyboardButton(text="Еще")
         no = telebot.types.KeyboardButton(text="В главное меню")
         reply_to.add(yes, no)
+        return reply_to
+
+    #клавиатура админки
+    def admin_panel():
+        reply_to = telebot.types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=True)
+        get_users = telebot.types.KeyboardButton(text="/get_users")
+        send_to_user = telebot.types.KeyboardButton(text="/send_to_user")
+        main_menu = telebot.types.KeyboardButton(text="/main_menu")
+        reply_to.add(get_users, send_to_user, main_menu)
         return reply_to

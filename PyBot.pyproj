@@ -30,7 +30,6 @@
     <Compile Include="speech_to_text.py" />
     <Compile Include="PyBot.py" />
     <Compile Include="queries_to_bd.py" />
-    <Compile Include="resending_to_owner_motherfucker.py" />
     <Compile Include="text_to_speech.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />

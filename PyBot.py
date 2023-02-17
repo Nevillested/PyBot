@@ -1,9 +1,10 @@
 ﻿from email import message
-import telebot
+import keyboards_buttons
+import common_methods
 import queries_to_bd
 import answer_cases
-import keyboards_buttons
 import traceback
+import telebot
 
 MypyBot = telebot.TeleBot('2024376867:AAEwo60MQbbuvTAFMxCC_orH1t7Xyduj5So', parse_mode = None)
 
@@ -32,7 +33,7 @@ def catch_edit_msg(message):
 
     except Exception as e:
         print('Ошибочка в PyBot.edited_message_handler\nОписание: ' + "".join(traceback.format_exception_only(e)).strip())
-        MypyBot.send_message(message.chat.id, "Ок, допустим кря\nДопустим, ты сделал ошибку в работе бота\nНо это только ДОПУСТИМ\nИ что дальше ты намерен делать?", reply_markup  = keyboards_buttons.keyboards_class.main_menu())
+        MypyBot.send_message(message.chat.id, "Ок, допустим кря\nДопустим, ты сделал ошибку в работе бота\nНо это только ДОПУСТИМ\nИ что дальше ты намерен делать?")
 
 
 @MypyBot.message_handler(content_types=CONTENT_TYPES)
@@ -40,9 +41,6 @@ def start_message(message):
 
     try:
         print(f"Пришло сообщение от: {message.from_user.username}\nТип сообщения: {str(message.content_type)}\nТекст сообщения: {message.text}\n")
-
-        #пересылает все прилетевшее боту - админу
-        #resending_to_owner_motherfucker.resend(message)
 
         #проверяет пользователя в бд, если есть-обновляет данные, если нет-добавляет данные
         queries_to_bd.queries_class.check_user(message)
@@ -54,7 +52,7 @@ def start_message(message):
         last_msg_bot = queries_to_bd.queries_class.get_last_bot_msg(message.chat.id)
         
         #кейсы на ответы пользователю - получение результатов ответа (получение типа контента, который отправляется пользователю, содержимое контента и реплай-контент)
-        answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out = answer_cases.cases_class.cases_trigger(message, last_msg_bot, MypyBot)
+        parse_mode_out, answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out = answer_cases.cases_class.cases_trigger(message, last_msg_bot, MypyBot)
         
         #если результат - список, то возьмем первую строку из списка. Эта строка - название исходящих данных
         result_array_out = result_out
@@ -67,7 +65,7 @@ def start_message(message):
 
         #отправляет результат
         if content_type_out == "text":
-            MypyBot.send_message(message.chat.id, result_out, reply_markup  = reply_out)
+            MypyBot.send_message(message.chat.id, result_out, reply_markup = reply_out, parse_mode = parse_mode_out)
         elif content_type_out == "sticker":
             MypyBot.send_sticker(message.chat.id, result_out)
         elif content_type_out == "photo":
@@ -83,6 +81,6 @@ def start_message(message):
             
     except Exception as e:
         print('Ошибочка в PyBot.message_handler\nОписание: ' + "".join(traceback.format_exception_only(e)).strip())
-        MypyBot.send_message(message.chat.id, "Ок, допустим кря\nДопустим, ты сделал ошибку в работе бота\nНо это только ДОПУСТИМ\nИ что дальше ты намерен делать?", reply_markup  = keyboards_buttons.keyboards_class.main_menu())
+        MypyBot.send_message(message.chat.id, "Ок, допустим кря\nДопустим, ты сделал ошибку в работе бота\nНо это только ДОПУСТИМ\nИ что дальше ты намерен делать?")
 
 MypyBot.polling() 

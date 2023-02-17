@@ -1,5 +1,5 @@
-﻿import oracledb
-import common_methods
+﻿import common_methods
+import oracledb
 
 class queries_class(Exception):
 
@@ -157,6 +157,27 @@ class queries_class(Exception):
         if result_tuple != None:
             for item in result_tuple:
                 result_string = result_string + str(item)
+
+        return result_string
+
+    #получает предпоследнее сообщение пользователя
+    def get_prelast_user_msg(chat_id):
+        connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
+        cursor = connection.cursor()
+        
+        cursor.execute("""select message_data_clob_in
+                            from ( select to_char(message_data_clob_in) message_data_clob_in
+                                        , row_number() OVER(ORDER BY dt_ins DESC) rn
+                                     from john.users_data a
+                                    where chat_id = :cur_chat_id
+                                    order by dt_ins desc)
+                           where rn = 2""", cur_chat_id = chat_id)
+        result_tuple = cursor.fetchone()
+        connection.commit()
+        result_string = ''
+
+        if result_tuple != None:
+            result_string = common_methods.convertTuple(result_tuple)
 
         return result_string
 
@@ -492,3 +513,16 @@ class queries_class(Exception):
         connection.commit()
 
         return list_of_rows
+
+    #получает список пользователей
+    def get_users():
+        connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
+        cursor = connection.cursor()
+        
+        cursor.execute("""select listagg('ID чата `' || chat_id ||'`, ник/имя ' || coalesce(case when username is not null then '@'||username end, first_name||' '||last_name), '\n')
+                            from john.users""")
+        tuple_data = cursor.fetchone()
+        connection.commit()
+        result = common_methods.convertTuple(tuple_data)
+        result = result.replace("_", "\_")
+        return result
