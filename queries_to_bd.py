@@ -191,7 +191,8 @@ class queries_class(Exception):
                                         , row_number() OVER(ORDER BY dt_ins DESC) rn
                                      from john.users_data a
                                     where chat_id = :cur_chat_id
-                                      and message_data_clob_out = 'квиз по по номеру десятка кандзи'
+                                      and a.content_type_out = 'poll'
+                                      and to_char(message_data_clob_out) = 'квиз по по номеру десятка кандзи'
                                       and case when REGEXP_LIKE(message_data_clob_in, '^[[:digit:]]+$') then 1 else 0 end = 1
                                     order by dt_ins desc)
                            where rn = 1
