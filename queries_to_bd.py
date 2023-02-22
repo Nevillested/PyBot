@@ -61,7 +61,11 @@ class queries_class(Exception):
         message_id = data_from_message.message_id
         username = data_from_message.from_user.username
         content_type = str(data_from_message.content_type)
-        clob_data = data_from_message.text
+        clob_data =''
+        if (data_from_message.content_type =='text'):
+            clob_data = data_from_message.text
+        elif (data_from_message.content_type =='location'):
+            clob_data = str(data_from_message.location.latitude)+';'+str(data_from_message.location.longitude)
 
         rows = [ (chat_id, message_id, username, content_type, clob_data) ]
         cursor.executemany("""insert into john.users_data (chat_id, message_id, username, content_type_in, message_data_clob_in)

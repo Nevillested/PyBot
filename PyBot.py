@@ -1,6 +1,4 @@
 ﻿from email import message
-import keyboards_buttons
-import common_methods
 import queries_to_bd
 import answer_cases
 import traceback
@@ -39,7 +37,7 @@ def catch_edit_msg(message):
 @MypyBot.message_handler(content_types=CONTENT_TYPES)
 def start_message(message):
 
-    try:
+    #try:
         print(f"Пришло сообщение от: {message.from_user.username}\nТип сообщения: {str(message.content_type)}\nТекст сообщения: {message.text}\n")
 
         #проверяет пользователя в бд, если есть-обновляет данные, если нет-добавляет данные
@@ -79,8 +77,8 @@ def start_message(message):
         elif content_type_out == "poll":
             MypyBot.send_poll(message.chat.id, 'Кандзи: ' + answer_desc_out, options = result_array_out, correct_option_id  = correct_answer_id_out, type = 'quiz', reply_markup = reply_out)
             
-    except Exception as e:
-        print('Ошибочка в PyBot.message_handler\nОписание: ' + "".join(traceback.format_exception_only(e)).strip())
-        MypyBot.send_message(message.chat.id, "Ок, допустим кря\nДопустим, ты сделал ошибку в работе бота\nНо это только ДОПУСТИМ\nИ что дальше ты намерен делать?")
-
+    #except Exception as e:
+     #   print('Ошибочка в PyBot.message_handler\nОписание: ' + "".join(traceback.format_exception_only(e)).strip())
+      #  MypyBot.send_message(message.chat.id, "Ок, допустим кря\nДопустим, ты сделал ошибку в работе бота\nНо это только ДОПУСТИМ\nИ что дальше ты намерен делать?")
+#
 MypyBot.polling() 

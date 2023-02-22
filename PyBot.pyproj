@@ -31,6 +31,7 @@
     <Compile Include="PyBot.py" />
     <Compile Include="queries_to_bd.py" />
     <Compile Include="text_to_speech.py" />
+    <Compile Include="weather.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

@@ -1,4 +1,5 @@
-﻿import common_methods
+﻿from datetime import timedelta, date
+import common_methods
 import telebot
 
 class keyboards_class(Exception):
@@ -21,12 +22,14 @@ class keyboards_class(Exception):
         delete_space = telebot.types.KeyboardButton(text="/delete_space")
         get_quiz = telebot.types.KeyboardButton(text="/get_quiz")
         send_admin = telebot.types.KeyboardButton(text="/send_to_admin")
+        get_weather = telebot.types.KeyboardButton(text="/get_weather")
+
         adminka = telebot.types.KeyboardButton(text="/adminka")
         
         if chat_id == common_methods.id_owner:
-            reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space, get_quiz, adminka)
+            reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space, get_quiz, get_weather, adminka)
         else:
-            reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space, get_quiz, send_admin)
+            reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space, get_quiz, get_weather, send_admin)
 
         return reply_to
 
@@ -152,4 +155,31 @@ class keyboards_class(Exception):
         send_to_user = telebot.types.KeyboardButton(text="/send_to_user")
         main_menu = telebot.types.KeyboardButton(text="/main_menu")
         reply_to.add(get_users, send_to_user, main_menu)
+        return reply_to
+
+    #клавиатура погоды
+    def weather():
+        reply_to = telebot.types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=True)
+        current_weather = telebot.types.KeyboardButton(text="/current_weather")
+        certain_day_weather = telebot.types.KeyboardButton(text="/certain_day_weather")
+        thirty_days_weather = telebot.types.KeyboardButton(text="/thirty_days_weather")
+        reply_to.add(current_weather, certain_day_weather, thirty_days_weather)
+        return reply_to
+
+    #клавиатура адреса погоды
+    def weather_place():
+        reply_to = telebot.types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=True)
+        current_place = telebot.types.KeyboardButton(text="Отправить свою локацию", request_location=True)
+        reply_to.add(current_place)
+        return reply_to
+
+    #клавиатура для дней погоды на 1 месяц
+    def weather_days():
+        reply_to = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        iteration_var = 0
+        while iteration_var <= 31:
+            buffer_day = date.today() + timedelta(days=iteration_var)
+            buffer_day = buffer_day.strftime('%d-%m-%Y')
+            reply_to.add(telebot.types.KeyboardButton(text=str(buffer_day)))
+            iteration_var += 1
         return reply_to

@@ -9,5 +9,4 @@ def convert_text_to_speech(text_in, language_in):
     myobj.save("voice_out.ogg")
 
     result = os.getcwd() + r'\voice_out.ogg'
-    print(result)
     return result

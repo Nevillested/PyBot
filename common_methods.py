@@ -1,4 +1,5 @@
-﻿from bs4 import BeautifulSoup
+﻿from googletrans import Translator
+from bs4 import BeautifulSoup
 import queries_to_bd
 import queries_to_bd
 import requests
@@ -98,3 +99,11 @@ def resend_data(message, bot):
         bot.send_document(chat_id_to_send, message.document.file_id)
     else:
         bot.send_message(chat_id_to_send, 'Не удалось переслать вам сообщение. Свяжитесь с админом и расскажите об ошибке плз\nТип сообщения: '+str(message.content_type)) 
+
+#переводчик из EN в RU
+def translate_en_to_ru(input_string):
+    translator = Translator()
+    
+    translated_text = translator.translate(input_string, dest='ru')
+    
+    return str(translated_text.text)

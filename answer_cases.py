@@ -1,8 +1,10 @@
 ﻿import keyboards_buttons
 import common_methods
 import queries_to_bd
+from datetime import datetime
 import speech_to_text
 import text_to_speech
+import weather
 import ChatGpt
 import telebot
 import random
@@ -44,8 +46,9 @@ class cases_class(Exception):
                 s11 = "/speech_to_text - переведу войс в текст\n"
                 s12 = "/text_to_speech - переведу текст в войс\n"
                 s13 = "/get_quiz - викторина/тест по японским кандзи\n"
-                s14 = "/send_to_admin - отправка сообщения админу\n"
-                result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12+s13+s14
+                s14 = "/get_weather - погода по текущей локации или указанному адресу\n"
+                admin = "/send_to_admin - отправка сообщения админу\n"
+                result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12+s13+s14+admin
                 reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id) 
         elif last_msg_user == "/stick":
                 content_type_out = "sticker"
@@ -279,7 +282,17 @@ class cases_class(Exception):
                     content_type_out = "text"
                     result_out = "Что-то не похоже, чтобы ты был админом."
                     reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
-
+        elif last_msg_user == "/get_weather":
+                content_type_out = "text"
+                result_out = "В какой области будем смотреть прогноз погоды? (Можешь отправить текущую локацию или написать адрес текстом.)"
+                reply_out = keyboards_buttons.keyboards_class.weather_place()
+        elif last_msg_bot == "В какой области будем смотреть прогноз погоды? (Можешь отправить текущую локацию или написать адрес текстом.)":
+            content_type_out = "text"
+            if cur_message.content_type == 'text' or cur_message.content_type == 'location':
+                result_out = weather.current_weather(cur_message)
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
+            else:
+                result_out = "Адрес нужен в виде текста или локации."
 
         else:
             content_type_out = "text"
