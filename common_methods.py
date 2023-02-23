@@ -1,7 +1,6 @@
 ﻿from googletrans import Translator
 from bs4 import BeautifulSoup
 import queries_to_bd
-import queries_to_bd
 import requests
 import random
 import urllib
@@ -107,3 +106,29 @@ def translate_en_to_ru(input_string):
     translated_text = translator.translate(input_string, dest='ru')
     
     return str(translated_text.text)
+
+
+#получает рандомную пикчу с реактора по запросу
+def get_random_pikcha_by_teg(msg):
+    tegs = msg.split()
+    result_tegs = ''
+    for item in tegs:
+        result_tegs = result_tegs + '+' + str(item)
+    page = "https://joyreactor.cc/search?q=" + result_tegs
+    html_page = urllib.request.urlopen(page)
+    soup = BeautifulSoup(html_page, "lxml")
+    images_url = []
+    
+    for img in soup.findAll('img'):
+        if img.get('src').__contains__('post'):
+            images_url.append('https:'+img.get('src'))
+    
+    url_of_result_image =  images_url[random.randint(1,len(images_url)-1)]
+    
+    response = requests.get(url_of_result_image)
+    img_name = 'get_pikcha.jpeg'
+    if response.status_code:
+        fp = open(img_name, 'wb')
+        fp.write(response.content)
+        fp.close()
+    return img_name

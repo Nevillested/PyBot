@@ -47,8 +47,9 @@ class cases_class(Exception):
                 s12 = "/text_to_speech - переведу текст в войс\n"
                 s13 = "/get_quiz - викторина/тест по японским кандзи\n"
                 s14 = "/get_weather - погода по текущей локации или указанному адресу\n"
+                s15 = "/get_reactor_pikcha - получить рандомную пикчу по тегу с рекатора"
                 admin = "/send_to_admin - отправка сообщения админу\n"
-                result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12+s13+s14+admin
+                result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12+s13+s14+s15+admin
                 reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id) 
         elif last_msg_user == "/stick":
                 content_type_out = "sticker"
@@ -293,6 +294,15 @@ class cases_class(Exception):
                 reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
             else:
                 result_out = "Адрес нужен в виде текста или локации."
+        elif last_msg_user == "/get_reactor_pikcha":
+                content_type_out = "text"
+                result_out = "Какую рандомную пикчу ищем на реакторе?"
+                reply_out = telebot.types.ReplyKeyboardRemove()
+        elif last_msg_bot == "Какую рандомную пикчу ищем на реакторе?":
+                content_type_out = "photo"
+                result_out = common_methods.get_random_pikcha_by_teg(last_msg_user)
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
+
 
         else:
             content_type_out = "text"
