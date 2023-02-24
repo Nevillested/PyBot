@@ -1,6 +1,4 @@
-﻿#import requires modules
-from ast import main
-from geopandas.tools import geocode
+﻿from geopandas.tools import geocode
 import common_methods
 import requests
 import json

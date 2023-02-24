@@ -1,9 +1,11 @@
-﻿from googletrans import Translator
-from bs4 import BeautifulSoup
+﻿from bs4 import BeautifulSoup
+import googletrans
 import queries_to_bd
 import requests
 import random
 import urllib
+import segno
+import os
 
 #проверяет в строке наличие не русских букв. Если нашел-возвращает -1, если все ок и не нашел - возвращает 0
 def check_ru_char_in_string(string_income):
@@ -74,7 +76,7 @@ def resend_data(message, bot):
     chat_id_to_send = None
 
     if message.chat.id == id_owner:
-        chat_id_to_send = queries_to_bd.queries_class.get_prelast_user_msg(message.chat.id)
+        chat_id_to_send = queries_to_bd.get_prelast_user_msg(message.chat.id)
     else:
         chat_id_to_send = id_owner
         
@@ -101,12 +103,11 @@ def resend_data(message, bot):
 
 #переводчик из EN в RU
 def translate_en_to_ru(input_string):
-    translator = Translator()
+    translator = googletrans.Translator()
     
     translated_text = translator.translate(input_string, dest='ru')
     
     return str(translated_text.text)
-
 
 #получает рандомную пикчу с реактора по запросу
 def get_random_pikcha_by_teg(msg):
@@ -114,7 +115,12 @@ def get_random_pikcha_by_teg(msg):
     result_tegs = ''
     for item in tegs:
         result_tegs = result_tegs + '+' + str(item)
-    page = "https://joyreactor.cc/search?q=" + result_tegs
+    result_tegs = urllib.parse.quote(result_tegs)
+    result_tegs = result_tegs.replace("%2B", "+")
+    result_tegs = result_tegs[1:]
+
+    page = "https://joyreactor.cc/search?q=" + result_tegs + f"/" +str(random.randint(1,10))
+
     html_page = urllib.request.urlopen(page)
     soup = BeautifulSoup(html_page, "lxml")
     images_url = []
@@ -132,3 +138,11 @@ def get_random_pikcha_by_teg(msg):
         fp.write(response.content)
         fp.close()
     return img_name
+
+#создает qr-код
+def create_qr_code(text):
+    qrcode = segno.make_qr(text)
+    name = "qr_code.pdf"
+    qrcode.save(name, border=1, scale=8)
+    result = os.getcwd() + '\\' + name
+    return result

@@ -183,3 +183,11 @@ class keyboards_class(Exception):
             reply_to.add(telebot.types.KeyboardButton(text=str(buffer_day)))
             iteration_var += 1
         return reply_to
+   
+    #тестовая inline клавиатура - команда /get_inline
+    def inline_keyboard():
+        markup = telebot.types.InlineKeyboardMarkup()
+        markup.row_width = 2
+        markup.add(telebot.types.InlineKeyboardButton("Yes", callback_data="cb_yes"),
+                                   telebot.types.InlineKeyboardButton("No", callback_data="cb_no"))
+        return markup

@@ -66,7 +66,7 @@ class cases_class(Exception):
                 reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_user == "/anekdot":
                 content_type_out = "text"
-                result_out = queries_to_bd.queries_class.get_joke()
+                result_out = queries_to_bd.get_joke()
                 result_out = result_out.replace("it_is_new_row", "\n")
                 reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_user == "/rand":
@@ -80,9 +80,9 @@ class cases_class(Exception):
                 content_type_out = "text"
                 result_out = "Язык вводимого текста? en / ru"
                 reply_out = keyboards_buttons.keyboards_class.ru_en()
-                queries_to_bd.queries_class.create_session_cezar(cur_message)
+                queries_to_bd.create_session_cezar(cur_message)
         elif last_msg_bot == "Язык вводимого текста? en / ru":
-                queries_to_bd.queries_class.update_lang_session_cezar(cur_message)
+                queries_to_bd.update_lang_session_cezar(cur_message)
                 content_type_out = "text"
                 if cur_message.text.lower() == "en":
                     result_out = "Введи ключ в пределах от 0 до 26."
@@ -95,14 +95,14 @@ class cases_class(Exception):
         elif last_msg_bot == "Введи ключ в пределах от 0 до 26." or last_msg_bot == "Введи ключ в пределах от 0 до 32.":
                 content_type_out = "text"
                 if last_msg_user.isnumeric() and ( (last_msg_bot == "Введи ключ в пределах от 0 до 26." and int(last_msg_user)>=0 and int(last_msg_user)<26) or (last_msg_bot == "Введи ключ в пределах от 0 до 32." and int(last_msg_user)>=0 and int(last_msg_user)<32)):
-                    queries_to_bd.queries_class.update_key_session_cezar(cur_message)
+                    queries_to_bd.update_key_session_cezar(cur_message)
                     result_out = "Введи обрабатываемый текст"
                 else:
                    result_out = "Я для таких идиотов как ты даже кнопки сделал. Вводи число в соответствующем диапазоне."
                 reply_out = telebot.types.ReplyKeyboardRemove()
         elif last_msg_bot == "Введи обрабатываемый текст":
-                queries_to_bd.queries_class.update_messaage_in_session_cezar(cur_message)
-                lang, key, method, messaage_in = queries_to_bd.queries_class.get_data_cezar(cur_message)
+                queries_to_bd.update_messaage_in_session_cezar(cur_message)
+                lang, key, method, messaage_in = queries_to_bd.get_data_cezar(cur_message)
                 content_type_out = "text"
                 result_out = cezar.cezar_class.encrypt_decrypt(method, key, lang, messaage_in)
                 reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
@@ -127,7 +127,7 @@ class cases_class(Exception):
         elif last_msg_bot == "Выбери язык распознавания текста":
                 content_type_out = "text"
                 if cur_message.text.lower() == "en" or cur_message.text.lower() == "ru":
-                    queries_to_bd.queries_class.create_session_voice(cur_message)
+                    queries_to_bd.create_session_voice(cur_message)
                     result_out = "Присылай войс для распознавания"
                     reply_out = telebot.types.ReplyKeyboardRemove()
                 else:
@@ -136,9 +136,9 @@ class cases_class(Exception):
         elif last_msg_bot =="Присылай войс для распознавания":
                 content_type_out = "text"
                 if cur_message.content_type == "voice":
-                    lang = (queries_to_bd.queries_class.get_lang_voice(cur_message)).lower()
+                    lang = (queries_to_bd.get_lang_voice(cur_message)).lower()
                     result_out = r"'" + speech_to_text.voice_processing(cur_message, bot, lang )+ r"'" #вызов функции конвертации
-                    queries_to_bd.queries_class.insert_result_recognize_speech(cur_message, result_out)
+                    queries_to_bd.insert_result_recognize_speech(cur_message, result_out)
                 else:
                     result_out = "Что-то не похоже на войс, попробуй еще разок"
                 reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
@@ -185,7 +185,7 @@ class cases_class(Exception):
                 reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_bot == "Какое слово ищем в японском словаре?":
                 content_type_out = "text"
-                result_out = queries_to_bd.queries_class.get_translate_jp(last_msg_user)
+                result_out = queries_to_bd.get_translate_jp(last_msg_user)
                 reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
                 #если в бд ничего не найдено, то спрашиваем у ChatGPT
                 if result_out == 'Мы ничего не нашли':
@@ -198,7 +198,7 @@ class cases_class(Exception):
                 content_type_out = "text"
                 reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
                 if last_msg_user.isnumeric():
-                    result_out = queries_to_bd.queries_class.get_kanji(last_msg_user)
+                    result_out = queries_to_bd.get_kanji(last_msg_user)
                 else:
                     result_out = "Введенное тобой что-то не похоже на число."
         elif last_msg_user == "/get_quiz":
@@ -220,7 +220,7 @@ class cases_class(Exception):
         elif last_msg_bot == "квиз по всем имеющимся кандзи" and last_msg_user == "еще":
                 answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out = quiz.get_all_kanji_quiz()
         elif last_msg_bot == "квиз по по номеру десятка кандзи" and last_msg_user == "еще":
-                pre_last_msg_user = queries_to_bd.queries_class.get_pre_last_user_msg(cur_message.chat.id)
+                pre_last_msg_user = queries_to_bd.get_pre_last_user_msg(cur_message.chat.id)
                 answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out = quiz.get_decade_kanji_quiz(pre_last_msg_user)
         elif (last_msg_bot == "квиз по по номеру десятка кандзи" or "квиз по всем имеющимся кандзи") and last_msg_user == "в главное меню":
             content_type_out = "text"
@@ -247,7 +247,7 @@ class cases_class(Exception):
         elif last_msg_user == "/get_users":
             if cur_message.chat.id == common_methods.id_owner:
                 content_type_out = "text"
-                result_out = queries_to_bd.queries_class.get_users()
+                result_out = queries_to_bd.get_users()
                 reply_out = keyboards_buttons.keyboards_class.admin_panel()
                 parse_mode_out = 'MarkdownV2'
             else:
@@ -302,12 +302,25 @@ class cases_class(Exception):
                 content_type_out = "photo"
                 result_out = common_methods.get_random_pikcha_by_teg(last_msg_user)
                 reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
+        elif last_msg_user == "/get_qr_code":
+                content_type_out = "text"
+                result_out = "Введи текст, который будет помещен в qr-код."
+                reply_out = telebot.types.ReplyKeyboardRemove()
+        elif last_msg_bot == "Введи текст, который будет помещен в qr-код.":
+                content_type_out = "document"
+                result_out = common_methods.create_qr_code(last_msg_user)
+                reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
 
+        #тестовая команда
+        elif last_msg_user == '/get_inline':
+                content_type_out = "text"
+                result_out = "Это инлайн клава"
+                reply_out = keyboards_buttons.keyboards_class.inline_keyboard()
 
         else:
             content_type_out = "text"
             result_out = ChatGpt.get_result_from_chatgpt(last_msg_user)
-            #result_out = queries_to_bd.queries_class.get_other_answer(last_msg_user)
+            #result_out = queries_to_bd.get_other_answer(last_msg_user)
             reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
             
         return parse_mode_out, answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out

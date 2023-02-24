@@ -1,10 +1,8 @@
 ﻿import common_methods
 import oracledb
 
-class queries_class(Exception):
-
-    #проверяет пользователя в бд, если есть-обновляет данные, если нет-добавляет данные
-    def check_user(data_from_message):
+#проверяет пользователя в бд, если есть-обновляет данные, если нет-добавляет данные
+def check_user(data_from_message):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
 
@@ -51,9 +49,9 @@ class queries_class(Exception):
                                               , b.is_premium
                                               , b.is_bot)""", rows)
         connection.commit()
-    
-    #сохраняет прилетевшие данные в переписке с пользователем
-    def insert_user_story_in(data_from_message):
+
+#сохраняет прилетевшие данные в переписке с пользователем
+def insert_user_story_in(data_from_message):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
 
@@ -72,8 +70,8 @@ class queries_class(Exception):
                               values (:1, :2, :3, :4, :5 )""", rows)
         connection.commit()
 
-    #добавляет новую версию отредактированного сообщения и возвращает предыдущую
-    def insert_edited_msg(data_from_message):
+#добавляет новую версию отредактированного сообщения и возвращает предыдущую
+def insert_edited_msg(data_from_message):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
         
@@ -106,8 +104,8 @@ class queries_class(Exception):
                                                      where rownum = 1""", rows_in)
         connection.commit()
 
-    #выдает последнюю версию отредактированного сообщения
-    def get_last_ver_msg(data_from_message):
+#выдает последнюю версию отредактированного сообщения
+def get_last_ver_msg(data_from_message):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
         
@@ -132,9 +130,9 @@ class queries_class(Exception):
             result_string = result_string + str(item)
         
         return result_string
-        
-    #сохраняет улетевшие данные пользователю
-    def insert_user_story_out(content_type_out, clob_data_out, chat_id, message_id):
+    
+#сохраняет улетевшие данные пользователю
+def insert_user_story_out(content_type_out, clob_data_out, chat_id, message_id):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
         
@@ -142,8 +140,8 @@ class queries_class(Exception):
         cursor.executemany("""update john.users_data set content_type_out = :1, message_data_clob_out = :2 where chat_id = :3 and message_id = :4""", rows)
         connection.commit()
 
-    #получает последнее свое отправленное сообщение
-    def get_last_bot_msg(chat_id):
+#получает последнее свое отправленное сообщение
+def get_last_bot_msg(chat_id):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
         
@@ -164,8 +162,8 @@ class queries_class(Exception):
 
         return result_string
 
-    #получает предпоследнее сообщение пользователя
-    def get_prelast_user_msg(chat_id):
+#получает предпоследнее сообщение пользователя
+def get_prelast_user_msg(chat_id):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
         
@@ -185,8 +183,8 @@ class queries_class(Exception):
 
         return result_string
 
-    #получает последний номер десятка кандзи
-    def get_pre_last_user_msg(chat_id):
+#получает последний номер десятка кандзи
+def get_pre_last_user_msg(chat_id):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
         
@@ -210,8 +208,8 @@ class queries_class(Exception):
 
         return result_string
 
-    #получает анекдот
-    def get_joke():
+#получает анекдот
+def get_joke():
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
         
@@ -227,8 +225,8 @@ class queries_class(Exception):
             anekdot = anekdot + item
         return anekdot
 
-    #создает строку для наполнения данных для шифрования/дешифрования
-    def create_session_cezar(data_from_message):
+#создает строку для наполнения данных для шифрования/дешифрования
+def create_session_cezar(data_from_message):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
 
@@ -239,9 +237,9 @@ class queries_class(Exception):
         cursor.executemany("""insert into john.cezar (chat_id, method)
                               values (:1, :2)""", rows)
         connection.commit()
-    
-    #добавляет язык обработки данных для шифрования/дешифрования
-    def update_lang_session_cezar(data_from_message):
+
+#добавляет язык обработки данных для шифрования/дешифрования
+def update_lang_session_cezar(data_from_message):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
 
@@ -260,9 +258,9 @@ class queries_class(Exception):
                                  on (a.id = b.id and a.chat_id = b.chat_id)
                                when matched then update set a.lang = b.lang""", rows)
         connection.commit()
-    
-    #добавляет ключ для шифрования/дешифрования
-    def update_key_session_cezar(data_from_message):
+
+#добавляет ключ для шифрования/дешифрования
+def update_key_session_cezar(data_from_message):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
         
@@ -282,8 +280,8 @@ class queries_class(Exception):
                                when matched then update set a.key = b.key""", rows)
         connection.commit()
 
-    #добавляет текст для шифрования/дешифрования
-    def update_messaage_in_session_cezar(data_from_message):
+#добавляет текст для шифрования/дешифрования
+def update_messaage_in_session_cezar(data_from_message):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
         
@@ -303,8 +301,8 @@ class queries_class(Exception):
                                when matched then update set a.messaage_in = b.messaage_in""", rows)
         connection.commit()
 
-    #выдает данные для шифрования
-    def get_data_cezar(data_from_message):
+#выдает данные для шифрования
+def get_data_cezar(data_from_message):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
         
@@ -324,8 +322,8 @@ class queries_class(Exception):
         connection.commit()
         return val[0],val[1],val[2],val[3]
 
-    #выдает какой-нибудь ответ, который у него есть в вопрос-ответнике
-    def get_other_answer(user_text):
+#выдает какой-нибудь ответ, который у него есть в вопрос-ответнике
+def get_other_answer(user_text):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
         
@@ -348,9 +346,9 @@ class queries_class(Exception):
             val = row
         connection.commit()
         return val[0]
-    
-    #создает новую сессию распознавания текста, добавляет язык
-    def create_session_voice(data_from_message):
+
+#создает новую сессию распознавания текста, добавляет язык
+def create_session_voice(data_from_message):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
         
@@ -358,8 +356,8 @@ class queries_class(Exception):
         cursor.executemany("""insert into john.voices (chat_id, lang) values (:1, :2)""", rows)
         connection.commit()
 
-    #выдает язык распознавания текста
-    def get_lang_voice(data_from_message):
+#выдает язык распознавания текста
+def get_lang_voice(data_from_message):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
         
@@ -378,8 +376,8 @@ class queries_class(Exception):
         connection.commit()
         return val[0]
 
-    #сохраняет распознанный текст
-    def insert_result_recognize_speech(data_from_message, result_recog):
+#сохраняет распознанный текст
+def insert_result_recognize_speech(data_from_message, result_recog):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
         
@@ -399,8 +397,8 @@ class queries_class(Exception):
                                           )""", rows)
         connection.commit()
 
-    #возвращает перевод слова из "новые слова"
-    def get_translate_jp(user_word):
+#возвращает перевод слова из "новые слова"
+def get_translate_jp(user_word):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
 
@@ -426,8 +424,8 @@ class queries_class(Exception):
         result = common_methods.convertTuple(val)
         return result
 
-    #возвращает список кандзи по номеру десятка
-    def get_kanji(user_value):
+#возвращает список кандзи по номеру десятка
+def get_kanji(user_value):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
 
@@ -441,8 +439,8 @@ class queries_class(Exception):
         result = common_methods.convertTuple(val)
         return result
 
-    #возвращает данные для квиза но номеру десятка
-    def get_decade_kanji_quiz(num_decade):
+#возвращает данные для квиза но номеру десятка
+def get_decade_kanji_quiz(num_decade):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
         
@@ -481,8 +479,8 @@ class queries_class(Exception):
 
         return list_of_rows
 
-    #возвращает данные для квиза по всем имеющимся кадзи
-    def get_all_kanji_quiz():
+#возвращает данные для квиза по всем имеющимся кадзи
+def get_all_kanji_quiz():
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
         
@@ -519,8 +517,8 @@ class queries_class(Exception):
 
         return list_of_rows
 
-    #получает список пользователей
-    def get_users():
+#получает список пользователей
+def get_users():
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
         
