@@ -2,10 +2,8 @@
 import telebot
 import sending
 
-class keyboards_class(Exception):
-
-    #клавиатура основного меню
-    def main_menu(chat_id):
+#клавиатура основного меню
+def main_menu(chat_id):
         reply_to = telebot.types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
         help = telebot.types.KeyboardButton(text="/help")
         stick = telebot.types.KeyboardButton(text="/stick")
@@ -35,8 +33,8 @@ class keyboards_class(Exception):
 
         return reply_to
 
-    #клавиатура для шифрования - выбор языка
-    def ru_en():
+#клавиатура для шифрования - выбор языка
+def ru_en():
         reply_to = telebot.types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
         EN = telebot.types.KeyboardButton(text="EN")
         RU = telebot.types.KeyboardButton(text="RU")
@@ -44,8 +42,8 @@ class keyboards_class(Exception):
         reply_to.add(EN, RU, main_menu)
         return reply_to
 
-    #клавиатура для шифрования - русские ключи
-    def ru_key():
+#клавиатура для шифрования - русские ключи
+def ru_key():
         reply_to = telebot.types.ReplyKeyboardMarkup(row_width=6, resize_keyboard=True, one_time_keyboard=True)
         zero = telebot.types.KeyboardButton(text="0")
         one = telebot.types.KeyboardButton(text="1")
@@ -82,9 +80,9 @@ class keyboards_class(Exception):
         main_menu = telebot.types.KeyboardButton(text="/main_menu")
         reply_to.add(zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty_one, twenty_two, twenty_three, twenty_four, twenty_five, twenty_six, twenty_seven, twenty_eight, twenty_nine, thirty, thirty_one, main_menu)
         return reply_to
-    
-    #клавиатура для шифрования - английские ключи
-    def en_key():
+
+#клавиатура для шифрования - английские ключи
+def en_key():
         reply_to = telebot.types.ReplyKeyboardMarkup(row_width=6, resize_keyboard=True, one_time_keyboard=True)
         zero = telebot.types.KeyboardButton(text="0")
         one = telebot.types.KeyboardButton(text="1")
@@ -116,8 +114,8 @@ class keyboards_class(Exception):
         reply_to.add(zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty_one, twenty_two, twenty_three, twenty_four, twenty_five, main_menu)
         return reply_to
 
-    #клавиатура для поиска номера десятка. Должна быть редактирована в зависимости от увеличения/уменьшения кол-ва кандзи в словаре
-    def kanji_num():
+#клавиатура для поиска номера десятка. Должна быть редактирована в зависимости от увеличения/уменьшения кол-ва кандзи в словаре
+def kanji_num():
         reply_to = telebot.types.ReplyKeyboardMarkup(row_width=6, resize_keyboard=True, one_time_keyboard=True)
         one = telebot.types.KeyboardButton(text="1")
         two = telebot.types.KeyboardButton(text="2")
@@ -137,9 +135,9 @@ class keyboards_class(Exception):
         main_menu = telebot.types.KeyboardButton(text="/main_menu")
         reply_to.add(one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, main_menu)
         return reply_to
-    
-    #клавиатура для выбора квиза
-    def kanji_quiz():
+
+#клавиатура для выбора квиза
+def kanji_quiz():
         reply_to = telebot.types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=True)
         all_kanji = telebot.types.KeyboardButton(text="по всем имеющимся кандзи!")
         decade_kanji = telebot.types.KeyboardButton(text="по номеру десятка!")
@@ -147,16 +145,16 @@ class keyboards_class(Exception):
         reply_to.add(all_kanji, decade_kanji, main_menu)
         return reply_to
 
-    #клавиатура для повторного вызова квиза
-    def retry_quiz():
+#клавиатура для повторного вызова квиза
+def retry_quiz():
         reply_to = telebot.types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
         yes = telebot.types.KeyboardButton(text="Еще")
         main_menu = telebot.types.KeyboardButton(text="/main_menu")
         reply_to.add(yes, main_menu)
         return reply_to
 
-    #клавиатура админки
-    def admin_panel():
+#клавиатура админки
+def admin_panel():
         reply_to = telebot.types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=True)
         get_users = telebot.types.KeyboardButton(text="/get_users")
         send_to_user = telebot.types.KeyboardButton(text="/send_to_user")
@@ -164,16 +162,16 @@ class keyboards_class(Exception):
         reply_to.add(get_users, send_to_user, main_menu)
         return reply_to
 
-    #клавиатура адреса погоды
-    def weather_place():
+#клавиатура адреса погоды
+def weather_place():
         reply_to = telebot.types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=True)
         current_place = telebot.types.KeyboardButton(text="Отправить свою локацию", request_location=True)
         main_menu = telebot.types.KeyboardButton(text="/main_menu")
         reply_to.add(current_place, main_menu)
         return reply_to
 
-    #клавиатура по циклу - тестовый вариант, нигде пока не используется
-    def weather_days():
+#клавиатура по циклу - тестовый вариант, нигде пока не используется
+def weather_days():
         reply_to = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         iteration_var = 0
         while iteration_var <= 31:
@@ -182,9 +180,9 @@ class keyboards_class(Exception):
             reply_to.add(telebot.types.KeyboardButton(text=str(buffer_day)))
             iteration_var += 1
         return reply_to
-   
-    #тестовая inline клавиатура - команда /get_inline
-    def inline_keyboard():
+
+#тестовая inline клавиатура - команда /get_inline
+def inline_keyboard():
         markup = telebot.types.InlineKeyboardMarkup()
         markup.row_width = 2
         markup.add(telebot.types.InlineKeyboardButton("Yes", callback_data="cb_yes"),

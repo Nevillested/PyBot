@@ -8,7 +8,7 @@ def send_msg(resending_flg, cur_message, bot, chat_id, content_type_out, result_
             bot.send_message(chat_id, result_out, parse_mode = parse_mode_out, reply_markup = reply_out)
 
         elif content_type_out == "sticker":
-            bot.send_sticker(chat_id, result_out, reply_markup = reply_out)
+            bot.send_sticker(chat_id, sticker = open(result_out, "rb"), reply_markup = reply_out)
 
         elif content_type_out == "photo":
             bot.send_photo(chat_id, photo = open(result_out, 'rb'), caption = caption_out, reply_markup = reply_out)

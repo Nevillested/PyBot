@@ -63,7 +63,7 @@ def start_message(message):
          content_type_out,
          result_out,
          reply_out,
-         caption_out) = answer_cases.cases_class.cases_trigger(message, MypyBot)
+         caption_out) = answer_cases.cases_trigger(message, MypyBot)
 
         #отправляет результат
         content_type_out, result_out = sending.send_msg( resending_flg,
