@@ -111,6 +111,8 @@ def get_random_pikcha_by_teg(msg):
 #создает qr-код
 def create_qr_code(text):
     qrcode = segno.make_qr(text)
+    new_dir = 'assets/temp'
+    os.chdir(new_dir)
     name = "qr_code.pdf"
     qrcode.save(name, border=1, scale=8)
     result = os.getcwd() + '\\' + name
