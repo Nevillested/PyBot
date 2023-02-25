@@ -152,3 +152,4 @@ cython_debug/
 #.idea/
 
 assets_data/
+assets/ffmpeg.exe

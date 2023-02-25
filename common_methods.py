@@ -62,7 +62,7 @@ def get_pikcha():
     url_of_result_image =  images_url[random.randint(1,len(images_url)-1)]
     
     response = requests.get(url_of_result_image)
-    img_name = 'get_pikcha.jpeg'
+    img_name = 'assets/temp/shinobu.jpeg'
     if response.status_code:
         fp = open(img_name, 'wb')
         fp.write(response.content)
@@ -101,7 +101,7 @@ def get_random_pikcha_by_teg(msg):
     url_of_result_image =  images_url[random.randint(1,len(images_url)-1)]
     
     response = requests.get(url_of_result_image)
-    img_name = 'get_pikcha.jpeg'
+    img_name = 'assets/temp/image_by_teg.jpeg'
     if response.status_code:
         fp = open(img_name, 'wb')
         fp.write(response.content)
