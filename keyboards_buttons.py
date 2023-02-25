@@ -1,6 +1,6 @@
 ﻿from datetime import timedelta, date
-import common_methods
 import telebot
+import sending
 
 class keyboards_class(Exception):
 
@@ -23,13 +23,15 @@ class keyboards_class(Exception):
         get_quiz = telebot.types.KeyboardButton(text="/get_quiz")
         send_admin = telebot.types.KeyboardButton(text="/send_to_admin")
         get_weather = telebot.types.KeyboardButton(text="/get_weather")
+        get_reactor_pikcha = telebot.types.KeyboardButton(text="/get_reactor_pikcha")
+        get_qr_code = telebot.types.KeyboardButton(text="/get_qr_code")
 
         adminka = telebot.types.KeyboardButton(text="/adminka")
         
-        if chat_id == common_methods.id_owner:
-            reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space, get_quiz, get_weather, adminka)
+        if chat_id == sending.id_owner:
+            reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space, get_quiz, get_weather, get_reactor_pikcha, get_qr_code, adminka)
         else:
-            reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space, get_quiz, get_weather, send_admin)
+            reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space, get_quiz, get_weather, get_reactor_pikcha, get_qr_code, send_admin)
 
         return reply_to
 
@@ -38,7 +40,8 @@ class keyboards_class(Exception):
         reply_to = telebot.types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
         EN = telebot.types.KeyboardButton(text="EN")
         RU = telebot.types.KeyboardButton(text="RU")
-        reply_to.add(EN, RU)
+        main_menu = telebot.types.KeyboardButton(text="/main_menu")
+        reply_to.add(EN, RU, main_menu)
         return reply_to
 
     #клавиатура для шифрования - русские ключи
@@ -76,7 +79,8 @@ class keyboards_class(Exception):
         twenty_nine = telebot.types.KeyboardButton(text="29")
         thirty = telebot.types.KeyboardButton(text="30")
         thirty_one = telebot.types.KeyboardButton(text="31")
-        reply_to.add(zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty_one, twenty_two, twenty_three, twenty_four, twenty_five, twenty_six, twenty_seven, twenty_eight, twenty_nine, thirty, thirty_one)
+        main_menu = telebot.types.KeyboardButton(text="/main_menu")
+        reply_to.add(zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty_one, twenty_two, twenty_three, twenty_four, twenty_five, twenty_six, twenty_seven, twenty_eight, twenty_nine, thirty, thirty_one, main_menu)
         return reply_to
     
     #клавиатура для шифрования - английские ключи
@@ -108,7 +112,8 @@ class keyboards_class(Exception):
         twenty_three = telebot.types.KeyboardButton(text="23")
         twenty_four = telebot.types.KeyboardButton(text="24")
         twenty_five = telebot.types.KeyboardButton(text="25")
-        reply_to.add(zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty_one, twenty_two, twenty_three, twenty_four, twenty_five)
+        main_menu = telebot.types.KeyboardButton(text="/main_menu")
+        reply_to.add(zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty_one, twenty_two, twenty_three, twenty_four, twenty_five, main_menu)
         return reply_to
 
     #клавиатура для поиска номера десятка. Должна быть редактирована в зависимости от увеличения/уменьшения кол-ва кандзи в словаре
@@ -129,7 +134,8 @@ class keyboards_class(Exception):
         thirteen = telebot.types.KeyboardButton(text="13")
         fourteen = telebot.types.KeyboardButton(text="14")
         fifteen = telebot.types.KeyboardButton(text="15")
-        reply_to.add(one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen)
+        main_menu = telebot.types.KeyboardButton(text="/main_menu")
+        reply_to.add(one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, main_menu)
         return reply_to
     
     #клавиатура для выбора квиза
@@ -137,15 +143,16 @@ class keyboards_class(Exception):
         reply_to = telebot.types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=True)
         all_kanji = telebot.types.KeyboardButton(text="по всем имеющимся кандзи!")
         decade_kanji = telebot.types.KeyboardButton(text="по номеру десятка!")
-        reply_to.add(all_kanji, decade_kanji)
+        main_menu = telebot.types.KeyboardButton(text="/main_menu")
+        reply_to.add(all_kanji, decade_kanji, main_menu)
         return reply_to
 
     #клавиатура для повторного вызова квиза
     def retry_quiz():
         reply_to = telebot.types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
         yes = telebot.types.KeyboardButton(text="Еще")
-        no = telebot.types.KeyboardButton(text="В главное меню")
-        reply_to.add(yes, no)
+        main_menu = telebot.types.KeyboardButton(text="/main_menu")
+        reply_to.add(yes, main_menu)
         return reply_to
 
     #клавиатура админки
@@ -157,23 +164,15 @@ class keyboards_class(Exception):
         reply_to.add(get_users, send_to_user, main_menu)
         return reply_to
 
-    #клавиатура погоды
-    def weather():
-        reply_to = telebot.types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=True)
-        current_weather = telebot.types.KeyboardButton(text="/current_weather")
-        certain_day_weather = telebot.types.KeyboardButton(text="/certain_day_weather")
-        thirty_days_weather = telebot.types.KeyboardButton(text="/thirty_days_weather")
-        reply_to.add(current_weather, certain_day_weather, thirty_days_weather)
-        return reply_to
-
     #клавиатура адреса погоды
     def weather_place():
         reply_to = telebot.types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=True)
         current_place = telebot.types.KeyboardButton(text="Отправить свою локацию", request_location=True)
-        reply_to.add(current_place)
+        main_menu = telebot.types.KeyboardButton(text="/main_menu")
+        reply_to.add(current_place, main_menu)
         return reply_to
 
-    #клавиатура для дней погоды на 1 месяц
+    #клавиатура по циклу - тестовый вариант, нигде пока не используется
     def weather_days():
         reply_to = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         iteration_var = 0

@@ -7,7 +7,7 @@ import json
 def get_coordinates(place):
     location = geocode(place, provider="nominatim" , user_agent = 'my_request')
     point = location.geometry.iloc[0]
-    return point.x, point.y
+    return point.y, point.x
 
 #выдает погоду на текущее время
 def current_weather(cur_data):
@@ -20,7 +20,7 @@ def current_weather(cur_data):
     else:
         latitude = cur_data.location.latitude
         longitude = cur_data.location.longitude
-        
+
     address = f'https://api.openweathermap.org/data/2.5/weather?lat={str(latitude)}&lon={str(longitude)}&lang=ru&appid={api_key}'
     x = requests.get(address)
     

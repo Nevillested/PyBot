@@ -4,6 +4,7 @@ import queries_to_bd
 from datetime import datetime
 import speech_to_text
 import text_to_speech
+import sending
 import weather
 import ChatGpt
 import telebot
@@ -14,16 +15,22 @@ import os
 
 class cases_class(Exception):
 
-    def cases_trigger(cur_message, last_msg_bot, bot):
+    def cases_trigger(cur_message, bot):
         
         correct_answer_id_out = ""
         content_type_out = ""
         answer_desc_out = ""
         parse_mode_out = None
+        poll_type_out = ""
+        resending_flg = 0
+        caption_out = ""
         result_out = ""
         reply_out = telebot.types.ReplyKeyboardMarkup()
-
+        
+        #получает последнее свое отправленное сообщение
+        last_msg_bot = queries_to_bd.get_last_bot_msg(cur_message.chat.id)
         last_msg_user = ""
+
         if cur_message.content_type == "text":
              last_msg_user = cur_message.text.lower()
         elif cur_message.content_type == "voice":
@@ -32,6 +39,7 @@ class cases_class(Exception):
 
         if last_msg_user == "/start" or  last_msg_user == "/help":
                 content_type_out = "text"
+                admin = "/send_to_admin - отправка сообщения админу\n"
                 s0 =  "Помощь немощу, сам же догадаться не можешь интуитивно да:\n"
                 s1 =  "/stick - рандомный стикер с Шинобу\n"
                 s2 =  "/pikcha - рандомная пикча с Шинобу\n"
@@ -47,10 +55,15 @@ class cases_class(Exception):
                 s12 = "/text_to_speech - переведу текст в войс\n"
                 s13 = "/get_quiz - викторина/тест по японским кандзи\n"
                 s14 = "/get_weather - погода по текущей локации или указанному адресу\n"
-                s15 = "/get_reactor_pikcha - получить рандомную пикчу по тегу с рекатора"
-                admin = "/send_to_admin - отправка сообщения админу\n"
-                result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12+s13+s14+s15+admin
+                s15 = "/get_reactor_pikcha - получить рандомную пикчу по тегу с рекатора\n"
+                s16 = "/get_qr_code - создать qr-код со своим текстом внутри\n"
+                result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12+s13+s14+s15+s16
+                result_out += admin
                 reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id) 
+        elif (last_msg_user == "/main_menu"):
+            content_type_out = "text"
+            result_out = "Ну ок"
+            reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_user == "/stick":
                 content_type_out = "sticker"
                 result_out = "https://cdn.tlgrm.app/stickers/34e/704/34e704f5-0115-3c1e-954e-74d2b180751d/192/" + str(random.randint(1,12)) + ".webp"
@@ -59,6 +72,7 @@ class cases_class(Exception):
                 content_type_out = "photo"
                 result_out = common_methods.get_pikcha()
                 reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
+                caption_out = "Ну ты и изврат"
         elif last_msg_user == "/maid":
                 content_type_out = "photo"
                 maids_dir = r"C:\assets_data\maids"
@@ -207,36 +221,34 @@ class cases_class(Exception):
                 reply_out = keyboards_buttons.keyboards_class.kanji_quiz()
         elif last_msg_bot == "Квиз по всем имеющимся кандзи или по номеру определенного десятка?" and last_msg_user == "по всем имеющимся кандзи!":
             answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out = quiz.get_all_kanji_quiz()
+            poll_type_out = "quiz"
         elif last_msg_bot == "Квиз по всем имеющимся кандзи или по номеру определенного десятка?" and last_msg_user == "по номеру десятка!":
             content_type_out = "text"
             result_out = "По какому номеру десятка кандзи будем гонять?"
             reply_out = keyboards_buttons.keyboards_class.kanji_num()
         elif last_msg_bot == "По какому номеру десятка кандзи будем гонять?":
                 if last_msg_user.isnumeric():
+                    poll_type_out = "quiz"
                     answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out = quiz.get_decade_kanji_quiz(last_msg_user)
                 else:
                     content_type_out = "text"
                     result_out = "Введенное тобой что-то не похоже на число."
         elif last_msg_bot == "квиз по всем имеющимся кандзи" and last_msg_user == "еще":
                 answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out = quiz.get_all_kanji_quiz()
+                poll_type_out = "quiz"
         elif last_msg_bot == "квиз по по номеру десятка кандзи" and last_msg_user == "еще":
                 pre_last_msg_user = queries_to_bd.get_pre_last_user_msg(cur_message.chat.id)
                 answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out = quiz.get_decade_kanji_quiz(pre_last_msg_user)
-        elif (last_msg_bot == "квиз по по номеру десятка кандзи" or "квиз по всем имеющимся кандзи") and last_msg_user == "в главное меню":
-            content_type_out = "text"
-            result_out = "Ну ок"
-            reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
+                poll_type_out = "quiz"
         elif last_msg_user == "/send_to_admin":
                 content_type_out = "text"
                 result_out = "Что хотите отправить? Принимаются текст, фото, видео, войсы, видео заметки."
                 reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_bot == "Что хотите отправить? Принимаются текст, фото, видео, войсы, видео заметки.":
-                common_methods.resend_data(cur_message, bot)
-                content_type_out = "text"
-                result_out = "Отправлено"
+                resending_flg = 1
                 reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_user == "/adminka":
-            if cur_message.chat.id == common_methods.id_owner:
+            if cur_message.chat.id == sending.id_owner:
                 content_type_out = "text"
                 result_out = "Здравствуйте, мой господин"
                 reply_out = keyboards_buttons.keyboards_class.admin_panel()
@@ -245,7 +257,7 @@ class cases_class(Exception):
                 result_out = "Что-то не похоже, чтобы ты был админом."
                 reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_user == "/get_users":
-            if cur_message.chat.id == common_methods.id_owner:
+            if cur_message.chat.id == sending.id_owner:
                 content_type_out = "text"
                 result_out = queries_to_bd.get_users()
                 reply_out = keyboards_buttons.keyboards_class.admin_panel()
@@ -255,7 +267,7 @@ class cases_class(Exception):
                 result_out = "Что-то не похоже, чтобы ты был админом."
                 reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_user == "/send_to_user":
-            if cur_message.chat.id == common_methods.id_owner:
+            if cur_message.chat.id == sending.id_owner:
                 content_type_out = "text"
                 result_out = 'Блок отправки сообщений пользователю.\nКому отправляем? (chat_id)'
                 reply_out = keyboards_buttons.keyboards_class.admin_panel()
@@ -265,7 +277,7 @@ class cases_class(Exception):
                 reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
         elif last_msg_bot.__contains__("Блок отправки сообщений пользователю."):
             if last_msg_bot.__contains__("Кому отправляем? (chat_id)"):
-                if cur_message.chat.id == common_methods.id_owner:
+                if cur_message.chat.id == sending.id_owner:
                     content_type_out = "text"
                     result_out = 'Блок отправки сообщений пользователю.\nЧто отправляем?'
                     reply_out = keyboards_buttons.keyboards_class.admin_panel()
@@ -274,10 +286,8 @@ class cases_class(Exception):
                     result_out = "Что-то не похоже, чтобы ты был админом."
                     reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
             elif last_msg_bot.__contains__("Что отправляем?"):
-                if cur_message.chat.id == common_methods.id_owner:
-                    common_methods.resend_data(cur_message, bot)
-                    content_type_out = "text"
-                    result_out = "Блок отправки сообщений пользователю.\nОтправлено"
+                if cur_message.chat.id == sending.id_owner:
+                    resending_flg = 1
                     reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
                 else:
                     content_type_out = "text"
@@ -323,4 +333,4 @@ class cases_class(Exception):
             #result_out = queries_to_bd.get_other_answer(last_msg_user)
             reply_out = keyboards_buttons.keyboards_class.main_menu(cur_message.chat.id)
             
-        return parse_mode_out, answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out
+        return resending_flg, poll_type_out, parse_mode_out, answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out, caption_out

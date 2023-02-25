@@ -69,38 +69,6 @@ def get_pikcha():
         fp.close()
     return img_name
 
-#метод пересылки сообщений
-id_owner = 1275894304
-def resend_data(message, bot):
-
-    chat_id_to_send = None
-
-    if message.chat.id == id_owner:
-        chat_id_to_send = queries_to_bd.get_prelast_user_msg(message.chat.id)
-    else:
-        chat_id_to_send = id_owner
-        
-    bot.send_message(chat_id_to_send, 'Пришло сообщение от @' + message.from_user.username +':') 
-
-    if message.content_type == "text":
-        bot.send_message(chat_id_to_send, message.text)
-    elif message.content_type == "sticker":
-        bot.send_sticker(chat_id_to_send, message.sticker.file_id)
-    elif message.content_type == "photo":
-        file = message.photo[-1]
-        file = file.file_id
-        bot.send_photo(chat_id_to_send, photo = file)
-    elif message.content_type == "voice":
-        bot.send_voice(chat_id_to_send, message.voice.file_id)
-    elif message.content_type == "video":
-        bot.send_video(chat_id_to_send, message.video.file_id)
-    elif message.content_type == "video_note":
-        bot.send_video_note(chat_id_to_send, message.video_note.file_id)
-    elif message.content_type == "document":
-        bot.send_document(chat_id_to_send, message.document.file_id)
-    else:
-        bot.send_message(chat_id_to_send, 'Не удалось переслать вам сообщение. Свяжитесь с админом и расскажите об ошибке плз\nТип сообщения: '+str(message.content_type)) 
-
 #переводчик из EN в RU
 def translate_en_to_ru(input_string):
     translator = googletrans.Translator()
@@ -109,6 +77,7 @@ def translate_en_to_ru(input_string):
     
     return str(translated_text.text)
 
+#issue  - придумать как вытащить сколько всего максимум страниц есть по текущему тегу
 #получает рандомную пикчу с реактора по запросу
 def get_random_pikcha_by_teg(msg):
     tegs = msg.split()
@@ -119,8 +88,8 @@ def get_random_pikcha_by_teg(msg):
     result_tegs = result_tegs.replace("%2B", "+")
     result_tegs = result_tegs[1:]
 
-    page = "https://joyreactor.cc/search?q=" + result_tegs + f"/" +str(random.randint(1,10))
-
+    page = "https://joyreactor.cc/search?q=" + result_tegs
+    print(page)
     html_page = urllib.request.urlopen(page)
     soup = BeautifulSoup(html_page, "lxml")
     images_url = []
