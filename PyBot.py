@@ -1,4 +1,5 @@
-﻿import queries_to_bd
+﻿import keyboards_buttons
+import queries_to_bd
 import answer_cases
 import traceback
 import telebot
@@ -31,7 +32,7 @@ def catch_edit_msg(message):
 
     except Exception as e:
         print('Ошибочка в PyBot.edited_message_handler\nОписание: ' + "".join(traceback.format_exception_only(e)).strip())
-        MypyBot.send_message(message.chat.id, "Ок, допустим кря\nДопустим, ты сделал ошибку в работе бота\nНо это только ДОПУСТИМ\nИ что дальше ты намерен делать?")
+        MypyBot.send_message(message.chat.id, "Ок, допустим кря\nДопустим, ты сделал ошибку в работе бота\nНо это только ДОПУСТИМ\nИ что дальше ты намерен делать?", reply_markup = keyboards_buttons.main_menu(message.chat.id))
         
 
 #callback_query_handler пока в тесте
@@ -85,6 +86,6 @@ def start_message(message):
             
     except Exception as e:
         print('Ошибочка в PyBot.message_handler\nОписание: ' + "".join(traceback.format_exception_only(e)).strip())
-        MypyBot.send_message(message.chat.id, "Ок, допустим кря\nДопустим, ты сделал ошибку в работе бота\nНо это только ДОПУСТИМ\nИ что дальше ты намерен делать?")
+        MypyBot.send_message(message.chat.id, "Ок, допустим кря\nДопустим, ты сделал ошибку в работе бота\nНо это только ДОПУСТИМ\nИ что дальше ты намерен делать?", reply_markup = keyboards_buttons.main_menu(message.chat.id))
 
 MypyBot.polling() 
