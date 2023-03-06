@@ -309,7 +309,7 @@ def cases_trigger(cur_message, bot):
             reply_out = telebot.types.ReplyKeyboardRemove()
     elif last_msg_bot == "Какую рандомную пикчу ищем на реакторе?":
             content_type_out = "photo"
-            result_out = common_methods.get_random_pikcha_by_teg(last_msg_user)
+            parse_mode_out, caption_out, result_out = common_methods.get_random_pikcha_by_teg(last_msg_user)
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user == "/get_qr_code":
             content_type_out = "text"
