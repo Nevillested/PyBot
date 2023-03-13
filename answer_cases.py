@@ -202,7 +202,7 @@ def cases_trigger(cur_message, bot):
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
             #если в бд ничего не найдено, то спрашиваем у ChatGPT
             if result_out == 'Мы ничего не нашли':
-                result_out = ChatGpt.get_result_from_chatgpt("Переведи на японский язык: " + last_msg_user)
+                result_out = ChatGpt.get_result_from_chatgpt("Переведи с японского на русский язык: " + last_msg_user)
     elif last_msg_user == "/get_kanji":
             content_type_out = "text"
             result_out = "Пришлю десяток кандзи из словаря для изучения. Какой номер десятка?"
@@ -319,12 +319,6 @@ def cases_trigger(cur_message, bot):
             content_type_out = "document"
             result_out = common_methods.create_qr_code(last_msg_user)
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
-
-    #тестовая команда
-    elif last_msg_user == '/get_inline':
-        content_type_out = "text"
-        result_out = "Это инлайн клава"
-        reply_out = keyboards_buttons.inline_keyboard()
 
     else:
         content_type_out = "text"

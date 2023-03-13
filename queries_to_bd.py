@@ -225,6 +225,21 @@ def get_joke():
             anekdot = anekdot + item
         return anekdot
 
+#получает комплимент
+def get_compliment():
+        connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
+        cursor = connection.cursor()
+        
+        cursor.execute("""select to_char(text)
+                            from (select *
+                                    from john.compliments
+                                   order by dbms_random.value)
+                           where rownum = 1""")
+        tuple_data = cursor.fetchone()
+        connection.commit()
+        compliment = common_methods.convertTuple(tuple_data)
+        return compliment
+
 #создает строку для наполнения данных для шифрования/дешифрования
 def create_session_cezar(data_from_message):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
@@ -402,8 +417,7 @@ def get_translate_jp(user_word):
         connection = oracledb.connect(user="john", password="ipiheb60", dsn="localhost:1521/xe")
         cursor = connection.cursor()
 
-        for row in cursor.execute(""" select coalesce(
-                                                        LISTAGG('С кандзи: '||coalesce(t1.jap_word_with_kanji,'-')||'\nБез кандзи: '||coalesce(t1.jap_word_without_kanji,'-')||'\nПеревод: '||coalesce(t1.rus_word,'-')||'' ,'\n\n')
+        for row in cursor.execute(""" select coalesce( LISTAGG('С кандзи: '||coalesce(t1.jap_word_with_kanji,'-')||'\nБез кандзи: '||coalesce(t1.jap_word_without_kanji,'-')||'\nПеревод: '||coalesce(t1.rus_word,'-')||'' ,'\n\n')
                                                       , 'Мы ничего не нашли'
                                                      ) as result_output 
                                         from (select jap_word_with_kanji

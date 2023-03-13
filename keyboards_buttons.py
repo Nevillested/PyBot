@@ -170,7 +170,7 @@ def weather_place():
         reply_to.add(current_place, main_menu)
         return reply_to
 
-#клавиатура по циклу - тестовый вариант, нигде пока не используется
+#клавиатура создающаяся по циклу - тестовый вариант, нигде пока не используется
 def weather_days():
         reply_to = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         iteration_var = 0
@@ -180,11 +180,3 @@ def weather_days():
             reply_to.add(telebot.types.KeyboardButton(text=str(buffer_day)))
             iteration_var += 1
         return reply_to
-
-#тестовая inline клавиатура - команда /get_inline
-def inline_keyboard():
-        markup = telebot.types.InlineKeyboardMarkup()
-        markup.row_width = 2
-        markup.add(telebot.types.InlineKeyboardButton("Yes", callback_data="cb_yes"),
-                                   telebot.types.InlineKeyboardButton("No", callback_data="cb_no"))
-        return markup

@@ -4,9 +4,10 @@ import common_methods
 import queries_to_bd
 import answer_cases
 import threading
-import traceback
+import inspect
 import telebot
 import sending
+import datetime
 
 MypyBot = telebot.TeleBot('2024376867:AAEwo60MQbbuvTAFMxCC_orH1t7Xyduj5So', parse_mode = None)
 
@@ -17,109 +18,107 @@ CONTENT_TYPES = ["text", "audio", "document", "photo", "sticker", "video", "vide
 
 #основной держатель всех ивентов бота
 def main_bot():
-    
     @MypyBot.edited_message_handler(content_types="text")
     def catch_edit_msg(message):
         try:
             print(f"Пользователь {message.from_user.username} отредактировал сообщение.\n")
-    
+            
             #добавляет отредактированное сообщение
             queries_to_bd.insert_edited_msg(message)
-    
+            
             #получает предпоследнеюю версию сообщения и обрамляет ее в результат
             result_prev_msg = "Ты думаешь я ничего не видел?\n" + r"|| '" + queries_to_bd.get_last_ver_msg(message)+ r"' ||"
-    
+            
             #отправляет результат
             MypyBot.send_message(message.chat.id, result_prev_msg , reply_to_message_id = message.id, parse_mode='MarkdownV2')
             
             #сохраняет улетевшие данные пользователю
             queries_to_bd.insert_user_story_out("text", result_prev_msg, message.chat.id, message.message_id)
-    
         except Exception as e:
-            print('Ошибочка в PyBot.edited_message_handler\nОписание: ' + "".join(traceback.format_exception_only(e)).strip())
-            MypyBot.send_message(message.chat.id, "Ок, допустим кря\nДопустим, ты сделал ошибку в работе бота\nНо это только ДОПУСТИМ\nИ что дальше ты намерен делать?", reply_markup = keyboards_buttons.main_menu(message.chat.id))
+            print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
             
-    
-    #callback_query_handler пока в тесте
-    @MypyBot.callback_query_handler(func=lambda call: True)
-    def callback_query(call):
-        if call.data == "cb_yes":
-            MypyBot.answer_callback_query(call.id, "Answer is Yes")
-        elif call.data == "cb_no":
-            MypyBot.answer_callback_query(call.id, "Answer is No")
-    
-    
     @MypyBot.message_handler(content_types=CONTENT_TYPES)
     def start_message(message):
         try:
             print(f"Пришло сообщение от: {message.from_user.username}\nТип сообщения: {str(message.content_type)}\nТекст сообщения: {message.text}\n")
-    
+            
             #проверяет пользователя в бд, если есть-обновляет данные, если нет-добавляет данные
             queries_to_bd.check_user(message)
-    
+            
             #сохраняет прилетевшие данные от пользователя
             queries_to_bd.insert_user_story_in(message)
             
             #получение результатов для ответа пользователю
             (resending_flg,
-         poll_type_out,
-         parse_mode_out,
-         answer_desc_out,
-         correct_answer_id_out,
-         content_type_out,
-         result_out,
-         reply_out,
-         caption_out) = answer_cases.cases_trigger(message, MypyBot)
-    
+                 poll_type_out,
+                 parse_mode_out,
+                 answer_desc_out,
+                 correct_answer_id_out,
+                 content_type_out,
+                 result_out,
+                 reply_out,
+                 caption_out) = answer_cases.cases_trigger(message, MypyBot)
+            
             #отправляет результат
             content_type_out, result_out = sending.send_msg( resending_flg,
-                                                             message,
-                                                             MypyBot,
-                                                             message.chat.id,
-                                                             content_type_out,
-                                                             result_out,
-                                                             reply_out,
-                                                             parse_mode_out,
-                                                             caption_out,
-                                                             answer_desc_out,
-                                                             result_out,
-                                                             correct_answer_id_out,
-                                                             poll_type_out)
-    
+                                                                 message,
+                                                                 MypyBot,
+                                                                 message.chat.id,
+                                                                 content_type_out,
+                                                                 result_out,
+                                                                 reply_out,
+                                                                 parse_mode_out,
+                                                                 caption_out,
+                                                                 answer_desc_out,
+                                                                 result_out,
+                                                                 correct_answer_id_out,
+                                                                 poll_type_out)
+            
             #сохраняет улетевшие данные пользователю
             queries_to_bd.insert_user_story_out(content_type_out, result_out, message.chat.id, message.message_id)
-                
         except Exception as e:
-            print('Ошибочка в PyBot.message_handler\nОписание: ' + "".join(traceback.format_exception_only(e)).strip())
-            MypyBot.send_message(message.chat.id, "Ок, допустим кря\nДопустим, ты сделал ошибку в работе бота\nНо это только ДОПУСТИМ\nИ что дальше ты намерен делать?", reply_markup = keyboards_buttons.main_menu(message.chat.id))
-    
-    
-    MypyBot.polling() 
+            print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
+    MypyBot.polling()
+            
 
-#отправщик пикч по времени. Короче говоря - шедулер
+#Шедулер
 def time_schedule_bot():
-
     def send_time_pikcha():
         try:
-            threading.Timer(3600.0, send_time_pikcha).start()
-            content_type_out = 'photo'
-            result_out = common_methods.get_pikcha()
-            content_type_out, result_out = sending.send_msg( 0,
-                                                             None,
-                                                             MypyBot,
-                                                             sending.id_owner,
-                                                             content_type_out,
-                                                             result_out,
-                                                             None,
-                                                             None,
-                                                             None,
-                                                             None,
-                                                             None,
-                                                             None,
-                                                             None)
-            print('Отправка ежечасной пикчи!')
+            threading.Timer(60.0, send_time_pikcha).start()
+            if (datetime.datetime.now().minute == 00):
+                #отправка пикчи
+                content_type_out, result_out = sending.send_msg( 0,
+                                                                 None,
+                                                                 MypyBot,
+                                                                 sending.id_owner,
+                                                                 'photo',
+                                                                 common_methods.get_pikcha(),
+                                                                 None,
+                                                                 None,
+                                                                 'Ежечасное солнышко',
+                                                                 None,
+                                                                 None,
+                                                                 None,
+                                                                 None)
+                #отправка комплимента
+                #content_type_out, result_out = sending.send_msg( 0,
+                #                                                 None,
+                #                                                 MypyBot,
+                #                                                 83729683,
+                #                                                 'text',
+                #                                                 queries_to_bd.get_compliment(),
+                #                                                 None,
+                #                                                 None,
+                #                                                 'Ежечасное солнышко',
+                #                                                 None,
+                #                                                 None,
+                #                                                 None,
+                #                                                 None)
+                print('Отработка ежечасного шедулера')
+
         except Exception as e:
-            print('При отправке ежечасной пикчи произошла ошибка: \n' + e)
+            print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
 
     send_time_pikcha()
     
