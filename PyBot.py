@@ -66,7 +66,7 @@ def main_bot():
     @MypyBot.message_handler(content_types=CONTENT_TYPES)
     def start_message(message):
         try:
-            if message.via_bot.username != 'ArarararagiBot' and message.via_bot.is_bot != True:
+            if message.via_bot != True:
                 print(f"Пришло сообщение от: {message.from_user.username}\nТип сообщения: {str(message.content_type)}\nТекст сообщения: {message.text}\n")
                 
                 #проверяет пользователя в бд, если есть-обновляет данные, если нет-добавляет данные
