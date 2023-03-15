@@ -1,8 +1,10 @@
 ﻿import queries_to_bd
+import cfg
 
-id_owner = 1275894304
+#метод отправки сообщений с различными типами данных
 def send_msg(resending_flg, cur_message, bot, chat_id, content_type_out, result_out, reply_out, parse_mode_out, caption_out, poll_answer_desc_out, poll_options_out, poll_correct_option_id_out, poll_type_out):
 
+    #если флаг отправки сообщения другому пользователю через бота равен 0: (от пользователя админу или от админа пользователю)
     if resending_flg == 0:
         if content_type_out == "text":
             bot.send_message(chat_id, result_out, parse_mode = parse_mode_out, reply_markup = reply_out)
@@ -22,26 +24,22 @@ def send_msg(resending_flg, cur_message, bot, chat_id, content_type_out, result_
             bot.send_poll(chat_id, 'Кандзи: ' + poll_answer_desc_out, options = poll_options_out, correct_option_id  = poll_correct_option_id_out, type = poll_type_out, reply_markup = reply_out)
         elif content_type_out == "document":
             bot.send_document(chat_id, document = open(result_out, 'rb'), reply_markup = reply_out)
-
+            
+    #если флаг отправки сообщения другому пользователю через бота равен 1: (от пользователя админу или от админа пользователю)
     elif resending_flg == 1:
         chat_id_to_send = None
         content_type_out = cur_message.content_type
-
-
-
-
+        
         if content_type_out == "text":
             result_out = cur_message.text
 
-        if cur_message.chat.id == id_owner:
+        #получаем id чата, куда отправляем сообщение
+        if cur_message.chat.id == cfg.id_owner:
             chat_id_to_send = queries_to_bd.get_prelast_user_msg(cur_message.chat.id)
         else:
-            chat_id_to_send = id_owner
+            chat_id_to_send = cfg.id_owner
             
         bot.send_message(chat_id_to_send, 'Пришло сообщение от @' + cur_message.from_user.username +':') 
-
-
-
 
         if cur_message.content_type == "text":
             bot.send_message(chat_id_to_send, cur_message.text)
@@ -70,4 +68,5 @@ def send_msg(resending_flg, cur_message, bot, chat_id, content_type_out, result_
             bot.send_message(cur_message.chat.id, 'Не удалось отправить ваше сообщение. Свяжитесь с админом и расскажите об ошибке плз\nТип сообщения: '+str(cur_message.content_type)) 
             
         bot.send_message(cur_message.chat.id, 'Отправлено') 
+
     return content_type_out, result_out

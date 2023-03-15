@@ -11,6 +11,7 @@ import telebot
 import random
 import cezar
 import quiz
+import cfg
 import os
 
 
@@ -247,7 +248,7 @@ def cases_trigger(cur_message, bot):
             resending_flg = 1
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user == "/adminka":
-            if cur_message.chat.id == sending.id_owner:
+            if cur_message.chat.id == cfg.id_owner:
                 content_type_out = "text"
                 result_out = "Здравствуйте, мой господин"
                 reply_out = keyboards_buttons.admin_panel()
@@ -256,7 +257,7 @@ def cases_trigger(cur_message, bot):
                 result_out = "Что-то не похоже, чтобы ты был админом."
                 reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user == "/get_users":
-            if cur_message.chat.id == sending.id_owner:
+            if cur_message.chat.id == cfg.id_owner:
                 content_type_out = "text"
                 result_out = queries_to_bd.get_users()
                 reply_out = keyboards_buttons.admin_panel()
@@ -266,7 +267,7 @@ def cases_trigger(cur_message, bot):
                 result_out = "Что-то не похоже, чтобы ты был админом."
                 reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user == "/send_to_user":
-            if cur_message.chat.id == sending.id_owner:
+            if cur_message.chat.id == cfg.id_owner:
                 content_type_out = "text"
                 result_out = 'Блок отправки сообщений пользователю.\nКому отправляем? (chat_id)'
                 reply_out = keyboards_buttons.admin_panel()
@@ -276,7 +277,7 @@ def cases_trigger(cur_message, bot):
                 reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_bot.__contains__("Блок отправки сообщений пользователю."):
             if last_msg_bot.__contains__("Кому отправляем? (chat_id)"):
-                if cur_message.chat.id == sending.id_owner:
+                if cur_message.chat.id == cfg.id_owner:
                     content_type_out = "text"
                     result_out = 'Блок отправки сообщений пользователю.\nЧто отправляем?'
                     reply_out = keyboards_buttons.admin_panel()
@@ -285,7 +286,7 @@ def cases_trigger(cur_message, bot):
                     result_out = "Что-то не похоже, чтобы ты был админом."
                     reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
             elif last_msg_bot.__contains__("Что отправляем?"):
-                if cur_message.chat.id == sending.id_owner:
+                if cur_message.chat.id == cfg.id_owner:
                     resending_flg = 1
                     reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
                 else:
@@ -319,7 +320,11 @@ def cases_trigger(cur_message, bot):
             content_type_out = "document"
             result_out = common_methods.create_qr_code(last_msg_user)
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
-
+            
+    elif last_msg_user == "/get_inline_kb":
+            content_type_out = "text"
+            result_out = "Это инлайн клавиатура"
+            reply_out = keyboards_buttons.inline_kb()
     else:
         content_type_out = "text"
         result_out = ChatGpt.get_result_from_chatgpt(last_msg_user)

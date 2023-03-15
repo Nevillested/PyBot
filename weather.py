@@ -2,6 +2,7 @@
 import common_methods
 import requests
 import json
+import cfg
 
 #получает долготу и широту по месту
 def get_coordinates(place):
@@ -12,7 +13,7 @@ def get_coordinates(place):
 #выдает погоду на текущее время
 def current_weather(cur_data):
     
-    api_key = '8c99404b494468c2a48817ae5ecb3c96'
+    api_key = cfg.weather_token
     latitude = ''
     longitude = ''
     if cur_data.content_type == 'text':
@@ -49,7 +50,7 @@ def current_weather(cur_data):
 #выдает погоду на определенный день - НЕ РАБОТАЕТ И НЕ ДОДЕЛАНО, ПОТОМУ ЧТО https://openweathermap.org/ ЕБУЧИЕ ЖЛОБЫ
 def certain_day_weather(day, place):
     
-    api_key = '8c99404b494468c2a48817ae5ecb3c96'
+    api_key = cfg.weather_token
     list_chars_coord = {'1234567890.; '}
     latitude = ''
     longitude = ''

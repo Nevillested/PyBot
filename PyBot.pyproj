@@ -22,9 +22,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="answer_cases.py" />
+    <Compile Include="callback_data.py" />
     <Compile Include="cezar.py" />
+    <Compile Include="cfg.py" />
     <Compile Include="ChatGpt.py" />
     <Compile Include="common_methods.py" />
+    <Compile Include="inline_mode.py" />
     <Compile Include="keyboards_buttons.py" />
     <Compile Include="quiz.py" />
     <Compile Include="sending.py" />

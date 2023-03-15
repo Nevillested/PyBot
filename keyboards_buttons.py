@@ -1,6 +1,7 @@
 ﻿from datetime import timedelta, date
 import telebot
 import sending
+import cfg
 
 #клавиатура основного меню
 def main_menu(chat_id):
@@ -26,7 +27,7 @@ def main_menu(chat_id):
 
         adminka = telebot.types.KeyboardButton(text="/adminka")
         
-        if chat_id == sending.id_owner:
+        if chat_id == cfg.id_owner:
             reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space, get_quiz, get_weather, get_reactor_pikcha, get_qr_code, adminka)
         else:
             reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space, get_quiz, get_weather, get_reactor_pikcha, get_qr_code, send_admin)
@@ -172,11 +173,19 @@ def weather_place():
 
 #клавиатура создающаяся по циклу - тестовый вариант, нигде пока не используется
 def weather_days():
-        reply_to = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-        iteration_var = 0
-        while iteration_var <= 31:
-            buffer_day = date.today() + timedelta(days=iteration_var)
-            buffer_day = buffer_day.strftime('%d-%m-%Y')
-            reply_to.add(telebot.types.KeyboardButton(text=str(buffer_day)))
-            iteration_var += 1
+    reply_to = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    iteration_var = 0
+    while iteration_var <= 31:
+        buffer_day = date.today() + timedelta(days=iteration_var)
+        buffer_day = buffer_day.strftime('%d-%m-%Y')
+        reply_to.add(telebot.types.KeyboardButton(text=str(buffer_day)))
+        iteration_var += 1
+    return reply_to
+
+
+def inline_kb():
+        reply_to = telebot.types.InlineKeyboardMarkup()
+        reply_to.add(telebot.types.InlineKeyboardButton(text="Первая кнопка", callback_data="inline_kb_1bt"))
+        reply_to.add(telebot.types.InlineKeyboardButton(text="Вторая кнопка", callback_data="inline_kb_2bt"))
+        reply_to.add(telebot.types.InlineKeyboardButton(text="Третья кнопка", callback_data="inline_kb_3bt"))
         return reply_to
