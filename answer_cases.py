@@ -56,7 +56,8 @@ def cases_trigger(cur_message, bot):
             s14 = "/get_weather - погода по текущей локации или указанному адресу\n"
             s15 = "/get_reactor_pikcha - получить рандомную пикчу по тегу с рекатора\n"
             s16 = "/get_qr_code - создать qr-код со своим текстом внутри\n"
-            result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12+s13+s14+s15+s16
+            s17 = "/inline_mode - инлайн режимы\n"
+            result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12+s13+s14+s15+s16+s17
             result_out += admin
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id) 
     elif (last_msg_user == "/main_menu"):
@@ -319,6 +320,10 @@ def cases_trigger(cur_message, bot):
     elif last_msg_bot == "Введи текст, который будет помещен в qr-код.":
             content_type_out = "document"
             result_out = common_methods.create_qr_code(last_msg_user)
+            reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
+    elif last_msg_user == "/inline_mode":
+            content_type_out = "text"
+            result_out = "Значит, объясняю, что это такое и как пользоваться:\n\nИнлайн режим - это когда ты в чате с другим пользователем пишешь никнейм этого бота, а затем то, что хочешь найти. Например:\n@ArarararagiBot pic Шинобу Ошино\n\nи он тебе выдаст пикчи Ошино Шинобу\nСейчас пока работает только с пикчами - pic, чуть позже добавлю видео, ссылки, стикеры и еще что-нибудь\nнаслаждайся."
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
             
     elif last_msg_user == "/get_inline_kb":
