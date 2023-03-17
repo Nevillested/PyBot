@@ -24,7 +24,7 @@
     <Compile Include="answer_cases.py" />
     <Compile Include="callback_data.py" />
     <Compile Include="cezar.py" />
-    <Compile Include="cfg.py" />
+    <Compile Include="my_cfg.py" />
     <Compile Include="ChatGpt.py" />
     <Compile Include="common_methods.py" />
     <Compile Include="inline_mode.py" />

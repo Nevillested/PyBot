@@ -8,9 +8,9 @@ import inspect
 import telebot
 import sending
 import datetime
-import cfg
+import my_cfg
 
-MypyBot = telebot.TeleBot(cfg.telegram_token, parse_mode = None)
+MypyBot = telebot.TeleBot(my_cfg.telegram_token, parse_mode = None)
 
 CONTENT_TYPES = ["text", "audio", "document", "photo", "sticker", "video", "video_note", "voice", "location", "contact",
                  "new_chat_members", "left_chat_member", "new_chat_title", "new_chat_photo", "delete_chat_photo",
@@ -119,7 +119,7 @@ def time_schedule_bot():
                 content_type_out, result_out = sending.send_msg( 0,
                                                                  None,
                                                                  MypyBot,
-                                                                 cfg.id_owner,
+                                                                 my_cfg.id_owner,
                                                                  'photo',
                                                                  common_methods.get_pikcha(),
                                                                  None,

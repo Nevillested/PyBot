@@ -168,3 +168,42 @@ def create_qr_code(text):
     qrcode.save(name, border=1, scale=8)
     result = os.getcwd() + '\\' + name
     return result
+
+#парсит html страницу с <тегами> и переводит в словарь
+def html_string_to_dict(html_string):
+    result_dict = {}
+    idx_first_open_char_teg = -1
+    idx_second_open_char_teg = -1
+    current_key = ''
+    current_value = ''
+    for idx, char in enumerate(html_string):
+        current_teg = ''
+
+        if char == '<':
+            idx_first_open_char_teg = idx
+            if idx_second_open_char_teg != -1:
+                current_value = html_string[idx_second_open_char_teg+1:idx_first_open_char_teg]
+                idx_second_open_char_teg = -1
+        if char == '>':
+            idx_second_open_char_teg = idx
+        
+        if idx_first_open_char_teg != -1 and idx_second_open_char_teg != -1:
+
+            current_teg = html_string[idx_first_open_char_teg+1:idx_second_open_char_teg]
+            current_key = current_teg
+            idx_first_open_char_teg = -1
+        
+        if len(current_key) != 0 and len(current_value) != 0:
+            result_dict[current_key] = current_value
+            current_key = ''
+            current_value = ''
+
+    return result_dict
+
+#возвращает список с уникальными значениями
+def unique_list_from_list(list1):
+    unique_list = []
+    for x in list1:
+        if x not in unique_list:
+            unique_list.append(x)
+    return unique_list

@@ -11,7 +11,7 @@ import telebot
 import random
 import cezar
 import quiz
-import cfg
+import my_cfg
 import os
 
 
@@ -249,7 +249,7 @@ def cases_trigger(cur_message, bot):
             resending_flg = 1
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user == "/adminka":
-            if cur_message.chat.id == cfg.id_owner:
+            if cur_message.chat.id == my_cfg.id_owner:
                 content_type_out = "text"
                 result_out = "Здравствуйте, мой господин"
                 reply_out = keyboards_buttons.admin_panel()
@@ -258,7 +258,7 @@ def cases_trigger(cur_message, bot):
                 result_out = "Что-то не похоже, чтобы ты был админом."
                 reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user == "/get_users":
-            if cur_message.chat.id == cfg.id_owner:
+            if cur_message.chat.id == my_cfg.id_owner:
                 content_type_out = "text"
                 result_out = queries_to_bd.get_users()
                 reply_out = keyboards_buttons.admin_panel()
@@ -268,7 +268,7 @@ def cases_trigger(cur_message, bot):
                 result_out = "Что-то не похоже, чтобы ты был админом."
                 reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user == "/send_to_user":
-            if cur_message.chat.id == cfg.id_owner:
+            if cur_message.chat.id == my_cfg.id_owner:
                 content_type_out = "text"
                 result_out = 'Блок отправки сообщений пользователю.\nКому отправляем? (chat_id)'
                 reply_out = keyboards_buttons.admin_panel()
@@ -278,7 +278,7 @@ def cases_trigger(cur_message, bot):
                 reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_bot.__contains__("Блок отправки сообщений пользователю."):
             if last_msg_bot.__contains__("Кому отправляем? (chat_id)"):
-                if cur_message.chat.id == cfg.id_owner:
+                if cur_message.chat.id == my_cfg.id_owner:
                     content_type_out = "text"
                     result_out = 'Блок отправки сообщений пользователю.\nЧто отправляем?'
                     reply_out = keyboards_buttons.admin_panel()
@@ -287,7 +287,7 @@ def cases_trigger(cur_message, bot):
                     result_out = "Что-то не похоже, чтобы ты был админом."
                     reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
             elif last_msg_bot.__contains__("Что отправляем?"):
-                if cur_message.chat.id == cfg.id_owner:
+                if cur_message.chat.id == my_cfg.id_owner:
                     resending_flg = 1
                     reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
                 else:
@@ -323,7 +323,7 @@ def cases_trigger(cur_message, bot):
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user == "/inline_mode":
             content_type_out = "text"
-            result_out = "Значит, объясняю, что это такое и как пользоваться:\n\nИнлайн режим - это когда ты в чате с другим пользователем пишешь никнейм этого бота, а затем то, что хочешь найти. Например:\n@ArarararagiBot pic Шинобу Ошино\n\nи он тебе выдаст пикчи Ошино Шинобу\nСейчас пока работает только с пикчами - pic, чуть позже добавлю видео, ссылки, стикеры и еще что-нибудь\nнаслаждайся."
+            result_out = "Значит, объясняю, что это такое и как пользоваться:\n\nИнлайн режим - это когда ты в чате с другим пользователем пишешь никнейм этого бота, а затем то, что хочешь найти. Пока есть три режима:\n1)Выдает пикчи:\n'@ArarararagiBot pic Shinobu Oshino'\n\n2)Выдает топ видосов на ютубе:\n'@ArarararagiBot vid Monogatari Series'\n\n3)Выдаст топ ссылок по поиску в гугле:\n'@ArarararagiBot search Kyoto'\n\n3)Погуглит вместо тебя:\n'@ArarararagiBot google Как стать женщиной?'"
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
             
     elif last_msg_user == "/get_inline_kb":

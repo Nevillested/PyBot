@@ -1,5 +1,5 @@
 ﻿import queries_to_bd
-import cfg
+import my_cfg
 
 #метод отправки сообщений с различными типами данных
 def send_msg(resending_flg, cur_message, bot, chat_id, content_type_out, result_out, reply_out, parse_mode_out, caption_out, poll_answer_desc_out, poll_options_out, poll_correct_option_id_out, poll_type_out):
@@ -34,10 +34,10 @@ def send_msg(resending_flg, cur_message, bot, chat_id, content_type_out, result_
             result_out = cur_message.text
 
         #получаем id чата, куда отправляем сообщение
-        if cur_message.chat.id == cfg.id_owner:
+        if cur_message.chat.id == my_cfg.id_owner:
             chat_id_to_send = queries_to_bd.get_prelast_user_msg(cur_message.chat.id)
         else:
-            chat_id_to_send = cfg.id_owner
+            chat_id_to_send = my_cfg.id_owner
             
         bot.send_message(chat_id_to_send, 'Пришло сообщение от @' + cur_message.from_user.username +':') 
 

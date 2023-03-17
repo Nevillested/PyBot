@@ -1,9 +1,9 @@
 import openai
-import cfg
+import my_cfg
 
 def get_result_from_chatgpt(msg_in):
-    openai.api_key = cfg.chat_gpt_token
-    model_engine = cfg.chat_gpt_model
+    openai.api_key = my_cfg.chat_gpt_token
+    model_engine = my_cfg.chat_gpt_model
     prompt = msg_in
     completion = openai.Completion.create(
         engine=model_engine,

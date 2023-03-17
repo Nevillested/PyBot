@@ -1,10 +1,10 @@
 ﻿import common_methods
 import oracledb
-import cfg
+import my_cfg
 
 #проверяет пользователя в бд, если есть-обновляет данные, если нет-добавляет данные
 def check_user(data_from_message):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
 
         chat_id = data_from_message.chat.id
@@ -53,7 +53,7 @@ def check_user(data_from_message):
 
 #сохраняет прилетевшие данные в переписке с пользователем
 def insert_user_story_in(data_from_message):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
 
         chat_id = data_from_message.chat.id
@@ -73,7 +73,7 @@ def insert_user_story_in(data_from_message):
 
 #добавляет новую версию отредактированного сообщения и возвращает предыдущую
 def insert_edited_msg(data_from_message):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
         
         msg_text = data_from_message.text
@@ -107,7 +107,7 @@ def insert_edited_msg(data_from_message):
 
 #выдает последнюю версию отредактированного сообщения
 def get_last_ver_msg(data_from_message):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
         
         chat_id = data_from_message.chat.id
@@ -134,7 +134,7 @@ def get_last_ver_msg(data_from_message):
     
 #сохраняет улетевшие данные пользователю
 def insert_user_story_out(content_type_out, clob_data_out, chat_id, message_id):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
         
         rows = [ (content_type_out, clob_data_out, chat_id, message_id) ]
@@ -143,7 +143,7 @@ def insert_user_story_out(content_type_out, clob_data_out, chat_id, message_id):
 
 #получает последнее свое отправленное сообщение
 def get_last_bot_msg(chat_id):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
         
         cursor.execute("""select to_char(message_data_clob_out)
@@ -165,7 +165,7 @@ def get_last_bot_msg(chat_id):
 
 #получает предпоследнее сообщение пользователя
 def get_prelast_user_msg(chat_id):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
         
         cursor.execute("""select message_data_clob_in
@@ -186,7 +186,7 @@ def get_prelast_user_msg(chat_id):
 
 #получает последний номер десятка кандзи
 def get_pre_last_user_msg(chat_id):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
         
         cursor.execute("""select to_char(message_data_clob_in)
@@ -211,7 +211,7 @@ def get_pre_last_user_msg(chat_id):
 
 #получает анекдот
 def get_joke():
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
         
         cursor.execute("""select to_char(text_joke)
@@ -228,7 +228,7 @@ def get_joke():
 
 #получает комплимент
 def get_compliment():
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
         
         cursor.execute("""select to_char(text)
@@ -243,7 +243,7 @@ def get_compliment():
 
 #создает строку для наполнения данных для шифрования/дешифрования
 def create_session_cezar(data_from_message):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
 
         chat_id = data_from_message.chat.id
@@ -256,7 +256,7 @@ def create_session_cezar(data_from_message):
 
 #добавляет язык обработки данных для шифрования/дешифрования
 def update_lang_session_cezar(data_from_message):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
 
         chat_id = data_from_message.chat.id
@@ -277,7 +277,7 @@ def update_lang_session_cezar(data_from_message):
 
 #добавляет ключ для шифрования/дешифрования
 def update_key_session_cezar(data_from_message):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
         
         chat_id = data_from_message.chat.id
@@ -298,7 +298,7 @@ def update_key_session_cezar(data_from_message):
 
 #добавляет текст для шифрования/дешифрования
 def update_messaage_in_session_cezar(data_from_message):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
         
         chat_id = data_from_message.chat.id
@@ -319,7 +319,7 @@ def update_messaage_in_session_cezar(data_from_message):
 
 #выдает данные для шифрования
 def get_data_cezar(data_from_message):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
         
         chat_id = data_from_message.chat.id
@@ -340,7 +340,7 @@ def get_data_cezar(data_from_message):
 
 #выдает какой-нибудь ответ, который у него есть в вопрос-ответнике
 def get_other_answer(user_text):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
         
         rows = [ (user_text) ]
@@ -365,7 +365,7 @@ def get_other_answer(user_text):
 
 #создает новую сессию распознавания текста, добавляет язык
 def create_session_voice(data_from_message):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
         
         rows = [ (data_from_message.chat.id, data_from_message.text) ]
@@ -374,7 +374,7 @@ def create_session_voice(data_from_message):
 
 #выдает язык распознавания текста
 def get_lang_voice(data_from_message):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
         
         rows = [ (data_from_message.chat.id) ]
@@ -394,7 +394,7 @@ def get_lang_voice(data_from_message):
 
 #сохраняет распознанный текст
 def insert_result_recognize_speech(data_from_message, result_recog):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
         
         rows = [ (result_recog, data_from_message.chat.id) ]
@@ -415,7 +415,7 @@ def insert_result_recognize_speech(data_from_message, result_recog):
 
 #возвращает перевод слова из "новые слова"
 def get_translate_jp(user_word):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
 
         for row in cursor.execute(""" select coalesce( LISTAGG('С кандзи: '||coalesce(t1.jap_word_with_kanji,'-')||'\nБез кандзи: '||coalesce(t1.jap_word_without_kanji,'-')||'\nПеревод: '||coalesce(t1.rus_word,'-')||'' ,'\n\n')
@@ -441,7 +441,7 @@ def get_translate_jp(user_word):
 
 #возвращает список кандзи по номеру десятка
 def get_kanji(user_value):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
 
         for row in cursor.execute("""with t1 as (select :cur_value as value from dual)
@@ -456,7 +456,7 @@ def get_kanji(user_value):
 
 #возвращает данные для квиза но номеру десятка
 def get_decade_kanji_quiz(num_decade):
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
         
         list_of_rows = []
@@ -496,7 +496,7 @@ def get_decade_kanji_quiz(num_decade):
 
 #возвращает данные для квиза по всем имеющимся кадзи
 def get_all_kanji_quiz():
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
         
         list_of_rows = []
@@ -534,7 +534,7 @@ def get_all_kanji_quiz():
 
 #получает список пользователей
 def get_users():
-        connection = oracledb.connect(user=cfg.bd_user, password=cfg.bd_pass, dsn=cfg.bd_dsn)
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
         
         cursor.execute("""select listagg('ID чата `' || chat_id ||'`, ник/имя ' || coalesce(case when username is not null then '@'||username end, first_name||' '||last_name), '\n')
