@@ -532,7 +532,7 @@ def get_all_kanji_quiz():
 
         return list_of_rows
 
-#получает список пользователей
+#получает список пользователей для админки в чаровском виде
 def get_users():
         connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
@@ -543,4 +543,38 @@ def get_users():
         connection.commit()
         result = common_methods.convertTuple(tuple_data)
         result = result.replace("_", "\_")
+        return result
+
+#получает список пользователей - только айдишники в list для рассылки
+def get_users_id():
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
+        cursor = connection.cursor()
+        result = []
+        list_of_id = []
+        for row in cursor.execute("""select chat_id from john.users"""):
+            result.append(row)
+        connection.commit()
+
+        
+        for item in result:
+            buffer = ''
+            for char_one in str(item):
+                for char_two in ('1234567890-'):
+                    if char_one == char_two:
+                        buffer += char_one
+            list_of_id.append(int(buffer))
+            
+        return list_of_id
+
+#получает сегодняшний праздник
+def get_holiday():
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
+        cursor = connection.cursor()
+        
+        cursor.execute("""select text_holiday from john.international_holiday where trunc(date_holiday) = trunc(sysdate) """)
+        tuple_data = cursor.fetchone()
+        connection.commit()
+        result = ''
+        if tuple_data != None:
+            result = common_methods.convertTuple(tuple_data)
         return result

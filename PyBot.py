@@ -111,9 +111,10 @@ def main_bot():
 
 #Шедулер
 def time_schedule_bot():
-    def send_time_pikcha():
+    #ежечасный шедулер
+    def scheduler_1h():
         try:
-            threading.Timer(60.0, send_time_pikcha).start()
+            threading.Timer(60.0, scheduler_1h).start()
             if (datetime.datetime.now().minute == 00):
                 #отправка пикчи
                 content_type_out, result_out = sending.send_msg( 0,
@@ -148,7 +149,37 @@ def time_schedule_bot():
         except Exception as e:
             print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
 
-    send_time_pikcha()
+    #ежедневный шедулер
+    def scheduler_1d():
+        try:
+            threading.Timer(3600.0, scheduler_1d).start()
+            if (datetime.datetime.now().hour == 20):
+                today_holiday = queries_to_bd.get_holiday()
+                if len(today_holiday) > 0:
+                    today_holiday = 'Сегодня ' + today_holiday.lower() + '🎉\nС праздничком:)'
+                    list_users_id = queries_to_bd.get_users_id()
+                    for item in list_users_id:
+                        try:
+                            content_type_out, result_out = sending.send_msg( 0,
+                                                                             None,
+                                                                             MypyBot,
+                                                                             item,
+                                                                             'text',
+                                                                             today_holiday,
+                                                                             None,
+                                                                             None,
+                                                                             None,
+                                                                             None,
+                                                                             None,
+                                                                             None,
+                                                                             None)
+                        except Exception as e:
+                            print('Не отправлено сообщение этому пользователю: ' +str(item)+'. Текст ошибки:\n'+str(e))
+        except Exception as e:
+            print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
+
+    scheduler_1h()
+    scheduler_1d()
 
 #создаем поток на основной держатель всех ивентов бота и на шедулер
 thread_main_bot = threading.Thread(target=main_bot)

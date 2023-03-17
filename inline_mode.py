@@ -158,9 +158,9 @@ def inline_mode_processed(bot, query):
 
             results = []
             current_query = urllib.parse.quote(current_query)
-            url = 'https://google.gik-team.com/?q='+current_query
+            url = 'https://google.gik-team.com/?q=' + current_query
 
-            result = '<a href="'+url+'">Я нашел, не благодари!</a>'
+            result = '<a href="' + url + '">Я нашел, не благодари!</a>'
 
             MsgCont = telebot.types.InputTextMessageContent(message_text = result, disable_web_page_preview = True, parse_mode = 'HTML')
                 
@@ -169,6 +169,7 @@ def inline_mode_processed(bot, query):
                 title='Давай я погуглю вместо тебя',
                 description='Ведь это же так сложно',
                 input_message_content=MsgCont,
+                thumb_url = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC8IPYVeYtSeyVa9m3ioSKxNnNosfUJZGcNA&usqp=CAU',
                 hide_url = True)
             
             results.append(msg)
