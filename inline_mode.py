@@ -17,8 +17,15 @@ from googlesearch import search as SeArCh
 from urltitle import URLTitleReader
 import requests
 import json
+import sending
 
 def inline_mode_processed(bot, query):
+    
+    send_mode = 'inline_mode'
+    results_out = []
+    query_data_out = query
+    cache_time_out = 0
+
     if (str(query.query)[0:3]).lower() == 'pic':
         current_query = str(query.query)[3:len(str(query.query))]
         if len(current_query)>1:
@@ -28,9 +35,8 @@ def inline_mode_processed(bot, query):
               "api_key": my_cfg.serpapi_token
             }
             search = GoogleSearch(params)
-            results = search.get_dict()
-            images_results = results.get('images_results')
-            results = []
+            results_serach = search.get_dict()
+            images_results = results_serach.get('images_results')
             idx = 0
             for item in images_results:
                 if str(item.get('original').__contains__('.jpg')) or str(item.get('original').__contains__('.jpeg')):
@@ -48,17 +54,18 @@ def inline_mode_processed(bot, query):
                             photo_width = width, 
                             photo_height = height
                         )
-                        results.append(msg)
+                        results_out.append(msg)
                         idx +=1
-            bot.answer_inline_query(query.id, results, cache_time = 0)
+
+            cache_time_out = 0
 
     elif (str(query.query)[0:3]).lower() == 'vid':
         current_query = (str(query.query)[4:len(str(query.query))]).replace(' ','+')
         if len(current_query) > 1:
             current_query = common_methods.translit(current_query)
-            results = []
             cnt = 0
-            html = urllib2.urlopen("https://www.youtube.com/results?search_query=" + current_query)
+            url = "https://www.youtube.com/results?search_query=" + current_query
+            html = urllib2.urlopen(url)
             video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
             video_ids = common_methods.unique_list_from_list(video_ids)
             
@@ -104,17 +111,16 @@ def inline_mode_processed(bot, query):
                     thumb_url = cur_thumb,
                     hide_url = True)
                 
-                results.append(msg)
+                results_out.append(msg)
                 if cnt == 4:
                     break
                 cnt += 1
-
-            bot.answer_inline_query(query.id, results, cache_time = 0)
+                
+            cache_time_out = 0
             
     elif (str(query.query)[0:6]).lower() == 'search':
         current_query = (str(query.query)[7:len(str(query.query))]).replace(' ','+')
         if len(current_query) > 1:
-            results =[]
             url = "https://google.serper.dev/search" #https://serper.dev/playground
             
             payload = json.dumps({
@@ -147,16 +153,15 @@ def inline_mode_processed(bot, query):
                     description=cur_description,
                     input_message_content=MsgCont)
                 
-                results.append(msg)
+                results_out.append(msg)
                 idx += 1
-
-            bot.answer_inline_query(query.id, results, cache_time = 5)
+                
+            cache_time_out = 5
             
     elif (str(query.query)[0:6]).lower() == 'google':
         current_query = str(query.query)[7:len(str(query.query))]
         if len(current_query) > 1:
 
-            results = []
             current_query = urllib.parse.quote(current_query)
             url = 'https://google.gik-team.com/?q=' + current_query
 
@@ -172,6 +177,9 @@ def inline_mode_processed(bot, query):
                 thumb_url = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC8IPYVeYtSeyVa9m3ioSKxNnNosfUJZGcNA&usqp=CAU',
                 hide_url = True)
             
-            results.append(msg)
+            results_out.append(msg)
+            
+            cache_time_out = 0
 
-            bot.answer_inline_query(query.id, results, cache_time = 0)
+    inline_data = query_data_out, results_out, cache_time_out
+    sending.send_msg(bot, send_mode, inline_data_out = inline_data)

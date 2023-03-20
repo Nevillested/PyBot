@@ -51,7 +51,7 @@ def check_user(data_from_message):
                                               , b.is_bot)""", rows)
         connection.commit()
 
-#сохраняет прилетевшие данные в переписке с пользователем
+#сохраняет прилетевшие данные в переписке с пользователем и ботом
 def insert_user_story_in(data_from_message):
         connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()
@@ -69,6 +69,24 @@ def insert_user_story_in(data_from_message):
         rows = [ (chat_id, message_id, username, content_type, clob_data) ]
         cursor.executemany("""insert into john.users_data (chat_id, message_id, username, content_type_in, message_data_clob_in)
                               values (:1, :2, :3, :4, :5 )""", rows)
+        connection.commit()
+
+#сохраняет данные при переписке между пользователями
+def save_resending_data(id_from, id_to, data_type, data_send):
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
+        cursor = connection.cursor()
+        
+        cursor.execute("""insert into john.resending_data (send_from, send_to, type_data, send_data)
+                          values (:a, :b, :c, :d)""", a = id_from, b = id_to, c = data_type, d = data_send)
+        connection.commit()
+
+#сохраняет данные inline mode
+def save_inline_data(id_from, text_query):
+        connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
+        cursor = connection.cursor()
+        
+        cursor.execute("""insert into john.inline_mode_data (query_from, query_text)
+                          values (:a, :b)""", a = id_from, b = text_query)
         connection.commit()
 
 #добавляет новую версию отредактированного сообщения и возвращает предыдущую
@@ -132,7 +150,7 @@ def get_last_ver_msg(data_from_message):
         
         return result_string
     
-#сохраняет улетевшие данные пользователю
+#сохраняет улетевшие данные пользователю в переписке с ботом
 def insert_user_story_out(content_type_out, clob_data_out, chat_id, message_id):
         connection = oracledb.connect(user=my_cfg.bd_user, password=my_cfg.bd_pass, dsn=my_cfg.bd_dsn)
         cursor = connection.cursor()

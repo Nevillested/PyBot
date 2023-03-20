@@ -15,17 +15,19 @@ import my_cfg
 import os
 
 
-def cases_trigger(cur_message, bot):
+def cases_trigger(bot, cur_message):
     
     correct_answer_id_out = ""
     content_type_out = ""
     answer_desc_out = ""
     parse_mode_out = None
     poll_type_out = ""
-    resending_flg = 0
+    send_mode = 'default_mode'
     caption_out = ""
     result_out = ""
     reply_out = telebot.types.ReplyKeyboardMarkup()
+    chat_id = cur_message.chat.id
+    msg_id = cur_message.message_id
     
     #получает последнее свое отправленное сообщение
     last_msg_bot = queries_to_bd.get_last_bot_msg(cur_message.chat.id)
@@ -34,7 +36,7 @@ def cases_trigger(cur_message, bot):
     if cur_message.content_type == "text":
             last_msg_user = cur_message.text.lower()
     elif cur_message.content_type == "voice":
-            last_msg_user = (speech_to_text.voice_processing(cur_message, bot, "ru" )).lower()
+            last_msg_user = (speech_to_text.voice_processing(cur_message, "ru" )).lower()
 
     if last_msg_user == "/start" or  last_msg_user == "/help":
             content_type_out = "text"
@@ -246,7 +248,7 @@ def cases_trigger(cur_message, bot):
             result_out = "Что хотите отправить? Принимаются текст, фото, видео, войсы, видео заметки."
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_bot == "Что хотите отправить? Принимаются текст, фото, видео, войсы, видео заметки.":
-            resending_flg = 1
+            send_mode = 'resending_mode'
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user == "/adminka":
             if cur_message.chat.id == my_cfg.id_owner:
@@ -288,7 +290,7 @@ def cases_trigger(cur_message, bot):
                     reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
             elif last_msg_bot.__contains__("Что отправляем?"):
                 if cur_message.chat.id == my_cfg.id_owner:
-                    resending_flg = 1
+                    send_mode = 'resending_mode'
                     reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
                 else:
                     content_type_out = "text"
@@ -325,15 +327,21 @@ def cases_trigger(cur_message, bot):
             content_type_out = "text"
             result_out = "Значит, объясняю, что это такое и как пользоваться:\n\nИнлайн режим - это когда ты в чате с другим пользователем пишешь никнейм этого бота, а затем то, что хочешь найти. Пока есть три режима:\n1)Выдает пикчи:\n'@ArarararagiBot pic Shinobu Oshino'\n\n2)Выдает топ видосов на ютубе:\n'@ArarararagiBot vid Monogatari Series'\n\n3)Выдаст топ ссылок по поиску в гугле:\n'@ArarararagiBot search Kyoto'\n\n3)Погуглит вместо тебя:\n'@ArarararagiBot google Как стать женщиной?'"
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
-            
     elif last_msg_user == "/get_inline_kb":
             content_type_out = "text"
             result_out = "Это инлайн клавиатура"
-            reply_out = keyboards_buttons.inline_kb()
+            reply_out = keyboards_buttons.inline_kb() 
     else:
         content_type_out = "text"
         result_out = ChatGpt.get_result_from_chatgpt(last_msg_user)
-        #result_out = queries_to_bd.get_other_answer(last_msg_user)
         reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
-        
-    return resending_flg, poll_type_out, parse_mode_out, answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out, caption_out
+    
+    type_data = content_type_out
+    text_data = result_out, reply_out, parse_mode_out
+    poll_data = result_out, poll_type_out, correct_answer_id_out,  answer_desc_out, reply_out
+    photo_data = result_out, reply_out, caption_out, parse_mode_out
+    sticker_data = result_out, reply_out
+    audio_data = result_out, reply_out
+    doc_data = result_out, reply_out
+    
+    return bot, send_mode, chat_id, msg_id, type_data, text_data, poll_data, photo_data, sticker_data, audio_data, doc_data

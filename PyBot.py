@@ -9,6 +9,7 @@ import telebot
 import sending
 import datetime
 import my_cfg
+import time
 
 MypyBot = telebot.TeleBot(my_cfg.telegram_token, parse_mode = None)
 
@@ -39,29 +40,29 @@ def main_bot():
                 queries_to_bd.insert_user_story_out("text", result_prev_msg, edited_message.chat.id, edited_message.message_id)
         except Exception as e:
             print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
-
+    
     #хэндер ивентов инлайн-запросов
     @MypyBot.inline_handler(lambda query: len(query.query) > 0)
     def query_text(query):
-        try:
+        #try:
             print(f"{query.from_user.username} сделал inline запрос: {query.query}.\n")
-
+    
             inline_mode.inline_mode_processed(MypyBot, query)
-
-        except Exception as e:
-            print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
+    
+        #except Exception as e:
+            #print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
         
     #хэндер ивентов колбэкдаты инлайн кнопок
     @MypyBot.callback_query_handler(func=lambda call: True)
     def callback_inline(call):
         try:
             print(f"{call.from_user.username} нажал кнопку {call.data}.\n")
-
+    
             callback_data.call_processed(MypyBot, call)
-
+    
         except Exception as e:
             print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
-
+    
     #хэндер простых сообщений
     @MypyBot.message_handler(content_types=CONTENT_TYPES)
     def start_message(message):
@@ -76,115 +77,62 @@ def main_bot():
                 queries_to_bd.insert_user_story_in(message)
                 
                 #получение результатов для ответа пользователю
-                (resending_flg,
-                     poll_type_out,
-                     parse_mode_out,
-                     answer_desc_out,
-                     correct_answer_id_out,
-                     content_type_out,
-                     result_out,
-                     reply_out,
-                     caption_out) = answer_cases.cases_trigger(message, MypyBot)
+                (bot, send_mode, chat_id, msg_id, type_data, text_data, poll_data, photo_data, sticker_data, audio_data, doc_data) = answer_cases.cases_trigger(MypyBot, message)
                 
                 #отправляет результат
-                content_type_out, result_out = sending.send_msg( resending_flg,
-                                                                     message,
-                                                                     MypyBot,
-                                                                     message.chat.id,
-                                                                     content_type_out,
-                                                                     result_out,
-                                                                     reply_out,
-                                                                     parse_mode_out,
-                                                                     caption_out,
-                                                                     answer_desc_out,
-                                                                     result_out,
-                                                                     correct_answer_id_out,
-                                                                     poll_type_out)
+                sending.send_msg(bot, send_mode, message, chat_id, msg_id, type_data, text_data, poll_data, photo_data, sticker_data, audio_data, doc_data)
                 
-                #сохраняет улетевшие данные пользователю
-                queries_to_bd.insert_user_story_out(content_type_out, result_out, message.chat.id, message.message_id)
         except Exception as e:
             print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
-
+    
     MypyBot.polling()
             
 
-#Шедулер
+##Шедулер
 def time_schedule_bot():
-    #ежечасный шедулер
-    def scheduler_1h():
+    while True:
+        time.sleep(60)
         try:
-            threading.Timer(60.0, scheduler_1h).start()
             if (datetime.datetime.now().minute == 00):
                 #отправка пикчи
-                content_type_out, result_out = sending.send_msg( 0,
-                                                                 None,
-                                                                 MypyBot,
-                                                                 my_cfg.id_owner,
-                                                                 'photo',
-                                                                 common_methods.get_pikcha(),
-                                                                 None,
-                                                                 None,
-                                                                 'Ежечасное солнышко',
-                                                                 None,
-                                                                 None,
-                                                                 None,
-                                                                 None)
-                #отправка комплимента
-                #content_type_out, result_out = sending.send_msg( 0,
-                #                                                 None,
-                #                                                 MypyBot,
-                #                                                 83729683,
-                #                                                 'text',
-                #                                                 queries_to_bd.get_compliment(),
-                #                                                 None,
-                #                                                 None,
-                #                                                 'Ежечасное солнышко',
-                #                                                 None,
-                #                                                 None,
-                #                                                 None,
-                #                                                 None)
+                cur_send_mode = 'default_mode'
+                cur_type_data = 'photo'
+                cur_photo_data = common_methods.get_pikcha(), None, 'Ежечасное солнышко', None
+                sending.send_msg(bot            = MypyBot,
+                                 send_mode      = cur_send_mode,
+                                 chat_id_out    = my_cfg.id_owner,
+                                 type_data_out  = cur_type_data,
+                                 photo_data_out = cur_photo_data)
                 print('Отработка ежечасного шедулера')
 
-        except Exception as e:
-            print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
-
-    #ежедневный шедулер
-    def scheduler_1d():
-        try:
-            threading.Timer(3600.0, scheduler_1d).start()
-            if (datetime.datetime.now().hour == 20):
+            if (datetime.datetime.now().hour == 22 and datetime.datetime.now().minute == 00):
                 today_holiday = queries_to_bd.get_holiday()
                 if len(today_holiday) > 0:
                     today_holiday = 'Сегодня ' + today_holiday.lower() + '🎉\nС праздничком:)'
                     list_users_id = queries_to_bd.get_users_id()
                     for item in list_users_id:
                         try:
-                            content_type_out, result_out = sending.send_msg( 0,
-                                                                             None,
-                                                                             MypyBot,
-                                                                             item,
-                                                                             'text',
-                                                                             today_holiday,
-                                                                             None,
-                                                                             None,
-                                                                             None,
-                                                                             None,
-                                                                             None,
-                                                                             None,
-                                                                             None)
+                            #отправка праздника
+                            cur_send_mode = 'default_mode'
+                            cur_type_data = 'text'
+                            cur_text_data = today_holiday, None, None
+                            sending.send_msg(bot           = MypyBot,
+                                             send_mode     = cur_send_mode,
+                                             chat_id_out   = item,
+                                             type_data_out = cur_type_data,
+                                             text_data_out = cur_text_data)
+
                         except Exception as e:
                             print('Не отправлено сообщение этому пользователю: ' +str(item)+'. Текст ошибки:\n'+str(e))
+                print('Отработка ежедневного шедулера')
+
         except Exception as e:
             print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
 
-    scheduler_1h()
-    scheduler_1d()
-
 #создаем поток на основной держатель всех ивентов бота и на шедулер
-thread_main_bot = threading.Thread(target=main_bot)
-thread_time_schedule_bot = threading.Thread(target=time_schedule_bot)
+thread_1 = threading.Thread(target=main_bot)
+thread_2 = threading.Thread(target=time_schedule_bot)
 
-#запускаем потоки
-thread_main_bot.start()
-thread_time_schedule_bot.start()
+##запускаем потоки
+thread_1.start()
+thread_2.start()
