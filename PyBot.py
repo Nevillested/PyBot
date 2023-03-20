@@ -44,13 +44,13 @@ def main_bot():
     #хэндер ивентов инлайн-запросов
     @MypyBot.inline_handler(lambda query: len(query.query) > 0)
     def query_text(query):
-        #try:
+        try:
             print(f"{query.from_user.username} сделал inline запрос: {query.query}.\n")
     
             inline_mode.inline_mode_processed(MypyBot, query)
     
-        #except Exception as e:
-            #print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
+        except Exception as e:
+            print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
         
     #хэндер ивентов колбэкдаты инлайн кнопок
     @MypyBot.callback_query_handler(func=lambda call: True)
@@ -88,7 +88,7 @@ def main_bot():
     MypyBot.polling()
             
 
-##Шедулер
+#Шедулер
 def time_schedule_bot():
     while True:
         time.sleep(60)

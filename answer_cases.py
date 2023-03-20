@@ -36,7 +36,7 @@ def cases_trigger(bot, cur_message):
     if cur_message.content_type == "text":
             last_msg_user = cur_message.text.lower()
     elif cur_message.content_type == "voice":
-            last_msg_user = (speech_to_text.voice_processing(cur_message, "ru" )).lower()
+            last_msg_user = (speech_to_text.voice_processing(cur_message, bot, "ru" )).lower()
 
     if last_msg_user == "/start" or  last_msg_user == "/help":
             content_type_out = "text"

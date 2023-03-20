@@ -67,6 +67,7 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
         bot.send_message(chat_id_to_send, 'Пришло сообщение от @' + from_send.from_user.username +':') 
         
         #раскейсовка и отправка сообщений, который отправляет юзер
+        status = 'Отправлено'
         if from_send.content_type == "text":
             result = from_send.text
             bot.send_message(chat_id_to_send, result)
@@ -97,13 +98,12 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
             bot.send_document(chat_id_to_send, result)
 
         else:
-            result = 'Не удалось отправить ваше сообщение. Свяжитесь с админом и расскажите об ошибке плз\nТип сообщения: '+str(from_send.content_type)
-            bot.send_message(from_send.chat.id, result) 
+            status = 'Не удалось отправить ваше сообщение. Свяжитесь с админом и расскажите об ошибке плз\nТип сообщения: '+str(from_send.content_type)
         
-        #уведомляет отправляющего пользователя об отправке
-        bot.send_message(from_send.chat.id, 'Отправлено') 
+        #уведомляет отправляющего пользователя о статусе сообщения
+        bot.send_message(from_send.chat.id, status) 
 
-        #сохраняет улетевшие данные пользователю
+        #сохраняет данные, теоретически улетевшие пользователю
         queries_to_bd.save_resending_data(from_send.chat.id, chat_id_to_send, from_send.content_type, result)
     
     #инлайн режим
