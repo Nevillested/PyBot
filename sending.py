@@ -52,6 +52,7 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
     elif send_mode == 'resending_mode':
 
         type_data_out = cur_msg.content_type
+        content_type_out = cur_msg.content_type
         from_send = cur_msg
         chat_id_to_send = None
         result = None
@@ -68,43 +69,43 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
         
         #раскейсовка и отправка сообщений, который отправляет юзер
         status = 'Отправлено'
-        if from_send.content_type == "text":
+        if content_type_out == "text":
             result = from_send.text
             bot.send_message(chat_id_to_send, result)
 
-        elif from_send.content_type == "sticker":
+        elif content_type_out == "sticker":
             result = from_send.sticker.file_id
             bot.send_sticker(chat_id_to_send, result)
 
-        elif from_send.content_type == "photo":
+        elif content_type_out == "photo":
             file = from_send.photo[-1]
             result = file.file_id
             bot.send_photo(chat_id_to_send, photo = result)
 
-        elif from_send.content_type == "voice":
+        elif content_type_out == "voice":
             result = from_send.voice.file_id
             bot.send_voice(chat_id_to_send, result)
 
-        elif from_send.content_type == "video":
+        elif content_type_out == "video":
             result = from_send.video.file_id
             bot.send_video(chat_id_to_send, result)
 
-        elif from_send.content_type == "video_note":
+        elif content_type_out == "video_note":
             result = from_send.video_note.file_id
             bot.send_video_note(chat_id_to_send, result)
 
-        elif from_send.content_type == "document":
+        elif content_type_out == "document":
             result = from_send.document.file_id
             bot.send_document(chat_id_to_send, result)
 
         else:
-            status = 'Не удалось отправить ваше сообщение. Свяжитесь с админом и расскажите об ошибке плз\nТип сообщения: '+str(from_send.content_type)
+            status = 'Не удалось отправить ваше сообщение. Свяжитесь с админом и расскажите об ошибке плз\nТип сообщения: '+str(content_type_out)
         
         #уведомляет отправляющего пользователя о статусе сообщения
         bot.send_message(from_send.chat.id, status) 
 
         #сохраняет данные, теоретически улетевшие пользователю
-        queries_to_bd.save_resending_data(from_send.chat.id, chat_id_to_send, from_send.content_type, result)
+        queries_to_bd.save_resending_data(from_send.chat.id, chat_id_to_send, content_type_out, result)
     
     #инлайн режим
     elif send_mode == 'inline_mode':

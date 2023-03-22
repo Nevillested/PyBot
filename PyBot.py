@@ -105,7 +105,7 @@ def time_schedule_bot():
                                  photo_data_out = cur_photo_data)
                 print('Отработка ежечасного шедулера')
 
-            if (datetime.datetime.now().hour == 22 and datetime.datetime.now().minute == 00):
+            if (datetime.datetime.now().hour == 21 and datetime.datetime.now().minute == 30):
                 today_holiday = queries_to_bd.get_holiday()
                 if len(today_holiday) > 0:
                     today_holiday = 'Сегодня ' + today_holiday.lower() + '🎉\nС праздничком:)'
