@@ -4,7 +4,7 @@ import my_cfg
 #метод отправки сообщений с различными типами данных
 
 
-def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, type_data_out=None, text_data_out=None, poll_data_out=None, photo_data_out=None, sticker_data_out=None, audio_data_out=None, doc_data_out=None, inline_data_out=None):
+def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, type_data_out=None, text_data_out=None, poll_data_out=None, photo_data_out=None, sticker_data_out=None, audio_data_out=None, doc_data_out=None, inline_data_out=None, flg_counter_msg=1):
     
     #простой режим отправки сообщений
     if send_mode == 'default_mode':
@@ -12,7 +12,8 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
             result_out =  text_data_out[0]
             reply_markup_out = text_data_out[1]
             parse_mode_out =  text_data_out[2]
-            bot.send_message(chat_id_out, result_out, reply_markup = reply_markup_out, parse_mode = parse_mode_out)
+            reply_message_out =  text_data_out[3]
+            bot.send_message(chat_id_out, result_out, reply_markup = reply_markup_out, parse_mode = parse_mode_out, reply_to_message_id = reply_message_out)
 
         elif type_data_out == "sticker":
             result_out = sticker_data_out[0]
@@ -46,7 +47,8 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
             bot.send_document(chat_id_out, document = open(result_out, 'rb'), reply_markup = reply_out)
 
         #сохраняет улетевшие данные пользователю
-        queries_to_bd.insert_user_story_out(type_data_out, result_out, chat_id_out, msg_id_out)
+        queries_to_bd.insert_user_story_out(type_data_out, result_out, chat_id_out, msg_id_out, flg_counter_msg)
+            
             
     #режим отправки соообщений другому пользователю
     elif send_mode == 'resending_mode':

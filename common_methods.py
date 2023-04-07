@@ -19,7 +19,7 @@ def check_ru_char_in_string(string_income):
         for r in ru_char_array:
             if c == r:
                 result_out = result_out + c
-                
+
     if string_income_lower == result_out:
         return 0
     else:
@@ -55,15 +55,15 @@ def get_pikcha():
     html_page = urllib.request.urlopen(page)
     soup = BeautifulSoup(html_page, "lxml")
     images_url = []
-    
+
     for img in soup.findAll('img'):
         if img.get('src').__contains__('post'):
             images_url.append('https:'+img.get('src'))
-    
+
     url_of_result_image =  images_url[random.randint(1,len(images_url)-1)]
-    
+
     response = requests.get(url_of_result_image)
-    img_name = 'assets/temp/shinobu.jpeg'
+    img_name = os.getcwd() + '/assets/temp/shinobu.jpeg'
     if response.status_code:
         fp = open(img_name, 'wb')
         fp.write(response.content)
@@ -73,9 +73,9 @@ def get_pikcha():
 #переводчик из EN в RU
 def translate_en_to_ru(input_string):
     translator = googletrans.Translator()
-    
+
     translated_text = translator.translate(input_string, dest='ru')
-    
+
     return str(translated_text.text)
 
 #переводит в транслит
@@ -145,7 +145,7 @@ def get_random_pikcha_by_teg(msg):
         #делаем запрос на пикчу
         response = requests.get(url_of_result_image)
         #даем пикче адрес и имя и сохраняем ее
-        img_name = 'assets/temp/image_by_teg.jpeg'
+        img_name = os.getcwd() + '/assets/temp/image_by_teg.jpeg'
         if response.status_code:
             fp = open(img_name, 'wb')
             fp.write(response.content)
@@ -154,7 +154,7 @@ def get_random_pikcha_by_teg(msg):
         #возвращаем адрес итоговой скачанной пикчи
         return parse_mode, caption, img_name
     except:
-        img_name = 'assets/not_found.png'
+        img_name = os.getcwd() + '/assets/not_found.png'
         parse_mode = None
         caption = "Мы либо ничего не нашли, либо произошла какая-то абсолютно неведомая херня, соре\nПопробуй написать теги транслитом"
         return parse_mode, caption, img_name
@@ -162,11 +162,11 @@ def get_random_pikcha_by_teg(msg):
 #создает qr-код
 def create_qr_code(text):
     qrcode = segno.make_qr(text)
-    new_dir = 'assets/temp'
+    new_dir = os.getcwd() + '/assets/temp/'
     os.chdir(new_dir)
     name = "qr_code.pdf"
     qrcode.save(name, border=1, scale=8)
-    result = os.getcwd() + '\\' + name
+    result =  new_dir + name
     return result
 
 #парсит html страницу с <тегами> и переводит в словарь
@@ -186,13 +186,13 @@ def html_string_to_dict(html_string):
                 idx_second_open_char_teg = -1
         if char == '>':
             idx_second_open_char_teg = idx
-        
+
         if idx_first_open_char_teg != -1 and idx_second_open_char_teg != -1:
 
             current_teg = html_string[idx_first_open_char_teg+1:idx_second_open_char_teg]
             current_key = current_teg
             idx_first_open_char_teg = -1
-        
+
         if len(current_key) != 0 and len(current_value) != 0:
             result_dict[current_key] = current_value
             current_key = ''

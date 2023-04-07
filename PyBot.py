@@ -1,4 +1,4 @@
-﻿import common_methods
+import common_methods
 import callback_data
 import queries_to_bd
 import answer_cases
@@ -20,24 +20,30 @@ CONTENT_TYPES = ["text", "audio", "document", "photo", "sticker", "video", "vide
 
 #основной держатель всех ивентов бота
 def main_bot():
+    
     #хэндер ивентов редактирования сообщения пользователем
     @MypyBot.edited_message_handler(content_types="text")
     def catch_edit_msg(edited_message):
         try:
-            if edited_message.via_bot.username != 'ArarararagiBot' and edited_message.via_bot.is_bot != True:
-                print(f"Пользователь {edited_message.from_user.username} отредактировал сообщение.\n")
+            print(f"Пользователь {edited_message.from_user.username} отредактировал сообщение.\n")
+            
+            #добавляет отредактированное сообщение
+            queries_to_bd.insert_edited_msg(edited_message)
+            
+            #получает предпоследнеюю версию сообщения и обрамляет ее в результат
+            result_prev_msg = "Ты думаешь я ничего не видел?\n" + r"|| '" + queries_to_bd.get_last_ver_msg(edited_message)+ r"' ||"
+            
+            #формирует текстовые данные
+            cur_text_data = result_prev_msg, None, 'MarkdownV2', edited_message.id
+
+            #отправляет и сохраняет
+            sending.send_msg(bot             = MypyBot,
+                             send_mode       = 'default_mode',
+                             chat_id_out     = edited_message.chat.id,
+                             type_data_out   = 'text',
+                             text_data_out   = cur_text_data,
+                             flg_counter_msg = 0)
                 
-                #добавляет отредактированное сообщение
-                queries_to_bd.insert_edited_msg(edited_message)
-                
-                #получает предпоследнеюю версию сообщения и обрамляет ее в результат
-                result_prev_msg = "Ты думаешь я ничего не видел?\n" + r"|| '" + queries_to_bd.get_last_ver_msg(edited_message)+ r"' ||"
-                
-                #отправляет результат
-                MypyBot.send_message(edited_message.chat.id, result_prev_msg , reply_to_message_id = edited_message.id, parse_mode='MarkdownV2')
-                
-                #сохраняет улетевшие данные пользователю
-                queries_to_bd.insert_user_story_out("text", result_prev_msg, edited_message.chat.id, edited_message.message_id)
         except Exception as e:
             print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
     
@@ -58,7 +64,7 @@ def main_bot():
         try:
             print(f"{call.from_user.username} нажал кнопку {call.data}.\n")
     
-            callback_data.call_processed(MypyBot, call)
+            callback_data.call_processed(MypyBot, call) 
     
         except Exception as e:
             print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
@@ -66,8 +72,9 @@ def main_bot():
     #хэндер простых сообщений
     @MypyBot.message_handler(content_types=CONTENT_TYPES)
     def start_message(message):
-        try:
-            if message.via_bot != True:
+        #try:
+            #if message.via_bot != True:
+                queries_to_bd.get_users_id()
                 print(f"Пришло сообщение от: {message.from_user.username}\nТип сообщения: {str(message.content_type)}\nТекст сообщения: {message.text}\n")
                 
                 #проверяет пользователя в бд, если есть-обновляет данные, если нет-добавляет данные
@@ -82,8 +89,8 @@ def main_bot():
                 #отправляет результат
                 sending.send_msg(bot, send_mode, message, chat_id, msg_id, type_data, text_data, poll_data, photo_data, sticker_data, audio_data, doc_data)
                 
-        except Exception as e:
-            print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
+        #except Exception as e:
+         #   print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
     
     MypyBot.polling()
             
@@ -98,29 +105,42 @@ def time_schedule_bot():
                 cur_send_mode = 'default_mode'
                 cur_type_data = 'photo'
                 cur_photo_data = common_methods.get_pikcha(), None, 'Ежечасное солнышко', None
-                sending.send_msg(bot            = MypyBot,
-                                 send_mode      = cur_send_mode,
-                                 chat_id_out    = my_cfg.id_owner,
-                                 type_data_out  = cur_type_data,
-                                 photo_data_out = cur_photo_data)
+                sending.send_msg(bot             = MypyBot,
+                                 send_mode       = cur_send_mode,
+                                 chat_id_out     = my_cfg.id_owner,
+                                 type_data_out   = cur_type_data,
+                                 photo_data_out  = cur_photo_data,
+                                 flg_counter_msg = 0)
+
+                #отправка комплимента
+                #cur_type_data = 'text'
+                #cur_text_data = queries_to_bd.get_compliment(), None, None
+                #sending.send_msg(bot             = MypyBot,
+                #                 send_mode       = cur_send_mode,
+                #                 chat_id_out     = my_cfg.id_owner,
+                #                 type_data_out   = cur_type_data,
+                #                 text_data_out   = cur_text_data,
+                #                 flg_counter_msg = 0)
+
                 print('Отработка ежечасного шедулера')
 
-            if (datetime.datetime.now().hour == 21 and datetime.datetime.now().minute == 30):
+            if (datetime.datetime.now().hour == 22 and datetime.datetime.now().minute == 30):
                 today_holiday = queries_to_bd.get_holiday()
                 if len(today_holiday) > 0:
-                    today_holiday = 'Сегодня ' + today_holiday.lower() + '🎉\nС праздничком:)'
+                    today_holiday = 'Сегодня ' + today_holiday.lower() + '🎉\nС праздничком:)\n(я добавлю чуть позже возможность отписки, не нервничай)'
                     list_users_id = queries_to_bd.get_users_id()
                     for item in list_users_id:
                         try:
                             #отправка праздника
                             cur_send_mode = 'default_mode'
                             cur_type_data = 'text'
-                            cur_text_data = today_holiday, None, None
-                            sending.send_msg(bot           = MypyBot,
-                                             send_mode     = cur_send_mode,
-                                             chat_id_out   = item,
-                                             type_data_out = cur_type_data,
-                                             text_data_out = cur_text_data)
+                            cur_text_data = today_holiday, None, None, None
+                            sending.send_msg(bot             = MypyBot,
+                                             send_mode       = cur_send_mode,
+                                             chat_id_out     = item,
+                                             type_data_out   = cur_type_data,
+                                             text_data_out   = cur_text_data,
+                                             flg_counter_msg = 0)
 
                         except Exception as e:
                             print('Не отправлено сообщение этому пользователю: ' +str(item)+'. Текст ошибки:\n'+str(e))
@@ -133,6 +153,6 @@ def time_schedule_bot():
 thread_1 = threading.Thread(target=main_bot)
 thread_2 = threading.Thread(target=time_schedule_bot)
 
-##запускаем потоки
+#запускаем потоки
 thread_1.start()
 thread_2.start()

@@ -1,4 +1,4 @@
-﻿#тут будут вещи, которые не стоит выкладывать на гитхаб 
+﻿#тут будут вещи, которые не стоит выкладывать на гитхаб
 
 telegram_token = "2024376867:AAGzGPqNyuhjB0UPhbfqvJXDD7Xy7JZoTeA"
 serpapi_token = "0c22a09f258226b7a1bda6e64b35465402c7d362659febb15c6b3e25457631a8" #https://serpapi.com/dashboard
@@ -10,3 +10,4 @@ bd_user = "john"
 bd_pass = "ipiheb60"
 bd_dsn = "localhost:1521/xe"
 chat_gpt_model = "text-davinci-003"
+pg_sql_con_string = "dbname='postgres' user='postgres' password='58ta8hw4'"

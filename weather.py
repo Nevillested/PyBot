@@ -32,7 +32,8 @@ def current_weather(cur_data):
         if item in ['weather', 'main', 'wind', 'sys']:
             new_dict[item] = response[item]
     
-    weather_description  = common_methods.translate_en_to_ru(str(new_dict['weather']['description']))
+    weather_description  = str(new_dict['weather']['description'])
+    
     main_temp            = str(round((int(new_dict['main']['temp']) - 273.15),2)) + '°'
     main_feels_like      = str(round((int(new_dict['main']['feels_like']) - 273.15),2))+ '°'
     main_temp_min        = str(round((int(new_dict['main']['temp_min']) - 273.15),2))+ '°'

@@ -16,9 +16,10 @@ import os
 
 
 def cases_trigger(bot, cur_message):
-    
+
     correct_answer_id_out = ""
     content_type_out = ""
+    reply_msg_id_out = None
     answer_desc_out = ""
     parse_mode_out = None
     poll_type_out = ""
@@ -28,7 +29,7 @@ def cases_trigger(bot, cur_message):
     reply_out = telebot.types.ReplyKeyboardMarkup()
     chat_id = cur_message.chat.id
     msg_id = cur_message.message_id
-    
+
     #получает последнее свое отправленное сообщение
     last_msg_bot = queries_to_bd.get_last_bot_msg(cur_message.chat.id)
     last_msg_user = ""
@@ -61,15 +62,15 @@ def cases_trigger(bot, cur_message):
             s17 = "/inline_mode - инлайн режимы\n"
             result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12+s13+s14+s15+s16+s17
             result_out += admin
-            reply_out = keyboards_buttons.main_menu(cur_message.chat.id) 
+            reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif (last_msg_user == "/main_menu"):
             content_type_out = "text"
             result_out = "Ну ок"
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user == "/stick":
             content_type_out = "sticker"
-            stikers_dir = r"assets\\stickers"
-            result_out = stikers_dir +"\\"+ random.choice(os.listdir(stikers_dir))
+            stikers_dir = os.getcwd() + "/assets/stickers/"
+            result_out = stikers_dir + random.choice(os.listdir(stikers_dir))
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user == "/pikcha":
             content_type_out = "photo"
@@ -78,8 +79,8 @@ def cases_trigger(bot, cur_message):
             caption_out = "Ну ты и изврат"
     elif last_msg_user == "/maid":
             content_type_out = "photo"
-            maids_dir = r"assets\maids"
-            result_out = maids_dir +"\\"+ random.choice(os.listdir(maids_dir))
+            maids_dir = "assets/maids/"
+            result_out = maids_dir + random.choice(os.listdir(maids_dir))
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user == "/anekdot":
             content_type_out = "text"
@@ -330,18 +331,18 @@ def cases_trigger(bot, cur_message):
     elif last_msg_user == "/get_inline_kb":
             content_type_out = "text"
             result_out = "Это инлайн клавиатура"
-            reply_out = keyboards_buttons.inline_kb() 
+            reply_out = keyboards_buttons.inline_kb()
     else:
         content_type_out = "text"
         result_out = ChatGpt.get_result_from_chatgpt(last_msg_user)
         reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
-    
-    type_data = content_type_out
-    text_data = result_out, reply_out, parse_mode_out
-    poll_data = result_out, poll_type_out, correct_answer_id_out,  answer_desc_out, reply_out
-    photo_data = result_out, reply_out, caption_out, parse_mode_out
+
+    type_data    = content_type_out
+    text_data    = result_out, reply_out, parse_mode_out, reply_msg_id_out
+    poll_data    = result_out, poll_type_out, correct_answer_id_out,  answer_desc_out, reply_out
+    photo_data   = result_out, reply_out, caption_out, parse_mode_out
     sticker_data = result_out, reply_out
-    audio_data = result_out, reply_out
-    doc_data = result_out, reply_out
-    
+    audio_data   = result_out, reply_out
+    doc_data     = result_out, reply_out
+
     return bot, send_mode, chat_id, msg_id, type_data, text_data, poll_data, photo_data, sticker_data, audio_data, doc_data

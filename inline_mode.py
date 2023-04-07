@@ -18,6 +18,7 @@ from urltitle import URLTitleReader
 import requests
 import json
 import sending
+import time
 
 def inline_mode_processed(bot, query):
     
@@ -29,6 +30,7 @@ def inline_mode_processed(bot, query):
     if (str(query.query)[0:3]).lower() == 'pic':
         current_query = str(query.query)[3:len(str(query.query))]
         if len(current_query)>1:
+            time.sleep(60)
             params = {
               "engine": "yandex_images",
               "text": current_query,
