@@ -207,7 +207,7 @@ def cases_trigger(bot, cur_message):
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
             #если в бд ничего не найдено, то спрашиваем у ChatGPT
             if result_out == 'Мы ничего не нашли':
-                result_out = ChatGpt.get_result_from_chatgpt("Переведи с японского на русский язык: " + last_msg_user)
+                result_out = ChatGpt.get_result_from_chatgpt("Переведи с русского на японский язык: " + last_msg_user)
     elif last_msg_user == "/get_kanji":
             content_type_out = "text"
             result_out = "Пришлю десяток кандзи из словаря для изучения. Какой номер десятка?"

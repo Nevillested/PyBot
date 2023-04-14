@@ -398,7 +398,6 @@ def insert_edited_msg(data_from_message):
                                limit 1) a
     """)
 
-
 #выдает последнюю версию отредактированного сообщения
 def get_last_ver_msg(data_from_message):
 
@@ -422,3 +421,25 @@ def get_last_ver_msg(data_from_message):
     result_string = common_methods.convertTuple(result_tuple)
 
     return result_string
+
+#выдает перевод найденного слова
+def get_translate_jp(user_text):
+
+    cur.execute("""
+    select coalesce(
+                    ( select STRING_AGG ('Без кандзи: '||jap_word_without_kanji||
+                                         '\nС Кандзи: '||coalesce(jap_word_with_kanji,'отсутствует')||
+                                         '\nПеревод: '||rus_word, '\n\n') res
+                        from jap_dict
+                       where lower(rus_word) like '%""" + user_text.lower() +"""%'
+                    ), 'Мы ничего не нашли'
+                   )
+    """)
+
+    result_tuple = cur.fetchone()
+
+    result_string = common_methods.convertTuple(result_tuple)
+
+    return result_string
+
+
