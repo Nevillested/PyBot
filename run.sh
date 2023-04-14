@@ -1,5 +1,5 @@
-rm -rf /home/duck/Documents/GitHub/PyBot/__pycache__
-rm -rf /home/duck/Documents/GitHub/PyBot/Env
+sudo -S <<< "58ta8hw4" rm -rf /home/duck/Documents/GitHub/PyBot/__pycache__
+sudo -S <<< "58ta8hw4" rm -rf /home/duck/Documents/GitHub/PyBot/Env
 cd /
 python3 -m venv /home/duck/Documents/GitHub/PyBot/Env
 source /home/duck/Documents/GitHub/PyBot/Env/bin/activate
@@ -7,7 +7,6 @@ pip3 install bs4
 pip3 install transliterate
 pip3 install googletrans
 pip3 install segno
-pip3 install oracledb
 pip3 install psycopg2-binary
 pip3 install telebot
 pip3 install SpeechRecognition

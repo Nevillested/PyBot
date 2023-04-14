@@ -1,5 +1,4 @@
 import common_methods
-import oracledb
 import my_cfg
 import psycopg2
 

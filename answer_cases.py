@@ -74,7 +74,7 @@ def cases_trigger(bot, cur_message):
                 if os.path.isfile(os.path.join(os.getcwd(), path)):
                     res.append(path)
             print(res)
-            stikers_dir = os.getcwd() + "/assets/stickers/"
+            stikers_dir = os.getcwd() + "/home/duck/Documents/GitHub/PyBot/assets/stickers/"
             result_out = stikers_dir + random.choice(os.listdir(stikers_dir))
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user == "/pikcha":
@@ -84,7 +84,7 @@ def cases_trigger(bot, cur_message):
             caption_out = "Ну ты и изврат"
     elif last_msg_user == "/maid":
             content_type_out = "photo"
-            maids_dir = "/assets/maids/"
+            maids_dir = "/home/duck/Documents/GitHub/PyBot/assets/maids/"
             result_out = maids_dir + random.choice(os.listdir(maids_dir))
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user == "/anekdot":

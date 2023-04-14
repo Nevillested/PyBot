@@ -15,7 +15,7 @@
     else:
         n = 0
     result = ''
-    
+
     for i in range(len(fraza)):
         if fraza[i].isalpha():
             if fraza[i] == fraza[i].upper():

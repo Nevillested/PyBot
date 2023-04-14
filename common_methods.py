@@ -63,7 +63,7 @@ def get_pikcha():
     url_of_result_image =  images_url[random.randint(1,len(images_url)-1)]
 
     response = requests.get(url_of_result_image)
-    img_name = os.getcwd() + '/assets/temp/shinobu.jpeg'
+    img_name = os.getcwd() + '/home/duck/Documents/GitHub/PyBot/assets/temp/shinobu.jpeg'
     if response.status_code:
         fp = open(img_name, 'wb')
         fp.write(response.content)
@@ -145,7 +145,7 @@ def get_random_pikcha_by_teg(msg):
         #делаем запрос на пикчу
         response = requests.get(url_of_result_image)
         #даем пикче адрес и имя и сохраняем ее
-        img_name = os.getcwd() + '/assets/temp/image_by_teg.jpeg'
+        img_name = os.getcwd() + '/home/duck/Documents/GitHub/PyBot/assets/temp/image_by_teg.jpeg'
         if response.status_code:
             fp = open(img_name, 'wb')
             fp.write(response.content)
@@ -154,7 +154,7 @@ def get_random_pikcha_by_teg(msg):
         #возвращаем адрес итоговой скачанной пикчи
         return parse_mode, caption, img_name
     except:
-        img_name = os.getcwd() + '/assets/not_found.png'
+        img_name = os.getcwd() + '/home/duck/Documents/GitHub/PyBot/assets/not_found.png'
         parse_mode = None
         caption = "Мы либо ничего не нашли, либо произошла какая-то абсолютно неведомая херня, соре\nПопробуй написать теги транслитом"
         return parse_mode, caption, img_name
@@ -162,7 +162,7 @@ def get_random_pikcha_by_teg(msg):
 #создает qr-код
 def create_qr_code(text):
     qrcode = segno.make_qr(text)
-    new_dir = os.getcwd() + '/assets/temp/'
+    new_dir = os.getcwd() + '/home/duck/Documents/GitHub/PyBot/assets/temp/'
     os.chdir(new_dir)
     name = "qr_code.pdf"
     qrcode.save(name, border=1, scale=8)
