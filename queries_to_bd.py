@@ -442,7 +442,6 @@ def get_translate_jp(user_text):
 
     return result_string
 
-
 #выдает кандзи
 def get_kanji(user_number):
 
@@ -461,4 +460,63 @@ def get_kanji(user_number):
 
     return result_string
 
+#получает последний "номер десятка", полученный от пользователя для квиза по "номеру десятка"
+def get_last_num_decade_kanji(chat_id):
 
+    cur.execute("""
+    select a.message_data_clob_in
+      from (select message_data_clob_in
+                 , ROW_NUMBER () OVER (ORDER BY dt_ins desc) as rn
+              from users_data
+             where chat_id = 1275894304
+               and message_data_clob_in ~ '^[0-9]+$'
+               and content_type_out = 'poll'
+               and message_data_clob_out = 'квиз по по номеру десятка кандзи'
+             order by dt_ins desc
+           ) as a
+     where a.rn = 1
+     """)
+    result_tuple = cur.fetchone()
+
+    result_string = ''
+
+    if result_tuple != None:
+        result_string = common_methods.convertTuple(result_tuple)
+
+    return result_string
+
+#возвращает данные для квиза но номеру десятка
+def get_decade_kanji_quiz(num_decade):
+
+    list_of_rows = []
+
+    cur.execute("""with
+                     all_vars as (
+                       select a.kanji
+                            , a.reading
+                            , a.rus_word
+                            , a.rn
+                         from (select a.*
+                                    , ROW_NUMBER () OVER (ORDER BY random()) as rn
+                                 from jap_kanji a
+                                where a.id <= 10 * """+num_decade+"""
+                                  and a.id > 10 * """+num_decade+""" -10
+                                order by random()
+                              ) a
+                        where rn <= 4
+                       ),
+                       rand_true_val as(
+                         select *
+                           from all_vars
+                          where rn = 1
+                       )
+                       /*берем правильный ответ*/
+                       select kanji, 'Чтение '||reading||'. Перевод '||rus_word,rn from rand_true_val
+                       /*объединяем со всеми, которые имеются*/
+                       union all
+                       select a.kanji, 'Чтение '||a.reading||'. Перевод '||a.rus_word,rn from (select *
+                                                                                                 from all_vars
+                                                                                                order by random()
+                                                                                              ) as a""")
+    list_of_rows = cur.fetchall()
+    return list_of_rows

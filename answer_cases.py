@@ -241,8 +241,8 @@ def cases_trigger(bot, cur_message):
             answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out = quiz.get_all_kanji_quiz()
             poll_type_out = "quiz"
     elif last_msg_bot == "квиз по по номеру десятка кандзи" and last_msg_user == "еще":
-            pre_last_msg_user = queries_to_bd.get_pre_last_user_msg(cur_message.chat.id)
-            answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out = quiz.get_decade_kanji_quiz(pre_last_msg_user)
+            last_num_decade_kanji = queries_to_bd.get_last_num_decade_kanji(cur_message.chat.id)
+            answer_desc_out, correct_answer_id_out, content_type_out, result_out, reply_out = quiz.get_decade_kanji_quiz(last_num_decade_kanji)
             poll_type_out = "quiz"
     elif last_msg_user == "/send_to_admin":
             content_type_out = "text"
