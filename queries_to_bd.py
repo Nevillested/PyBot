@@ -443,3 +443,22 @@ def get_translate_jp(user_text):
     return result_string
 
 
+#выдает кандзи
+def get_kanji(user_number):
+
+    cur.execute("""
+    select STRING_AGG ('Кандзи: '||kanji||
+                       '\nЧтения: '||reading||
+                       '\nПеревод: '||rus_word, '\n\n') res
+      from jap_kanji
+     where id <= 10 * """+user_number+"""
+       and id > 10 * """+user_number+""" - 10
+    """)
+
+    result_tuple = cur.fetchone()
+
+    result_string = common_methods.convertTuple(result_tuple)
+
+    return result_string
+
+
