@@ -69,6 +69,11 @@ def cases_trigger(bot, cur_message):
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user == "/stick":
             content_type_out = "sticker"
+            res = []
+            for path in os.listdir(os.getcwd()):
+                if os.path.isfile(os.path.join(os.getcwd(), path)):
+                    res.append(path)
+            print(res)
             stikers_dir = os.getcwd() + "/assets/stickers/"
             result_out = stikers_dir + random.choice(os.listdir(stikers_dir))
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
@@ -79,7 +84,7 @@ def cases_trigger(bot, cur_message):
             caption_out = "Ну ты и изврат"
     elif last_msg_user == "/maid":
             content_type_out = "photo"
-            maids_dir = "assets/maids/"
+            maids_dir = "/assets/maids/"
             result_out = maids_dir + random.choice(os.listdir(maids_dir))
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user == "/anekdot":

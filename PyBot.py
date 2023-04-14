@@ -72,8 +72,8 @@ def main_bot():
     #хэндер простых сообщений
     @MypyBot.message_handler(content_types=CONTENT_TYPES)
     def start_message(message):
-        #try:
-            #if message.via_bot != True:
+        try:
+            if message.via_bot != True:
                 queries_to_bd.get_users_id()
                 print(f"Пришло сообщение от: {message.from_user.username}\nТип сообщения: {str(message.content_type)}\nТекст сообщения: {message.text}\n")
                 
@@ -89,8 +89,8 @@ def main_bot():
                 #отправляет результат
                 sending.send_msg(bot, send_mode, message, chat_id, msg_id, type_data, text_data, poll_data, photo_data, sticker_data, audio_data, doc_data)
                 
-        #except Exception as e:
-         #   print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
+        except Exception as e:
+            print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
     
     MypyBot.polling()
             
