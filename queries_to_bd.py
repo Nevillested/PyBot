@@ -511,12 +511,39 @@ def get_decade_kanji_quiz(num_decade):
                           where rn = 1
                        )
                        /*берем правильный ответ*/
-                       select kanji, 'Чтение '||reading||'. Перевод '||rus_word,rn from rand_true_val
+                       select kanji, 'Чтение: '||reading||'. Перевод: '||rus_word,rn from rand_true_val
                        /*объединяем со всеми, которые имеются*/
                        union all
-                       select a.kanji, 'Чтение '||a.reading||'. Перевод '||a.rus_word,rn from (select *
+                       select a.kanji, 'Чтение: '||a.reading||'. Перевод: '||a.rus_word,rn from (select *
                                                                                                  from all_vars
                                                                                                 order by random()
-                                                                                              ) as a""")
+                                                                                              ) as a
+    """)
+    list_of_rows = cur.fetchall()
+    return list_of_rows
+
+#возвращает данные для квиза по всем имеющимся кадзи
+def get_all_kanji_quiz():
+    list_of_rows = []
+
+    cur.execute("""with
+                     all_vars as (
+                       select a.kanji
+                            , a.reading
+                            , a.rus_word
+                            , a.id
+                            , ROW_NUMBER () OVER (ORDER BY random()) as rn
+                         from jap_kanji as a
+						order by RANDOM() limit 4
+                       )
+                       /*берем правильный ответ*/
+                       select kanji, 'Чтение: '||reading||'. Перевод: '||rus_word,rn from all_vars where rn = 1
+                       /*объединяем со всеми, которые имеются*/
+                       union all
+                       select a.kanji, 'Чтение: '||a.reading||'. Перевод: '||a.rus_word, rn from (select *
+                                                                                                  from all_vars
+                                                                                                 order by random()
+                                                                                               ) as a
+    """)
     list_of_rows = cur.fetchall()
     return list_of_rows
