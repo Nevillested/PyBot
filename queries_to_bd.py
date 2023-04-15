@@ -588,3 +588,26 @@ def change_user_subscription_status(id_subscription, status):
        set active_flg = """+ str(status) + """
      where chat_id ||'_' ||id = '""" + id_subscription + """'
     """)
+
+#выдает список пользователей для активной подписки
+def get_users_id_of_current_subscription(name_of_subscription):
+
+    list_of_id = []
+    cur.execute("""
+    select chat_id
+      from subscriptions
+     where subscription_name = '""" + name_of_subscription + """'
+       and active_flg = 1
+    """)
+
+    rows = cur.fetchall()
+
+    for item in rows:
+        buffer = ''
+        for char_one in str(item):
+            for char_two in ('1234567890-'):
+                if char_one == char_two:
+                    buffer += char_one
+        list_of_id.append(int(buffer))
+
+    return list_of_id

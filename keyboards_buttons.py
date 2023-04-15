@@ -26,13 +26,13 @@ def main_menu(chat_id):
         get_reactor_pikcha = telebot.types.KeyboardButton(text="/get_reactor_pikcha")
         get_qr_code = telebot.types.KeyboardButton(text="/get_qr_code")
         inline_mode = telebot.types.KeyboardButton(text="/inline_mode")
-
+        manage_subscriptions = telebot.types.KeyboardButton(text="/manage_subscriptions")
         adminka = telebot.types.KeyboardButton(text="/adminka")
 
         if chat_id == my_cfg.id_owner:
-            reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space, get_quiz, get_weather, get_reactor_pikcha, get_qr_code, inline_mode, adminka)
+            reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space, get_quiz, get_weather, get_reactor_pikcha, get_qr_code, inline_mode, manage_subscriptions, adminka)
         else:
-            reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space, get_quiz, get_weather, get_reactor_pikcha, get_qr_code, inline_mode, send_admin)
+            reply_to.add(help, stick, pikcha, maid, anekdot, rand, encrypt, decrypt, speech_to_text, text_to_speech, get_translate_jp, get_kanji, delete_space, get_quiz, get_weather, get_reactor_pikcha, get_qr_code, inline_mode, manage_subscriptions, send_admin)
 
         return reply_to
 

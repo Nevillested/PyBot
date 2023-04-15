@@ -1,3 +1,4 @@
+import keyboards_buttons
 import common_methods
 import callback_data
 import queries_to_bd
@@ -61,13 +62,13 @@ def main_bot():
     #хэндер ивентов колбэкдаты инлайн кнопок
     @MypyBot.callback_query_handler(func=lambda call: True)
     def callback_inline(call):
-        #try:
+        try:
             print(f"{call.from_user.username} нажал кнопку {call.data}.\n")
     
             callback_data.call_processed(MypyBot, call) 
     
-        #except Exception as e:
-            #print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
+        except Exception as e:
+            print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
     
     #хэндер простых сообщений
     @MypyBot.message_handler(content_types=CONTENT_TYPES)
@@ -101,40 +102,66 @@ def time_schedule_bot():
         time.sleep(60)
         try:
             if (datetime.datetime.now().minute == 00):
+                
                 #отправка пикчи
-                cur_send_mode = 'default_mode'
-                cur_type_data = 'photo'
-                cur_photo_data = common_methods.get_pikcha(), None, 'Ежечасное солнышко', None
-                sending.send_msg(bot             = MypyBot,
-                                 send_mode       = cur_send_mode,
-                                 chat_id_out     = my_cfg.id_owner,
-                                 type_data_out   = cur_type_data,
-                                 photo_data_out  = cur_photo_data,
-                                 flg_counter_msg = 0)
+                list_users_id = queries_to_bd.get_users_id_of_current_subscription('Пикча с Шинобу')
+                for item in list_users_id:
+                    try:
+                        cur_send_mode = 'default_mode'
+                        cur_type_data = 'photo'
+                        cur_photo_data = common_methods.get_pikcha(), None, 'Ежечасное солнышко', None
+                        sending.send_msg(bot             = MypyBot,
+                                         send_mode       = cur_send_mode,
+                                         chat_id_out     = item,
+                                         type_data_out   = cur_type_data,
+                                         photo_data_out  = cur_photo_data,
+                                         flg_counter_msg = 0)
 
+                        cur_type_data = 'text'
+                        reply_markup_out = keyboards_buttons.create_inline_kb({"manage_subscriptions": "Смотреть подписки"})
+                        cur_text_data = 'Управление подписками', reply_markup_out, None, None
+                        sending.send_msg(bot             = MypyBot,
+                                         send_mode       = cur_send_mode,
+                                         chat_id_out     = item,
+                                         type_data_out   = cur_type_data,
+                                         text_data_out   = cur_text_data,
+                                         flg_counter_msg = 0)
+                                             
+                    except Exception as e:
+                        print('Не отправлено сообщение этому пользователю: ' +str(item)+'. Текст ошибки:\n'+str(e))
+                                             
                 #отправка комплимента
-                #cur_type_data = 'text'
-                #cur_text_data = queries_to_bd.get_compliment(), None, None
-                #sending.send_msg(bot             = MypyBot,
-                #                 send_mode       = cur_send_mode,
-                #                 chat_id_out     = my_cfg.id_owner,
-                #                 type_data_out   = cur_type_data,
-                #                 text_data_out   = cur_text_data,
-                #                 flg_counter_msg = 0)
+                list_users_id = queries_to_bd.get_users_id_of_current_subscription('Комплименты девушке')
+                for item in list_users_id:
+                    try:
+                        cur_type_data = 'text'
+                        reply_markup_out = keyboards_buttons.create_inline_kb({"manage_subscriptions": "Управление подписками"})
+                        cur_text_data = queries_to_bd.get_compliment(), reply_markup_out, None, None
+                        sending.send_msg(bot             = MypyBot,
+                                        send_mode       = cur_send_mode,
+                                         chat_id_out     = item,
+                                         type_data_out   = cur_type_data,
+                                         text_data_out   = cur_text_data,
+                                         flg_counter_msg = 0)
+                                             
+                    except Exception as e:
+                        print('Не отправлено сообщение этому пользователю: ' +str(item)+'. Текст ошибки:\n'+str(e))
 
                 print('Отработка ежечасного шедулера')
 
-            if (datetime.datetime.now().hour == 22 and datetime.datetime.now().minute == 30):
+            if (datetime.datetime.now().hour == 22 and datetime.datetime.now().minute == 00):
+                
+                #отправка праздника
                 today_holiday = queries_to_bd.get_holiday()
                 if len(today_holiday) > 0:
-                    today_holiday = 'Сегодня ' + today_holiday.lower() + '🎉\nС праздничком:)\n(я добавлю чуть позже возможность отписки, не нервничай)'
-                    list_users_id = queries_to_bd.get_users_id()
+                    list_users_id = queries_to_bd.get_users_id_of_current_subscription('Международные праздники')
+                    today_holiday = 'Сегодня ' + today_holiday.lower() + '🎉\nС праздничком:)'
                     for item in list_users_id:
                         try:
-                            #отправка праздника
                             cur_send_mode = 'default_mode'
                             cur_type_data = 'text'
-                            cur_text_data = today_holiday, None, None, None
+                            reply_markup_out = keyboards_buttons.create_inline_kb({"manage_subscriptions": "Управление подписками"})
+                            cur_text_data = today_holiday, reply_markup_out, None, None
                             sending.send_msg(bot             = MypyBot,
                                              send_mode       = cur_send_mode,
                                              chat_id_out     = item,
