@@ -60,8 +60,8 @@ def cases_trigger(bot, cur_message):
             s15 = "/get_reactor_pikcha - получить рандомную пикчу по тегу с рекатора\n"
             s16 = "/get_qr_code - создать qr-код со своим текстом внутри\n"
             s17 = "/inline_mode - инлайн режимы\n"
-            s18 = "/manage_subscriptions\n"
-            result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12+s13+s14+s15+s16+s17
+            s18 = "/manage_subscriptions - управление подписками\n"
+            result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12+s13+s14+s15+s16+s17+s18
             result_out += admin
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif (last_msg_user == "/main_menu"):

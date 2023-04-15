@@ -129,7 +129,8 @@ def time_schedule_bot():
                                              
                     except Exception as e:
                         print('Не отправлено сообщение этому пользователю: ' +str(item)+'. Текст ошибки:\n'+str(e))
-                                             
+
+            if (datetime.datetime.now().minute == 00):
                 #отправка комплимента
                 list_users_id = queries_to_bd.get_users_id_of_current_subscription('Комплименты девушке')
                 for item in list_users_id:
@@ -148,7 +149,7 @@ def time_schedule_bot():
                         print('Не отправлено сообщение этому пользователю: ' +str(item)+'. Текст ошибки:\n'+str(e))
 
                 print('Отработка ежечасного шедулера')
-
+            
             if (datetime.datetime.now().hour == 22 and datetime.datetime.now().minute == 00):
                 
                 #отправка праздника
