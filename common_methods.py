@@ -44,10 +44,11 @@ def check_en_char_in_string(string_income):
 
 #переводит Tuple в стрингу
 def convertTuple(tup):
-    str = ''
-    for item in tup:
-        str = str + item
-    return str
+    #str = ''
+    #for item in tup:
+        #str = str + item
+    str_val = "".join(map(str,tup))
+    return str_val
 
 #получает рандомную пикчу Шинобу с реактора
 def get_pikcha():
@@ -63,7 +64,7 @@ def get_pikcha():
     url_of_result_image =  images_url[random.randint(1,len(images_url)-1)]
 
     response = requests.get(url_of_result_image)
-    img_name = os.getcwd() + '/home/duck/Documents/GitHub/PyBot/assets/temp/shinobu.jpeg'
+    img_name = '/home/duck/Documents/GitHub/PyBot/assets/temp/shinobu.jpeg'
     if response.status_code:
         fp = open(img_name, 'wb')
         fp.write(response.content)
@@ -145,7 +146,7 @@ def get_random_pikcha_by_teg(msg):
         #делаем запрос на пикчу
         response = requests.get(url_of_result_image)
         #даем пикче адрес и имя и сохраняем ее
-        img_name = os.getcwd() + '/home/duck/Documents/GitHub/PyBot/assets/temp/image_by_teg.jpeg'
+        img_name = '/home/duck/Documents/GitHub/PyBot/assets/temp/image_by_teg.jpeg'
         if response.status_code:
             fp = open(img_name, 'wb')
             fp.write(response.content)
@@ -154,7 +155,7 @@ def get_random_pikcha_by_teg(msg):
         #возвращаем адрес итоговой скачанной пикчи
         return parse_mode, caption, img_name
     except:
-        img_name = os.getcwd() + '/home/duck/Documents/GitHub/PyBot/assets/not_found.png'
+        img_name = '/home/duck/Documents/GitHub/PyBot/assets/not_found.png'
         parse_mode = None
         caption = "Мы либо ничего не нашли, либо произошла какая-то абсолютно неведомая херня, соре\nПопробуй написать теги транслитом"
         return parse_mode, caption, img_name
@@ -162,7 +163,7 @@ def get_random_pikcha_by_teg(msg):
 #создает qr-код
 def create_qr_code(text):
     qrcode = segno.make_qr(text)
-    new_dir = os.getcwd() + '/home/duck/Documents/GitHub/PyBot/assets/temp/'
+    new_dir = '/home/duck/Documents/GitHub/PyBot//temp/'
     os.chdir(new_dir)
     name = "qr_code.pdf"
     qrcode.save(name, border=1, scale=8)

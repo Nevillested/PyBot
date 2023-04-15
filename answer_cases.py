@@ -69,12 +69,7 @@ def cases_trigger(bot, cur_message):
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user == "/stick":
             content_type_out = "sticker"
-            res = []
-            for path in os.listdir(os.getcwd()):
-                if os.path.isfile(os.path.join(os.getcwd(), path)):
-                    res.append(path)
-            print(res)
-            stikers_dir = os.getcwd() + "/home/duck/Documents/GitHub/PyBot/assets/stickers/"
+            stikers_dir = "/home/duck/Documents/GitHub/PyBot/assets/stickers/"
             result_out = stikers_dir + random.choice(os.listdir(stikers_dir))
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user == "/pikcha":
@@ -333,10 +328,22 @@ def cases_trigger(bot, cur_message):
             content_type_out = "text"
             result_out = "Значит, объясняю, что это такое и как пользоваться:\n\nИнлайн режим - это когда ты в чате с другим пользователем пишешь никнейм этого бота, а затем то, что хочешь найти. Пока есть три режима:\n1)Выдает пикчи:\n'@ArarararagiBot pic Shinobu Oshino'\n\n2)Выдает топ видосов на ютубе:\n'@ArarararagiBot vid Monogatari Series'\n\n3)Выдаст топ ссылок по поиску в гугле:\n'@ArarararagiBot search Kyoto'\n\n3)Погуглит вместо тебя:\n'@ArarararagiBot google Как стать женщиной?'"
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
+
+
+
+
+
+
+
+
     elif last_msg_user == "/get_inline_kb":
             content_type_out = "text"
             result_out = "Это инлайн клавиатура"
             reply_out = keyboards_buttons.inline_kb()
+    elif last_msg_user == "/get_inline_kb_holiday":
+            content_type_out = "text"
+            result_out = "Тут какой-то праздник"
+            reply_out = keyboards_buttons.create_inline_kb({"manage_subscriptions": "Управление подисками"})
     else:
         content_type_out = "text"
         result_out = ChatGpt.get_result_from_chatgpt(last_msg_user)

@@ -1,4 +1,5 @@
 ﻿from datetime import timedelta, date
+import queries_to_bd
 import telebot
 import sending
 import my_cfg
@@ -61,6 +62,7 @@ def ru_key():
         eleven = telebot.types.KeyboardButton(text="11")
         twelve = telebot.types.KeyboardButton(text="12")
         thirteen = telebot.types.KeyboardButton(text="13")
+
         fourteen = telebot.types.KeyboardButton(text="14")
         fifteen = telebot.types.KeyboardButton(text="15")
         sixteen = telebot.types.KeyboardButton(text="16")
@@ -183,10 +185,15 @@ def weather_days():
         iteration_var += 1
     return reply_to
 
+#метод для создания инлайн-клавиатуры. На вход получает словарь из пары "ид кнопки-название кнопки", а на выходе отдает саму клавиатуру
+def create_inline_kb(dict_of_buttons):
+    reply_to = telebot.types.InlineKeyboardMarkup()
+    for key, value in dict_of_buttons.items():
+        reply_to.add(telebot.types.InlineKeyboardButton(text=value, callback_data=key))
+    return reply_to
 
+#тестовая инлайн клавиатура
 def inline_kb():
-        reply_to = telebot.types.InlineKeyboardMarkup()
-        reply_to.add(telebot.types.InlineKeyboardButton(text="Первая кнопка", callback_data="inline_kb_1bt"))
-        reply_to.add(telebot.types.InlineKeyboardButton(text="Вторая кнопка", callback_data="inline_kb_2bt"))
-        reply_to.add(telebot.types.InlineKeyboardButton(text="Третья кнопка", callback_data="inline_kb_3bt"))
-        return reply_to
+    dict_of_btn = {'inline_kb_1bt': 'Первая кнопка', 'inline_kb_2bt': 'Вторая кнопка', 'inline_kb_3bt': 'Третья кнопка'}
+    reply_to = create_inline_kb(dict_of_btn)
+    return reply_to

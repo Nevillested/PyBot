@@ -142,7 +142,7 @@ def get_prelast_user_msg(chat_id):
              where chat_id = """ + str(chat_id) + """
            ) as a
      where a.rn = 2
-     """)
+    """)
     result_tuple = cur.fetchone()
 
     result_string = ''
@@ -474,7 +474,7 @@ def get_last_num_decade_kanji(chat_id):
              order by dt_ins desc
            ) as a
      where a.rn = 1
-     """)
+    """)
     result_tuple = cur.fetchone()
 
     result_string = ''
@@ -532,8 +532,7 @@ def get_all_kanji_quiz():
                             , a.rus_word
                             , a.id
                             , ROW_NUMBER () OVER (ORDER BY random()) as rn
-                         from jap_kanji as a
-						order by RANDOM() limit 4
+                         from jap_kanji as a order by RANDOM() limit 4
                        )
                        /*берем правильный ответ*/
                        select kanji, 'Чтение: '||reading||'. Перевод: '||rus_word,rn from all_vars where rn = 1
@@ -546,3 +545,46 @@ def get_all_kanji_quiz():
     """)
     list_of_rows = cur.fetchall()
     return list_of_rows
+
+#возвращает словарь с подписками пользователей
+def get_subscriptions_user(chat_id):
+    list_of_rows = []
+    dict_of_subscriptions_user = {}
+    cur.execute("""
+    select chat_id ||'_' ||id as  btn_id
+         , subscription_name
+      from subscriptions
+     where chat_id = """ + str(chat_id) + """
+    """)
+    list_of_rows = cur.fetchall()
+    for item in list_of_rows:
+        dict_of_subscriptions_user[item[0]] = item[1]
+
+    return dict_of_subscriptions_user
+
+#возвращает статус подписки пользователя
+def get_cur_subscription_status(id_subscription):
+    cur.execute("""
+    select a.active_flg
+      from (select a.*
+                 , a.chat_id ||'_' ||a.id as btn_id
+              from subscriptions as a
+           ) as a
+     where a.btn_id = '""" + id_subscription + """'
+    """)
+    result_tuple = cur.fetchone()
+
+    result_string = ''
+
+    if result_tuple != None:
+        result_string = common_methods.convertTuple(result_tuple)
+
+    return result_string
+
+#изменяет статус подписки
+def change_user_subscription_status(id_subscription, status):
+    cur.execute("""
+    update subscriptions
+       set active_flg = """+ str(status) + """
+     where chat_id ||'_' ||id = '""" + id_subscription + """'
+    """)
