@@ -60,8 +60,9 @@ def cases_trigger(bot, cur_message):
             s15 = "/get_reactor_pikcha - получить рандомную пикчу по тегу с рекатора\n"
             s16 = "/get_qr_code - создать qr-код со своим текстом внутри\n"
             s17 = "/inline_mode - инлайн режимы\n"
-            s18 = "/manage_subscriptions - управление подписками\n"
-            result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12+s13+s14+s15+s16+s17+s18
+            s18 = "/managesubscriptions - управление подписками\n"
+            s19 = "/prices - прайс лист\n"
+            result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12+s13+s14+s15+s16+s17+s18+s19
             result_out += admin
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif (last_msg_user == "/main_menu"):
@@ -329,22 +330,14 @@ def cases_trigger(bot, cur_message):
             content_type_out = "text"
             result_out = "Значит, объясняю, что это такое и как пользоваться:\n\nИнлайн режим - это когда ты в чате с другим пользователем пишешь никнейм этого бота, а затем то, что хочешь найти. Пока есть три режима:\n1)Выдает пикчи:\n'@ArarararagiBot pic Shinobu Oshino'\n\n2)Выдает топ видосов на ютубе:\n'@ArarararagiBot vid Monogatari Series'\n\n3)Выдаст топ ссылок по поиску в гугле:\n'@ArarararagiBot search Kyoto'\n\n3)Погуглит вместо тебя:\n'@ArarararagiBot google Как стать женщиной?'"
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
-    elif last_msg_user == "/manage_subscriptions":
+    elif last_msg_user == "/managesubscriptions":
             content_type_out = "text"
             result_out = "Управление подписками"
             reply_out = keyboards_buttons.create_inline_kb({"manage_subscriptions": "Смотреть подписки"})
-
-
-
-
-
-
-
-
-    elif last_msg_user == "/get_inline_kb":
+    elif last_msg_user == "/prices":
             content_type_out = "text"
-            result_out = "Это инлайн клавиатура"
-            reply_out = keyboards_buttons.inline_kb()
+            result_out = "Прайс-лист"
+            reply_out = keyboards_buttons.create_inline_kb({"payment_one_btn": "Потому что я такой хорошенький - 100р","payment_two_btn":"На тяжелую жизнь бездомного разработчика - 150р","payment_three_btn":"На развитие бота, чтобы он делал вашу жизнь лучше - 200р", "payment_shinobu":"На фигурки с лучшей девочкой ~~~р"})
     else:
         content_type_out = "text"
         result_out = ChatGpt.get_result_from_chatgpt(last_msg_user)

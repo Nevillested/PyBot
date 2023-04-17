@@ -1,5 +1,6 @@
 import keyboards_buttons
 import queries_to_bd
+import payments
 
 def call_processed(bot,call):
     # Если сообщение из чата с ботом
@@ -18,13 +19,7 @@ def call_processed(bot,call):
         for item in list_of_user_subscriptions:
             list_of_user_subscriptions_turn_on.append('turn_on_subscribe' + '_' + item)
 
-        if call.data == "inline_kb_1bt":
-            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Нажата первая кнопка!")
-        elif call.data == "inline_kb_2bt":
-            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Нажата вторая кнопка!")
-        elif call.data == "inline_kb_3bt":
-            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Нажата третья кнопка!")
-        elif call.data == "manage_subscriptions":
+        if call.data == "manage_subscriptions":
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Какая подписка интересует?", reply_markup = keyboards_buttons.create_inline_kb(dict_of_user_subscriptions))
         elif call.data in list_of_user_subscriptions:
             status_of_subs = queries_to_bd.get_cur_subscription_status(call.data)
@@ -41,17 +36,21 @@ def call_processed(bot,call):
             reply_markup_out = keyboards_buttons.create_inline_kb(dict_of_btn)
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=text_result_out, reply_markup = reply_markup_out)
         elif call.data == 'turn_cancel_subscribe':
-            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Отменено.Управление подписками:\n/manage_subscriptions')
+            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Отменено.Управление подписками:\n/managesubscriptions')
         elif call.data in list_of_user_subscriptions_turn_on:
             subs_id = (call.data).replace("turn_on_subscribe_", "")
             queries_to_bd.change_user_subscription_status(subs_id,1)
-            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Включено. Управление подписками:\n/manage_subscriptions')
+            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Включено. Управление подписками:\n/managesubscriptions')
         elif call.data in list_of_user_subscriptions_turn_off:
             subs_id = (call.data).replace("turn_off_subscribe_", "")
             queries_to_bd.change_user_subscription_status(subs_id,0)
-            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Отключено. Управление подписками:\n/manage_subscriptions')
+            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Отключено. Управление подписками:\n/managesubscriptions')
+        elif call.data.__contains__("payment"):
+            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Ура, транжирим!")
+            payments.command_pay(call.message, call.data)
         else:
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Нажата какая-то кнопка")
+
     # Если сообщение из инлайн-режима
     elif call.inline_message_id:
         if call.data == "test":
