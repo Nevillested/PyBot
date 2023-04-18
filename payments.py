@@ -1,5 +1,6 @@
 import telebot
 import my_cfg
+import sending
 
 from telebot.types import LabeledPrice, ShippingOption
 
@@ -38,21 +39,36 @@ def command_pay(message, PyBot, id_payment):
         print('Неизвестный id инвойса: ' + id_payment)
         return
 
-    PyBot.send_invoice(chat_id               = message.chat.id,
-                       title                 = title_out,
-                       description           = description_out,
-                       invoice_payload       = invoice_payload_out,
-                       provider_token        = my_cfg.provider_token,
-                       currency              = currency_out,
-                       prices                = prices_out,
-                       photo_url             = photo_url_out,
-                       photo_height          = 512,
-                       photo_width           = 512,
-                       photo_size            = 512,
-                       is_flexible           = False,
-                       start_parameter       = start_parameter_out,
-                       max_tip_amount        = max_tip_amount_out,
-                       suggested_tip_amounts = suggested_tip_amounts_out)
+    payment_data = (message.chat.id,
+                    title_out,
+                    description_out,
+                    invoice_payload_out,
+                    my_cfg.provider_token,
+                    currency_out,
+                    prices_out,
+                    photo_url_out,
+                    512,
+                    512,
+                    512,
+                    False,
+                    start_parameter_out,
+                    max_tip_amount_out,
+                    suggested_tip_amounts_out)
+
+    #отправляет и сохраняет результаты
+    sending.send_msg(bot              = PyBot,
+                     send_mode        = 'payment_mode',
+                     payment_data_out = payment_data)
+
+
+
+
+
+
+
+
+
+
 """
 @PyBot.MypyBot.shipping_query_handler(func=lambda query: True)
 def shipping(shipping_query):

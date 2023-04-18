@@ -4,7 +4,7 @@ import my_cfg
 #метод отправки сообщений с различными типами данных
 
 
-def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, type_data_out=None, text_data_out=None, poll_data_out=None, photo_data_out=None, sticker_data_out=None, audio_data_out=None, doc_data_out=None, inline_data_out=None, flg_counter_msg=1):
+def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, type_data_out=None, text_data_out=None, poll_data_out=None, photo_data_out=None, sticker_data_out=None, audio_data_out=None, doc_data_out=None, inline_data_out=None, payment_data_out=None, flg_counter_msg=1):
     
     #простой режим отправки сообщений
     if send_mode == 'default_mode':
@@ -127,4 +127,40 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
         
     
     #платежный режим
-    #elif send_mode == 'payment_mode':
+    elif send_mode == 'payment_mode':
+
+        chat_id_out = payment_data_out[0]
+        title_out = payment_data_out[1]
+        description_out = payment_data_out[2]
+        invoice_payload_out = payment_data_out[3]
+        provider_token_out = payment_data_out[4]
+        currency_out = payment_data_out[5]
+        prices_out = payment_data_out[6]
+        photo_url_out = payment_data_out[7]
+        photo_height_out = payment_data_out[8]
+        photo_width_out = payment_data_out[9]
+        photo_size_out = payment_data_out[10]
+        is_flexible_out = payment_data_out[11]
+        start_parameter_out = payment_data_out[12]
+        max_tip_amount_out = payment_data_out[13]
+        suggested_tip_amounts_out = payment_data_out[14]
+
+        #отправляет данные для платежа
+        bot.send_invoice(chat_id               = chat_id_out,
+                         title                 = title_out,
+                         description           = description_out,
+                         invoice_payload       = invoice_payload_out,
+                         provider_token        = provider_token_out,
+                         currency              = currency_out,
+                         prices                = prices_out,
+                         photo_url             = photo_url_out,
+                         photo_height          = photo_height_out,
+                         photo_width           = photo_width_out,
+                         photo_size            = photo_size_out,
+                         is_flexible           = is_flexible_out,
+                         start_parameter       = start_parameter_out,
+                         max_tip_amount        = max_tip_amount_out,
+                         suggested_tip_amounts = suggested_tip_amounts_out)
+        
+        #сохраняет данные для платежа
+        #queries_to_bd.save_data_for_payment(payment_data_out)
