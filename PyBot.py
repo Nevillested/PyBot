@@ -136,20 +136,19 @@ def query_text(query):
 #хэндер ивентов колбэкдаты инлайн кнопок
 @MypyBot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
-    #try:
+    try:
         print(f"{call.from_user.username} нажал кнопку {call.data}.\n")
 
         callback_data.call_processed(MypyBot, call) 
 
-   # except Exception as e:
-      #  print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
+    except Exception as e:
+        print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
 
 #хэндер простых сообщений
 @MypyBot.message_handler(content_types=CONTENT_TYPES)
 def start_message(message):
-   # try:
-        
-        #if message.via_bot != True:
+    try:
+        if message.via_bot != True:
             print(f"Пришло сообщение от: {message.from_user.username}\nТип сообщения: {str(message.content_type)}\nТекст сообщения: {message.text}\n")
             
             #проверяет пользователя в бд, если есть-обновляет данные, если нет-добавляет данные
@@ -164,7 +163,7 @@ def start_message(message):
             #отправляет результат
             sending.send_msg(bot, send_mode, message, chat_id, msg_id, type_data, text_data, poll_data, photo_data, sticker_data, audio_data, doc_data)
             
-    #except Exception as e:
-        #print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
+    except Exception as e:
+        print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
 
 MypyBot.polling()
