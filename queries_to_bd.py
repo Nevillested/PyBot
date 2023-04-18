@@ -611,3 +611,23 @@ def get_users_id_of_current_subscription(name_of_subscription):
         list_of_id.append(int(buffer))
 
     return list_of_id
+
+#сохраняет данные для платежа
+def save_data_for_payment(payment_data_out):
+
+    cur.execute("""
+    insert into payments (chat_id,
+                          title_payment,
+                          desc_payment,
+                          start_price_payment,
+                          url_photo_payment,
+                          max_tip_amount_payment,
+                          suggested_tip_amount_payment)
+    values (""" + str(payment_data_out[0]) + """,
+            '""" + str(payment_data_out[1]) + """',
+            '""" + str(payment_data_out[2]) + """',
+            '""" + str(payment_data_out[6]) + """',
+            '""" + str(payment_data_out[7]) + """',
+            '""" + str(payment_data_out[13]) + """',
+            '""" + str(payment_data_out[14]) + """')
+    """)

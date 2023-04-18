@@ -136,3 +136,28 @@ COMMENT ON COLUMN VOICES.CHAT_ID IS 'ID чата';
 COMMENT ON COLUMN VOICES.LANG IS 'Язык распознавания';
 COMMENT ON COLUMN VOICES.RESULT_TEXT IS 'Текстовый результат';
 COMMENT ON TABLE VOICES  IS 'Распознавание голоса';
+--------------------------------------------------------
+--  DDL for Table payments
+--------------------------------------------------------
+
+CREATE TABLE payments(id serial,
+                      dt_ins timestamp DEFAULT current_timestamp, 
+                      chat_id bigint,
+                      title_payment text,
+                      desc_payment text,
+                      start_price_payment text,
+                      url_photo_payment text,
+                      max_tip_amount_payment text,
+                      suggested_tip_amount_payment text)
+                          
+                          
+COMMENT ON COLUMN payments.ID IS 'ID строки';
+COMMENT ON COLUMN payments.DT_INS IS 'Дата вставки';
+COMMENT ON COLUMN payments.chat_id IS 'ID пользователя, запросивший данные';
+COMMENT ON COLUMN payments.title_payment IS 'Заголовок платежа';
+COMMENT ON COLUMN payments.desc_payment IS 'Описание платежа';
+COMMENT ON COLUMN payments.start_price_payment IS 'Стартовая сумма(в копейках)';
+COMMENT ON COLUMN payments.url_photo_payment IS 'URL фото картинки для платежа';
+COMMENT ON COLUMN payments.max_tip_amount_payment IS 'Пороговая сумма(в копейках)';
+COMMENT ON COLUMN payments.suggested_tip_amount_payment IS 'Набор дополнительных сумм сверху к платежу(в копейках)';
+COMMENT ON TABLE payments  IS 'Данные для платежей';

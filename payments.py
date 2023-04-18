@@ -2,8 +2,6 @@ import telebot
 import my_cfg
 import sending
 
-from telebot.types import LabeledPrice, ShippingOption
-
 def command_pay(message, PyBot, id_payment):
 
     #объявляем основные выходные параметры
@@ -11,7 +9,7 @@ def command_pay(message, PyBot, id_payment):
     description_out = None
     invoice_payload_out = 'Shut up and take my money!'
     currency_out = 'RUB'
-    prices_out = [LabeledPrice(label='Начальная ставка!', amount=9900)]
+    prices_out = 9900
     photo_url_out = None
     start_parameter_out = 'start_parameter_out'
     max_tip_amount_out = 100000

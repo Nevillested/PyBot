@@ -1,4 +1,5 @@
 ﻿import queries_to_bd
+from telebot.types import LabeledPrice
 import my_cfg
 
 #метод отправки сообщений с различными типами данных
@@ -135,7 +136,7 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
         invoice_payload_out = payment_data_out[3]
         provider_token_out = payment_data_out[4]
         currency_out = payment_data_out[5]
-        prices_out = payment_data_out[6]
+        prices_out = [LabeledPrice(label='Начальная ставка!', amount=payment_data_out[6])]
         photo_url_out = payment_data_out[7]
         photo_height_out = payment_data_out[8]
         photo_width_out = payment_data_out[9]
@@ -163,4 +164,4 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
                          suggested_tip_amounts = suggested_tip_amounts_out)
         
         #сохраняет данные для платежа
-        #queries_to_bd.save_data_for_payment(payment_data_out)
+        queries_to_bd.save_data_for_payment(payment_data_out)
