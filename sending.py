@@ -124,3 +124,7 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
         
         #сохраняет запрос
         queries_to_bd.save_inline_data(query_from, query_text)
+        
+    
+    #платежный режим
+    #elif send_mode == 'payment_mode':

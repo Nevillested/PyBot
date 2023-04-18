@@ -2,7 +2,7 @@ import keyboards_buttons
 import queries_to_bd
 import payments
 
-def call_processed(bot,call):
+def call_processed(bot, call):
     # Если сообщение из чата с ботом
     if call.message:
         dict_of_user_subscriptions = queries_to_bd.get_subscriptions_user(call.message.chat.id)
@@ -47,7 +47,7 @@ def call_processed(bot,call):
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Отключено. Управление подписками:\n/managesubscriptions')
         elif call.data.__contains__("payment"):
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Ура, транжирим!")
-            payments.command_pay(call.message, call.data)
+            payments.command_pay(call.message, bot, call.data)
         else:
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Нажата какая-то кнопка")
 

@@ -1,10 +1,9 @@
 import telebot
 import my_cfg
-import PyBot
 
 from telebot.types import LabeledPrice, ShippingOption
 
-def command_pay(message, id_payment):
+def command_pay(message, PyBot, id_payment):
 
     #объявляем основные выходные параметры
     title_out = None
@@ -35,22 +34,25 @@ def command_pay(message, id_payment):
         photo_url_out = 'https://i.ibb.co/pbQLhks/123123-0-Rf5-U.jpg'
         max_tip_amount_out = 1000000
         suggested_tip_amounts_out = [10100, 50100, 100100, 500100]
+    else:
+        print('Неизвестный id инвойса: ' + id_payment)
+        return
 
-    PyBot.MypyBot.send_invoice(chat_id               = message.chat.id,
-                               title                 = title_out,
-                               description           = description_out,
-                               invoice_payload       = invoice_payload_out,
-                               provider_token        = my_cfg.provider_token,
-                               currency              = currency_out,
-                               prices                = prices_out,
-                               photo_url             = photo_url_out,
-                               photo_height          = 512,
-                               photo_width           = 512,
-                               photo_size            = 512,
-                               is_flexible           = False,
-                               start_parameter       = start_parameter_out,
-                               max_tip_amount        = max_tip_amount_out,
-                               suggested_tip_amounts = suggested_tip_amounts_out)
+    PyBot.send_invoice(chat_id               = message.chat.id,
+                       title                 = title_out,
+                       description           = description_out,
+                       invoice_payload       = invoice_payload_out,
+                       provider_token        = my_cfg.provider_token,
+                       currency              = currency_out,
+                       prices                = prices_out,
+                       photo_url             = photo_url_out,
+                       photo_height          = 512,
+                       photo_width           = 512,
+                       photo_size            = 512,
+                       is_flexible           = False,
+                       start_parameter       = start_parameter_out,
+                       max_tip_amount        = max_tip_amount_out,
+                       suggested_tip_amounts = suggested_tip_amounts_out)
 """
 @PyBot.MypyBot.shipping_query_handler(func=lambda query: True)
 def shipping(shipping_query):
