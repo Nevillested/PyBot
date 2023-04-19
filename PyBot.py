@@ -124,7 +124,7 @@ def checkout(pre_checkout_query):
 
 
 #хэндер ивентов редактирования сообщения пользователем
-@MypyBot.edited_message_handler(content_types="text"
+@MypyBot.edited_message_handler(content_types="text")
 def catch_edit_msg(edited_message):
     try:
         print(f"Пользователь {edited_message.from_user.username} отредактировал сообщение.\n")
