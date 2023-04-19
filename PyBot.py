@@ -33,8 +33,7 @@ def time_schedule_bot():
                                      send_mode       = cur_send_mode,
                                      chat_id_out     = item,
                                      type_data_out   = cur_type_data,
-                                     photo_data_out  = cur_photo_data,
-                                     flg_counter_msg = 0)
+                                     photo_data_out  = cur_photo_data)
                                          
                 except Exception as e:
                     print('Не отправлено сообщение этому пользователю: ' +str(item)+'. Текст ошибки:\n'+str(e))
@@ -50,8 +49,7 @@ def time_schedule_bot():
                                      send_mode       = cur_send_mode,
                                      chat_id_out     = item,
                                      type_data_out   = cur_type_data,
-                                     text_data_out   = cur_text_data,
-                                     flg_counter_msg = 0)
+                                     text_data_out   = cur_text_data)
 
                 except Exception as e:
                     print('Не отправлено сообщение этому пользователю: ' +str(item)+'. Текст ошибки:\n'+str(e))
@@ -75,8 +73,7 @@ def time_schedule_bot():
                                          send_mode       = cur_send_mode,
                                          chat_id_out     = item,
                                          type_data_out   = cur_type_data,
-                                         text_data_out   = cur_text_data,
-                                         flg_counter_msg = 0)
+                                         text_data_out   = cur_text_data)
 
                     except Exception as e:
                         print('Не отправлено сообщение этому пользователю: ' +str(item)+'. Текст ошибки:\n'+str(e))
@@ -139,13 +136,14 @@ def catch_edit_msg(edited_message):
         
         #формирует текстовые данные
         cur_text_data = result_prev_msg, None, 'MarkdownV2', edited_message.id
+
         #отправляет и сохраняет
         sending.send_msg(bot             = MypyBot,
                          send_mode       = 'default_mode',
                          chat_id_out     = edited_message.chat.id,
+                         msg_id_out      = edited_message.message_id + 1,
                          type_data_out   = 'text',
-                         text_data_out   = cur_text_data,
-                         flg_counter_msg = 0)
+                         text_data_out   = cur_text_data)
             
     except Exception as e:
         print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))

@@ -5,7 +5,7 @@ import my_cfg
 #метод отправки сообщений с различными типами данных
 
 
-def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, type_data_out=None, text_data_out=None, poll_data_out=None, photo_data_out=None, sticker_data_out=None, audio_data_out=None, doc_data_out=None, inline_data_out=None, payment_data_out=None, flg_counter_msg=1):
+def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, type_data_out=None, text_data_out=None, poll_data_out=None, photo_data_out=None, sticker_data_out=None, audio_data_out=None, doc_data_out=None, inline_data_out=None, payment_data_out=None):
     
     #простой режим отправки сообщений
     if send_mode == 'default_mode':
@@ -48,7 +48,7 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
             bot.send_document(chat_id_out, document = open(result_out, 'rb'), reply_markup = reply_out)
 
         #сохраняет улетевшие данные пользователю
-        queries_to_bd.insert_user_story_out(type_data_out, result_out, chat_id_out, msg_id_out, flg_counter_msg)
+        queries_to_bd.insert_user_story_out(type_data_out, result_out, chat_id_out, msg_id_out)
             
             
     #режим отправки соообщений другому пользователю

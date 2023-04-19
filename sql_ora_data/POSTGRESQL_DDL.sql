@@ -109,21 +109,50 @@ COMMENT ON TABLE USERS  IS 'Пользователи';
 --------------------------------------------------------
 --  DDL for Table USERS_DATA
 --------------------------------------------------------
+select * from users_data
+--where chat_id = 1275894304
+order by dt_ins desc
 
-CREATE TABLE USERS_DATA (ID SERIAL , DT_INS TIMESTAMP DEFAULT current_timestamp, DT_UPD TIMESTAMP, chat_id bigint, MESSAGE_ID bigint, USERNAME text, CONTENT_TYPE_IN text, MESSAGE_DATA_CLOB_IN text, MESSAGE_VERSION_IN bigint DEFAULT 0, CONTENT_TYPE_OUT text, MESSAGE_DATA_CLOB_OUT text); 
 
-COMMENT ON COLUMN USERS_DATA.ID IS 'ID строки';
-COMMENT ON COLUMN USERS_DATA.DT_INS IS 'Дата вставки сообщения';
-COMMENT ON COLUMN USERS_DATA.DT_UPD IS 'Дата обновления сообщения';
-COMMENT ON COLUMN USERS_DATA.CHAT_ID IS 'ID сообщения в чате';
-COMMENT ON COLUMN USERS_DATA.MESSAGE_ID IS 'ID сообщения';
-COMMENT ON COLUMN USERS_DATA.USERNAME IS 'Никнейм пользователя';
-COMMENT ON COLUMN USERS_DATA.CONTENT_TYPE_IN IS 'Тип входящих данных в сообщении';
-COMMENT ON COLUMN USERS_DATA.MESSAGE_DATA_CLOB_IN IS 'Входящие данные в сообщении в text';
-COMMENT ON COLUMN USERS_DATA.MESSAGE_VERSION_IN IS 'Версия входящего сообщения';
-COMMENT ON COLUMN USERS_DATA.CONTENT_TYPE_OUT IS 'Тип исходящих данных в сообщении';
-COMMENT ON COLUMN USERS_DATA.MESSAGE_DATA_CLOB_OUT IS 'Исходящие данные в текстовом виде';
-COMMENT ON TABLE USERS_DATA  IS 'Переписка с пользователями';
+
+create table income (ID SERIAL ,
+					 DT_INS TIMESTAMP DEFAULT current_timestamp,
+					 DT_UPD TIMESTAMP,
+					 chat_id bigint,
+					 MESSAGE_ID bigint,
+					 MESSAGE_TYPE text,
+					 MESSAGE_VERSION bigint DEFAULT 0,
+					 MESSAGE_DATA text); 
+					 
+COMMENT ON COLUMN income.id is 'ID строки';
+COMMENT ON COLUMN income.DT_INS is 'Дата вставки сообщения';
+COMMENT ON COLUMN income.DT_UPD is 'Дата обновления сообщения';
+COMMENT ON COLUMN income.chat_id is 'ID чата';
+COMMENT ON COLUMN income.MESSAGE_ID is 'ID сообщения в чате';
+COMMENT ON COLUMN income.MESSAGE_TYPE is 'Тип данных';
+COMMENT ON COLUMN income.MESSAGE_VERSION is 'Версия сообщения';
+COMMENT ON COLUMN income.MESSAGE_DATA is 'Текстовые данные';
+COMMENT ON TABLE income IS 'Входящие данные';
+
+
+create table outcome (ID SERIAL ,
+					 DT_INS TIMESTAMP DEFAULT current_timestamp,
+					 DT_UPD TIMESTAMP,
+					 chat_id bigint,
+					 MESSAGE_ID bigint,
+					 MESSAGE_TYPE text,
+					 MESSAGE_VERSION bigint DEFAULT 0,
+					 MESSAGE_DATA text); 
+					 
+COMMENT ON COLUMN outcome.id is 'ID строки';
+COMMENT ON COLUMN outcome.DT_INS is 'Дата вставки сообщения';
+COMMENT ON COLUMN outcome.DT_UPD is 'Дата обновления сообщения';
+COMMENT ON COLUMN outcome.chat_id is 'ID чата';
+COMMENT ON COLUMN outcome.MESSAGE_ID is 'ID сообщения в чате';
+COMMENT ON COLUMN outcome.MESSAGE_TYPE is 'Тип данных';
+COMMENT ON COLUMN outcome.MESSAGE_VERSION is 'Версия сообщения';
+COMMENT ON COLUMN outcome.MESSAGE_DATA is 'Текстовые данные';
+COMMENT ON TABLE outcome IS 'Исходящие данные';
 --------------------------------------------------------
 --  DDL for Table VOICES
 --------------------------------------------------------

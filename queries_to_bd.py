@@ -54,46 +54,122 @@ def insert_user_story_in(data_from_message):
         data_in = str(data_from_message.location.latitude)+';'+str(data_from_message.location.longitude)
 
     cur.execute("""
-    insert into users_data ( chat_id,
+    insert into income ( chat_id,
                              message_id,
-                             username,
-                             content_type_in,
-                             message_data_clob_in
+                             MESSAGE_TYPE,
+                             MESSAGE_DATA
                            )
     values (  """ + chat_id + """,
               """ + message_id + """,
-             '""" + username + """',
              '""" + content_type + """',
              '""" + data_in + """'
            );
     """)
 
 #сохраняет улетевшие данные пользователю в переписке с ботом
-def insert_user_story_out(content_type_out, clob_data_out, chat_id, message_id, flg_counter_msg):
+def insert_user_story_out(content_type_out, clob_data_out, chat_id, message_id):
 
-    content_type_out = str(content_type_out) or ''
-    clob_data_out = str(clob_data_out) or ''
     chat_id = str(chat_id) or ''
-    message_id = str(message_id) or ''
+    message_id =str(message_id) or ''
+    content_type = str(content_type_out) or ''
+    data_in = (str(clob_data_out)).replace("'","''") or ''
 
-    #flg_counter_msg - это флаг встречного сообщения
-    #Если он равен 1, то улетающее сообщение - это ответ на сообщение пользователя
-    #Если он равен 0, то улетающее сообщение - просто сообщение, как правило это рассылка
-    if flg_counter_msg == 1:
-        cur_string = """
-        update users_data
-           set content_type_out      = '""" + content_type_out + """',
-               message_data_clob_out = '""" + clob_data_out.replace("'", "") + """'
-         where chat_id = """ + chat_id + """
-           and message_id = """ + message_id + """
-        """
-    elif flg_counter_msg == 0:
-        cur_string = """
-        insert into users_data (chat_id, content_type_out, message_data_clob_out)
-        values (""" + chat_id + """, '""" + content_type_out + """', '""" + clob_data_out.replace("'","") + """')
-        """
+    cur.execute("""
+    insert into outcome ( chat_id,
+                             message_id,
+                             MESSAGE_TYPE,
+                             MESSAGE_DATA
+                           )
+    values (  """ + chat_id + """,
+              """ + message_id + """,
+             '""" + content_type + """',
+             '""" + data_in + """'
+           );
+    """)
 
-    cur.execute(cur_string)
+#добавляет новую версию сообщения отредактированного пользователем
+def insert_edited_msg_by_user(data_from_message):
+
+    msg_text = str(data_from_message[0])
+    chat_id = str(data_from_message[1])
+    message_id = str(data_from_message[2])
+
+    cur.execute("""
+    insert into income( dt_ins
+                          , dt_upd
+                          , chat_id
+                          , message_id
+                          , MESSAGE_TYPE
+                          , MESSAGE_DATA
+                          , MESSAGE_VERSION)
+                     select a.dt_ins
+                          , current_timestamp
+                          , a.chat_id
+                          , a.message_id
+                          , a.MESSAGE_TYPE
+                          , '""" + msg_text + """'
+                          , a.MESSAGE_VERSION + 1
+                       from (select *
+                               from income
+                              where chat_id = """ + chat_id + """
+                                and message_id = """ + message_id + """
+                               order by MESSAGE_VERSION desc
+                               limit 1) a
+    """)
+
+#добавляет новую версию сообщения отредактированного ботом
+def insert_edited_msg_by_bot(data_from_message):
+
+    msg_text = str(data_from_message[0])
+    chat_id = str(data_from_message[1])
+    message_id = str(data_from_message[2])
+
+    cur.execute("""
+    insert into outcome( dt_ins
+                          , dt_upd
+                          , chat_id
+                          , message_id
+                          , MESSAGE_TYPE
+                          , MESSAGE_DATA
+                          , MESSAGE_VERSION)
+                     select a.dt_ins
+                          , current_timestamp
+                          , a.chat_id
+                          , a.message_id
+                          , a.MESSAGE_TYPE
+                          , '""" + msg_text + """'
+                          , a.MESSAGE_VERSION + 1
+                       from (select *
+                               from outcome
+                              where chat_id = """ + chat_id + """
+                                and message_id = """ + message_id + """
+                               order by MESSAGE_VERSION desc
+                               limit 1) a
+    """)
+
+#выдает последнюю версию отредактированного сообщения пользователем
+def get_last_ver_msg(data_from_message):
+
+    chat_id = str(data_from_message[0])
+    message_id = str(data_from_message[1])
+
+    cur.execute("""
+    select a.MESSAGE_DATA
+      from ( select MESSAGE_DATA,
+                    ROW_NUMBER () OVER (ORDER BY MESSAGE_VERSION desc) as rn
+               from income
+              where chat_id = """ + chat_id + """
+                and message_id = """ + message_id + """
+              order by MESSAGE_VERSION desc
+           ) as a
+     where a.rn = 2
+    """)
+
+    result_tuple = cur.fetchone()
+
+    result_string = common_methods.convertTuple(result_tuple)
+
+    return result_string
 
 #сохраняет данные при переписке между пользователями
 def save_resending_data(id_from, id_to, data_type, data_send):
@@ -115,13 +191,13 @@ def save_inline_data(id_from, text_query):
 def get_last_bot_msg(chat_id):
 
     cur.execute("""
-    select a.message_data_clob_out
-      from ( select message_data_clob_out
+    select a.MESSAGE_DATA
+      from ( select MESSAGE_DATA
                   , row_number() OVER(ORDER BY dt_ins DESC) rn
-               from users_data a
+               from outcome a
               where chat_id = """ + str(chat_id) + """
               order by dt_ins desc) as a
-     where a.rn = 2""")
+     where a.rn = 1""")
     result_tuple = cur.fetchone()
     result_string = ''
 
@@ -135,10 +211,10 @@ def get_last_bot_msg(chat_id):
 def get_prelast_user_msg(chat_id):
 
     cur.execute("""
-    select a.message_data_clob_in
-      from (select message_data_clob_in,
+    select a.MESSAGE_DATA
+      from (select MESSAGE_DATA,
                    ROW_NUMBER () OVER (ORDER BY dt_ins desc) as rn
-              from users_data a
+              from income a
              where chat_id = """ + str(chat_id) + """
            ) as a
      where a.rn = 2
@@ -365,62 +441,6 @@ def get_compliment():
     compliment = common_methods.convertTuple(tuple_data)
     return compliment
 
-#добавляет новую версию сообщения отредактированного пользователем
-def insert_edited_msg_by_user(data_from_message):
-
-    msg_text = str(data_from_message[0])
-    chat_id = str(data_from_message[1])
-    message_id = str(data_from_message[2])
-
-    cur.execute("""
-    insert into users_data( dt_ins
-                          , dt_upd
-                          , chat_id
-                          , message_id
-                          , username
-                          , content_type_in
-                          , message_data_clob_in
-                          , message_version_in)
-                     select a.dt_ins
-                          , current_timestamp
-                          , a.chat_id
-                          , a.message_id
-                          , a.username
-                          , a.content_type_in
-                          , '""" + msg_text + """'
-                          , a.message_version_in + 1
-                       from (select *
-                               from users_data
-                              where chat_id = """ + chat_id + """
-                                and message_id = """ + message_id + """
-                               order by message_version_in desc
-                               limit 1) a
-    """)
-
-#выдает последнюю версию отредактированного сообщения
-def get_last_ver_msg(data_from_message):
-
-    chat_id = str(data_from_message[0])
-    message_id = str(data_from_message[1])
-
-    cur.execute("""
-    select a.message_data_clob_in
-      from ( select message_data_clob_in,
-                    ROW_NUMBER () OVER (ORDER BY message_version_in desc) as rn
-               from users_data
-              where chat_id = """ + chat_id + """
-                and message_id = """ + message_id + """
-              order by message_version_in desc
-           ) as a
-     where a.rn = 2
-    """)
-
-    result_tuple = cur.fetchone()
-
-    result_string = common_methods.convertTuple(result_tuple)
-
-    return result_string
-
 #выдает перевод найденного слова
 def get_translate_jp(user_text):
 
@@ -463,17 +483,14 @@ def get_kanji(user_number):
 def get_last_num_decade_kanji(chat_id):
 
     cur.execute("""
-    select a.message_data_clob_in
-      from (select message_data_clob_in
-                 , ROW_NUMBER () OVER (ORDER BY dt_ins desc) as rn
-              from users_data
-             where chat_id = 1275894304
-               and message_data_clob_in ~ '^[0-9]+$'
-               and content_type_out = 'poll'
-               and message_data_clob_out = 'квиз по по номеру десятка кандзи'
-             order by dt_ins desc
+    select lag_msg
+      from ( select LAG(message_data,1) OVER ( ORDER BY id desc ) lag_msg,
+                    message_data,
+                    chat_id
+               from income
            ) as a
-     where a.rn = 1
+     where lower(a.message_data) = 'по номеру десятка!'
+       and a.chat_id = """ + str(chat_id) + """
     """)
     result_tuple = cur.fetchone()
 
@@ -481,7 +498,7 @@ def get_last_num_decade_kanji(chat_id):
 
     if result_tuple != None:
         result_string = common_methods.convertTuple(result_tuple)
-
+    print(result_string)
     return result_string
 
 #возвращает данные для квиза но номеру десятка

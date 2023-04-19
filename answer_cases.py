@@ -28,7 +28,7 @@ def cases_trigger(bot, cur_message):
     result_out = ""
     reply_out = telebot.types.ReplyKeyboardMarkup()
     chat_id = cur_message.chat.id
-    msg_id = cur_message.message_id
+    msg_id = cur_message.message_id + 1
 
     #получает последнее свое отправленное сообщение
     last_msg_bot = queries_to_bd.get_last_bot_msg(cur_message.chat.id)

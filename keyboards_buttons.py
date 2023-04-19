@@ -55,7 +55,7 @@ def retry_quiz():
 #клавиатура админки
 def admin_panel():
     reply_to = telebot.types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
-    reply_to.add("get_users", "send_to_user", "/main_menu")
+    reply_to.add("/get_users", "/send_to_user", "/main_menu")
     return reply_to
 
 #клавиатура адреса погоды

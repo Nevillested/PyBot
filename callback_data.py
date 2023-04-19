@@ -55,3 +55,8 @@ def call_processed(bot, call):
     elif call.inline_message_id:
         if call.data == "test":
             bot.edit_message_text(inline_message_id=call.inline_message_id, text="Бдыщь")
+
+    #Сохраняет в бд
+    edited_message = (call.data, call.message.chat.id, call.message.message_id)
+    print(edited_message)
+    queries_to_bd.insert_edited_msg_by_bot(edited_message)
