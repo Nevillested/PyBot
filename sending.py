@@ -106,6 +106,7 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
         bot.send_message(from_send.chat.id, status) 
 
         #сохраняет данные, теоретически улетевшие пользователю
+        queries_to_bd.insert_user_story_out(content_type_out, status, from_send.chat.id, cur_msg.message_id + 1)
         queries_to_bd.save_resending_data(from_send.chat.id, chat_id_to_send, content_type_out, result)
     
     #инлайн режим
