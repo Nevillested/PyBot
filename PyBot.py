@@ -97,6 +97,27 @@ CONTENT_TYPES = ["text", "audio", "document", "photo", "sticker", "video", "vide
                  "group_chat_created", "supergroup_chat_created", "channel_chat_created", "migrate_to_chat_id",
                  "migrate_from_chat_id", "pinned_message"]
 
+@MypyBot.shipping_query_handler(func=lambda query: True)
+def shipping(shipping_query):
+    print(shipping_query)
+    MypyBot.answer_shipping_query(shipping_query.id, ok=True, shipping_options=shipping_options,
+                              error_message='Ооох, кажется у курьерского собакена сейчас обед, попробуй позже.')
+
+
+@MypyBot.pre_checkout_query_handler(func=lambda query: True)
+def checkout(pre_checkout_query):
+    MypyBot.answer_pre_checkout_query(pre_checkout_query.id, ok=True,
+                                  error_message="Ты не поверишь, пришельцы пытались украсть твой CVV-код, но я отбился. Сейчас я отдохну пару мин, а ты затем попробуй еще разок.")
+
+
+@MypyBot.message_handler(content_types=['successful_payment'])
+def got_payment(message):
+    MypyBot.send_message(message.chat.id,
+                     'Атлы, все прошло успешно. Сейчас мы обработаем платеж `{} {}` настолько быстро насколько это вообще в принципе возможно.\nОставайтесь с нами и спасибо за покупку!'.format(
+                         message.successful_payment.total_amount / 100, message.successful_payment.currency),
+                     parse_mode='Markdown')
+
+
 #хэндер ивентов редактирования сообщения пользователем
 @MypyBot.edited_message_handler(content_types="text")
 def catch_edit_msg(edited_message):
@@ -136,13 +157,13 @@ def query_text(query):
 #хэндер ивентов колбэкдаты инлайн кнопок
 @MypyBot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
-    try:
+    #try:
         print(f"{call.from_user.username} нажал кнопку {call.data}.\n")
 
         callback_data.call_processed(MypyBot, call) 
 
-    except Exception as e:
-        print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
+    #except Exception as e:
+      #  print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
 
 #хэндер простых сообщений
 @MypyBot.message_handler(content_types=CONTENT_TYPES)

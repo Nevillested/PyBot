@@ -136,7 +136,7 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
         invoice_payload_out = payment_data_out[3]
         provider_token_out = payment_data_out[4]
         currency_out = payment_data_out[5]
-        prices_out = [LabeledPrice(label='Начальная ставка!', amount=payment_data_out[6])]
+        prices_out = [LabeledPrice(label='Выворачивай карманы, к оплате: ', amount=payment_data_out[6])]
         photo_url_out = payment_data_out[7]
         photo_height_out = payment_data_out[8]
         photo_width_out = payment_data_out[9]
@@ -145,6 +145,26 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
         start_parameter_out = payment_data_out[12]
         max_tip_amount_out = payment_data_out[13]
         suggested_tip_amounts_out = payment_data_out[14]
+
+
+        provider_data_out = '''{
+  "receipt": {
+    "customer": {
+        "email": "sid.sid.sid@mail.ru"
+    },     
+    "items": [
+      {
+             "description": "'''+description_out+'''",
+             "quantity": "1",
+             "amount": {
+                 "value": "'''+str(payment_data_out[6]/100)+'''",
+                 "currency": "'''+currency_out+'''"
+             },
+             "vat_code": "1"
+        }
+    ]
+  }
+}'''
 
         #отправляет данные для платежа
         bot.send_invoice(chat_id               = chat_id_out,
@@ -161,7 +181,11 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
                          is_flexible           = is_flexible_out,
                          start_parameter       = start_parameter_out,
                          max_tip_amount        = max_tip_amount_out,
-                         suggested_tip_amounts = suggested_tip_amounts_out)
+                         suggested_tip_amounts = suggested_tip_amounts_out,
+                         #need_phone_number     = True,
+                         #need_email            = True,
+                         provider_data         = provider_data_out
+                         )
         
         #сохраняет данные для платежа
         queries_to_bd.save_data_for_payment(payment_data_out)
