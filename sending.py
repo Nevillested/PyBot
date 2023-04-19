@@ -145,12 +145,10 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
         start_parameter_out = payment_data_out[12]
         max_tip_amount_out = payment_data_out[13]
         suggested_tip_amounts_out = payment_data_out[14]
-
-
         provider_data_out = '''{
   "receipt": {
     "customer": {
-        "email": "sid.sid.sid@mail.ru"
+        "email": "ararararagi.payments@gmail.com"
     },     
     "items": [
       {
@@ -182,10 +180,10 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
                          start_parameter       = start_parameter_out,
                          max_tip_amount        = max_tip_amount_out,
                          suggested_tip_amounts = suggested_tip_amounts_out,
-                         #need_phone_number     = True,
-                         #need_email            = True,
+                         need_email            = True,
+                         send_email_to_provider= True,
                          provider_data         = provider_data_out
-                         )
+                        )
         
         #сохраняет данные для платежа
         queries_to_bd.save_data_for_payment(payment_data_out)

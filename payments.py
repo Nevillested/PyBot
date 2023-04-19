@@ -35,10 +35,6 @@ def command_pay(message, PyBot, id_payment):
         description_out = 'Шинобу - лучшая девочка, ты это понимаешь?\nПоэтому давай, расчехляй свой кошель и без лишних вопросов скидывайся на кошерные фигурки.\nВсе скидываются, и ты скидывайся, давай, не ломайся\n(тут могла быть ваша пассивно-агрессивная реклама)'
         photo_url_out = 'https://i.ibb.co/pbQLhks/123123-0-Rf5-U.jpg'
         prices_out = 100000
-    elif id_payment == "payment_test":
-        title_out = 'Заголовок тестового платежа'
-        description_out = 'Описание тестового платежа'
-        prices_out = 10000
     else:
         print('Неизвестный id инвойса: ' + id_payment)
         return

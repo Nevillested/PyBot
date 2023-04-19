@@ -337,7 +337,7 @@ def cases_trigger(bot, cur_message):
     elif last_msg_user == "/prices":
             content_type_out = "text"
             result_out = "Прайс-лист"
-            reply_out = keyboards_buttons.create_inline_kb({"payment_one_btn": "Потому что я такой хорошенький - 100р","payment_two_btn":"На тяжелую жизнь бездомного разработчика - 150р","payment_three_btn":"На развитие бота, чтобы он делал вашу жизнь лучше - 200р", "payment_shinobu":"На фигурки с лучшей девочкой ~~~р", "payment_test":"test"})
+            reply_out = keyboards_buttons.create_inline_kb({"payment_one_btn": "Потому что я такой хорошенький - 100р","payment_two_btn":"На тяжелую жизнь бездомного разработчика - 150р","payment_three_btn":"На развитие бота, чтобы он делал вашу жизнь лучше - 200р", "payment_shinobu":"На фигурки с лучшей девочкой ~~~р"})
     else:
         content_type_out = "text"
         result_out = ChatGpt.get_result_from_chatgpt(last_msg_user)
