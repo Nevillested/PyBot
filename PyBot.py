@@ -130,10 +130,12 @@ def catch_edit_msg(edited_message):
         print(f"Пользователь {edited_message.from_user.username} отредактировал сообщение.\n")
         
         #добавляет отредактированное сообщение
-        queries_to_bd.insert_edited_msg(edited_message)
+        cur_data = (str(edited_message.text), str(edited_message.chat.id), str(edited_message.message_id))
+        queries_to_bd.insert_edited_msg_by_user(cur_data)
         
         #получает предпоследнеюю версию сообщения и обрамляет ее в результат
-        result_prev_msg = "Ты думаешь я ничего не видел?\n" + r"|| '" + queries_to_bd.get_last_ver_msg(edited_message)+ r"' ||"
+        cur_data = (str(edited_message.chat.id), str(edited_message.message_id))
+        result_prev_msg = "Ты думаешь я ничего не видел?\n" + r"|| '" + queries_to_bd.get_last_ver_msg(cur_data)+ r"' ||"
         
         #формирует текстовые данные
         cur_text_data = result_prev_msg, None, 'MarkdownV2', edited_message.id
@@ -164,7 +166,10 @@ def query_text(query):
 def callback_inline(call):
     try:
         print(f"{call.from_user.username} нажал кнопку {call.data}.\n")
-
+            
+        #сохраняет прилетевшие данные от пользователя
+        #queries_to_bd.insert_user_story_buttons_in(call)
+            
         callback_data.call_processed(MypyBot, call) 
 
     except Exception as e:
@@ -174,7 +179,7 @@ def callback_inline(call):
 @MypyBot.message_handler(content_types=CONTENT_TYPES)
 def start_message(message):
     try:
-        if message.via_bot != True:
+        #if message.via_bot != True:
             print(f"Пришло сообщение от: {message.from_user.username}\nТип сообщения: {str(message.content_type)}\nТекст сообщения: {message.text}\n")
             
             #проверяет пользователя в бд, если есть-обновляет данные, если нет-добавляет данные

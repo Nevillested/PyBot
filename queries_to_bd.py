@@ -365,12 +365,12 @@ def get_compliment():
     compliment = common_methods.convertTuple(tuple_data)
     return compliment
 
-#добавляет новую версию отредактированного сообщения и возвращает предыдущую
-def insert_edited_msg(data_from_message):
+#добавляет новую версию сообщения отредактированного пользователем
+def insert_edited_msg_by_user(data_from_message):
 
-    msg_text = str(data_from_message.text)
-    chat_id = str(data_from_message.chat.id)
-    message_id = str(data_from_message.message_id)
+    msg_text = str(data_from_message[0])
+    chat_id = str(data_from_message[1])
+    message_id = str(data_from_message[2])
 
     cur.execute("""
     insert into users_data( dt_ins
@@ -400,8 +400,8 @@ def insert_edited_msg(data_from_message):
 #выдает последнюю версию отредактированного сообщения
 def get_last_ver_msg(data_from_message):
 
-    chat_id = str(data_from_message.chat.id)
-    message_id = str(data_from_message.message_id)
+    chat_id = str(data_from_message[0])
+    message_id = str(data_from_message[1])
 
     cur.execute("""
     select a.message_data_clob_in
