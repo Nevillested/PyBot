@@ -617,17 +617,26 @@ def save_data_for_payment(payment_data_out):
 
     cur.execute("""
     insert into payments (chat_id,
-                          title_payment,
-                          desc_payment,
-                          start_price_payment,
-                          url_photo_payment,
-                          max_tip_amount_payment,
-                          suggested_tip_amount_payment)
+                          title,
+                          descr)
     values (""" + str(payment_data_out[0]) + """,
             '""" + str(payment_data_out[1]) + """',
-            '""" + str(payment_data_out[2]) + """',
-            '""" + str(payment_data_out[6]) + """',
-            '""" + str(payment_data_out[7]) + """',
-            '""" + str(payment_data_out[13]) + """',
-            '""" + str(payment_data_out[14]) + """')
+            '""" + str(payment_data_out[2]) + """')
+    """)
+
+#обновляет данные платежа
+def upd_data_for_payment(payment_data_in):
+
+    cur.execute("""
+    update payments
+    set currency                   = '""" +str(payment_data_in.successful_payment.currency)+ """',
+        total_amount               = """ +str(payment_data_in.successful_payment.total_amount)+ """,
+        telegram_payment_charge_id = '""" +str(payment_data_in.successful_payment.telegram_payment_charge_id)+ """',
+        provider_payment_charge_id = '""" +str(payment_data_in.successful_payment.provider_payment_charge_id)+ """'
+        where id = (select id
+                      from payments
+                     where chat_id = """+str(payment_data_in.chat.id)+"""
+                     order by dt_ins desc
+                     limit 1
+                   )
     """)

@@ -97,23 +97,34 @@ CONTENT_TYPES = ["text", "audio", "document", "photo", "sticker", "video", "vide
                  "group_chat_created", "supergroup_chat_created", "channel_chat_created", "migrate_to_chat_id",
                  "migrate_from_chat_id", "pinned_message"]
 
+#хэндлер успешных платежей
+@MypyBot.message_handler(content_types=['successful_payment'])
+def got_payment(message):
+    try:
+        print(f"Донат от :{edited_message.from_user.username}!")
+        MypyBot.send_message(message.chat.id,
+                             'Атлы, все прошло успешно. Сейчас мы обработаем платеж `{} {}` настолько быстро насколько это вообще в принципе возможно.\nОставайтесь с нами и спасибо за покупку!'.format(
+                                 message.successful_payment.total_amount / 100, message.successful_payment.currency),
+                             parse_mode='Markdown')
+                             
+        queries_to_bd.upd_data_for_payment(message)  
+                  
+    except Exception as e:
+        print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
+
 #хэнделер ошибок оплаты
 @MypyBot.pre_checkout_query_handler(func=lambda query: True)
 def checkout(pre_checkout_query):
-    MypyBot.answer_pre_checkout_query(pre_checkout_query.id, ok=True,
-                                  error_message="Ты не поверишь, пришельцы пытались украсть твой CVV-код, но я отбился. Сейчас я отдохну пару мин, а ты затем попробуй еще разок.")
-
-#хэндлер
-@MypyBot.message_handler(content_types=['successful_payment'])
-def got_payment(message):
-    MypyBot.send_message(message.chat.id,
-                     'Атлы, все прошло успешно. Сейчас мы обработаем платеж `{} {}` настолько быстро насколько это вообще в принципе возможно.\nОставайтесь с нами и спасибо за покупку!'.format(
-                         message.successful_payment.total_amount / 100, message.successful_payment.currency),
-                     parse_mode='Markdown')
+    try:
+        MypyBot.answer_pre_checkout_query(pre_checkout_query.id, ok=True,
+                                          error_message="Ты не поверишь, пришельцы пытались украсть твой CVV-код, но я отбился. Сейчас я отдохну пару мин, а ты затем попробуй еще разок.")
+        
+    except Exception as e:
+        print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
 
 
 #хэндер ивентов редактирования сообщения пользователем
-@MypyBot.edited_message_handler(content_types="text")
+@MypyBot.edited_message_handler(content_types="text"
 def catch_edit_msg(edited_message):
     try:
         print(f"Пользователь {edited_message.from_user.username} отредактировал сообщение.\n")
