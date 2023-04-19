@@ -154,6 +154,7 @@ def query_text(query):
     try:
         print(f"{query.from_user.username} сделал inline запрос: {query.query}.\n")
 
+        #метод обработки всех инлайн запросов
         inline_mode.inline_mode_processed(MypyBot, query)
 
     except Exception as e:
@@ -164,10 +165,8 @@ def query_text(query):
 def callback_inline(call):
     try:
         print(f"{call.from_user.username} нажал кнопку {call.data}.\n")
-            
-        #сохраняет прилетевшие данные от пользователя
-        #queries_to_bd.insert_user_story_buttons_in(call)
-            
+        
+        #метод обработки всех инлайн кнопок
         callback_data.call_processed(MypyBot, call) 
 
     except Exception as e:

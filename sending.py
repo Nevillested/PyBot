@@ -2,10 +2,8 @@
 from telebot.types import LabeledPrice
 import my_cfg
 
-#метод отправки сообщений с различными типами данных
-
-
-def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, type_data_out=None, text_data_out=None, poll_data_out=None, photo_data_out=None, sticker_data_out=None, audio_data_out=None, doc_data_out=None, inline_data_out=None, payment_data_out=None):
+#метод отправки сообщений с различными режимами
+def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, type_data_out=None, text_data_out=None, poll_data_out=None, photo_data_out=None, sticker_data_out=None, audio_data_out=None, doc_data_out=None, inline_data_out=None, payment_data_out=None, edit_msg_data_out=None):
     
     #простой режим отправки сообщений
     if send_mode == 'default_mode':
@@ -187,3 +185,18 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
         
         #сохраняет данные для платежа
         queries_to_bd.save_data_for_payment(payment_data_out)
+    
+    #режим редактирования сообщений
+    elif send_mode == 'editing_msg':
+        
+        chat_id_out      = edit_msg_data_out[0]
+        message_id_out   = edit_msg_data_out[1]
+        text_out         = edit_msg_data_out[2]
+        reply_markup_out = edit_msg_data_out[3]
+        btn_name_out     = edit_msg_data_out[4]
+        
+        bot.edit_message_text(chat_id=chat_id_out, message_id=message_id_out, text=text_out, reply_markup = reply_markup_out)
+
+        #Сохраняет в бд
+        edited_message = (text_out + ': ' + btn_name_out, chat_id_out, message_id_out)
+        queries_to_bd.insert_edited_msg_by_bot(edited_message)
