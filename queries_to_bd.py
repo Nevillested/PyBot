@@ -76,15 +76,20 @@ def insert_user_story_out(content_type_out, clob_data_out, chat_id, message_id):
 
     cur.execute("""
     insert into outcome ( chat_id,
-                             message_id,
-                             MESSAGE_TYPE,
-                             MESSAGE_DATA
-                           )
-    values (  """ + chat_id + """,
-              """ + message_id + """,
-             '""" + content_type + """',
-             '""" + data_in + """'
-           );
+                          message_id,
+                          message_type,
+                          message_data
+                        )
+    select """ + chat_id + """,
+           max(a.message_id) + 1,
+           '""" + content_type + """',
+           '""" + data_in + """'
+    from (select message_id
+            from income
+           union all
+          select message_id
+            from outcome
+         ) as a
     """)
 
 #добавляет новую версию сообщения отредактированного пользователем

@@ -98,7 +98,7 @@ CONTENT_TYPES = ["text", "audio", "document", "photo", "sticker", "video", "vide
 @MypyBot.message_handler(content_types=['successful_payment'])
 def got_payment(message):
     try:
-        print(f"Донат от :{edited_message.from_user.username}!")
+        print(f"Донат от: {message.from_user.username}!")
         MypyBot.send_message(message.chat.id,
                              'Атлы, все прошло успешно. Сейчас мы обработаем платеж `{} {}` настолько быстро насколько это вообще в принципе возможно.\nОставайтесь с нами и спасибо за покупку!'.format(
                                  message.successful_payment.total_amount / 100, message.successful_payment.currency),
