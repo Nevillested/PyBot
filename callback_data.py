@@ -8,15 +8,7 @@ def call_processed(bot, call):
     if call.message:
 
         dict_of_user_subscriptions = queries_to_bd.get_subscriptions_user(call.message.chat.id)
-        list_of_user_subscriptions = []
-        for key, value in dict_of_user_subscriptions.items():
-            list_of_user_subscriptions.append(key)
-        list_of_user_subscriptions_turn_off = []
-        for item in list_of_user_subscriptions:
-            list_of_user_subscriptions_turn_off.append('turn_off_subscribe' + '_' + item)
-        list_of_user_subscriptions_turn_on = []
-        for item in list_of_user_subscriptions:
-            list_of_user_subscriptions_turn_on.append('turn_on_subscribe' + '_' + item)
+        list_of_user_subscriptions = list(dict_of_user_subscriptions.keys())
 
         chat_id_out      = call.message.chat.id
         message_id_out   = call.message.message_id
@@ -44,12 +36,12 @@ def call_processed(bot, call):
         elif call.data == 'turn_cancel_subscribe':
             text_out = 'Отменено.Управление подписками:\n/managesubscriptions'
 
-        elif call.data in list_of_user_subscriptions_turn_on:
+        elif call.data in ['turn_on_subscribe' + '_' + item for item in list_of_user_subscriptions]:
             subs_id = (call.data).replace("turn_on_subscribe_", "")
             queries_to_bd.change_user_subscription_status(subs_id,1)
             text_out = 'Включено. Управление подписками:\n/managesubscriptions'
 
-        elif call.data in list_of_user_subscriptions_turn_off:
+        elif call.data in ['turn_off_subscribe' + '_' + item for item in list_of_user_subscriptions]:
             subs_id = (call.data).replace("turn_off_subscribe_", "")
             queries_to_bd.change_user_subscription_status(subs_id,0)
             text_out = 'Отключено. Управление подписками:\n/managesubscriptions'

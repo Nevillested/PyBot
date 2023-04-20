@@ -18,22 +18,22 @@ def command_pay(message, PyBot, id_payment):
     if id_payment == "payment_one_btn":
         title_out = 'owner = one love'
         description_out = 'Потому что я такой хорошенький'
-        photo_url_out = 'https://i.ibb.co/H7Zv0qp/1.jpg'
+        photo_url_out = None#'https://i.ibb.co/H7Zv0qp/1.jpg'
         prices_out = 10000
     elif id_payment == "payment_two_btn":
         title_out = 'Денег нет, но ты держись'
         description_out = 'Не помирай плз, держи 150р'
-        photo_url_out = 'https://i.ibb.co/DrR4mpk/2.jpg'
+        photo_url_out = None#'https://i.ibb.co/DrR4mpk/2.jpg'
         prices_out = 15000
     elif id_payment == "payment_three_btn":
         title_out = 'Бот - это святое'
         description_out = 'Ты только представь свою жизнь без этого бота. Ага, и я о том же, расчехляй кошель'
-        photo_url_out = 'https://i.ibb.co/6v1DT1d/3.jpg'
+        photo_url_out = None#'https://i.ibb.co/6v1DT1d/3.jpg'
         prices_out = 20000
     elif id_payment == "payment_shinobu":
         title_out = 'ka-ka'
         description_out = 'Шинобу - лучшая девочка, ты это понимаешь?\nПоэтому давай, расчехляй свой кошель и без лишних вопросов скидывайся на кошерные фигурки.\nВсе скидываются, и ты скидывайся, давай, не ломайся\n(тут могла быть ваша пассивно-агрессивная реклама)'
-        photo_url_out = 'https://i.ibb.co/pbQLhks/123123-0-Rf5-U.jpg'
+        photo_url_out = None#'https://i.ibb.co/3vqH491/ga4wtboduxm-0-Rf5-U-1-1.jpg'#'https://i.ibb.co/pbQLhks/123123-0-Rf5-U.jpg'
         prices_out = 100000
     else:
         print('Неизвестный id инвойса: ' + id_payment)
