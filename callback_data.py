@@ -16,8 +16,13 @@ def call_processed(bot, call):
         reply_markup_out = None
         btn_name_out     = call.data
 
-        if call.data == "manage_subscriptions":
+        if call.data == "subs_back_1":
+            text_out = "Управление подписками"
+            reply_markup_out = keyboards_buttons.create_inline_kb({"manage_subscriptions": "Смотреть подписки"})
+
+        elif call.data == "manage_subscriptions" or call.data == "subs_back_2":
             text_out = "Какая подписка интересует?"
+            dict_of_user_subscriptions["subs_back_1"] = "Назад"
             reply_markup_out = keyboards_buttons.create_inline_kb(dict_of_user_subscriptions)
 
         elif call.data in list_of_user_subscriptions:
@@ -29,8 +34,7 @@ def call_processed(bot, call):
             elif status_of_subs == '0':
                 text_out = 'Подписка неактивна, включить?'
                 dict_of_btn = {'turn_on_subscribe' + '_' + call.data: 'Да, включить', 'turn_cancel_subscribe': 'Отмена'}
-            else:
-                text_out = 'С подпиской что-то непонятное..'
+            dict_of_btn["subs_back_2"] = "Назад"
             reply_markup_out = keyboards_buttons.create_inline_kb(dict_of_btn)
 
         elif call.data == 'turn_cancel_subscribe':
