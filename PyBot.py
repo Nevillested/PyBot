@@ -43,7 +43,7 @@ def time_schedule_bot():
             for item in list_users_id:
                 try:
                     cur_type_data = 'text'
-                    reply_markup_out = keyboards_buttons.create_inline_kb({"manage_subscriptions": "Управление подписками"})
+                    reply_markup_out = keyboards_buttons.create_inline_kb({"see_subscriptions": "Смотреть подписки"})
                     cur_text_data = queries_to_bd.get_compliment(), reply_markup_out, None, None
                     sending.send_msg(bot             = MypyBot,
                                      send_mode       = cur_send_mode,
@@ -67,7 +67,7 @@ def time_schedule_bot():
                     try:
                         cur_send_mode = 'default_mode'
                         cur_type_data = 'text'
-                        reply_markup_out = keyboards_buttons.create_inline_kb({"manage_subscriptions": "Управление подписками"})
+                        reply_markup_out = keyboards_buttons.create_inline_kb({"see_subscriptions": "Смотреть подписки"})
                         cur_text_data = today_holiday, reply_markup_out, None, None
                         sending.send_msg(bot             = MypyBot,
                                          send_mode       = cur_send_mode,
@@ -105,7 +105,7 @@ def got_payment(message):
                              parse_mode='Markdown')
                              
         queries_to_bd.upd_data_for_payment(message)  
-                  
+
     except Exception as e:
         print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
 
@@ -115,7 +115,7 @@ def checkout(pre_checkout_query):
     try:
         MypyBot.answer_pre_checkout_query(pre_checkout_query.id, ok=True,
                                           error_message="Ты не поверишь, пришельцы пытались украсть твой CVV-код, но я отбился. Сейчас я отдохну пару мин, а ты затем попробуй еще разок.")
-        
+
     except Exception as e:
         print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
 

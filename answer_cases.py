@@ -333,7 +333,7 @@ def cases_trigger(bot, cur_message):
     elif last_msg_user == "/managesubscriptions":
             content_type_out = "text"
             result_out = "Управление подписками"
-            reply_out = keyboards_buttons.create_inline_kb({"manage_subscriptions": "Смотреть подписки"})
+            reply_out = keyboards_buttons.create_inline_kb({"see_subscriptions": "Смотреть подписки"})
     elif last_msg_user == "/prices":
             content_type_out = "text"
             result_out = "Прайс-лист"

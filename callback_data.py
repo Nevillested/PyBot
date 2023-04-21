@@ -2,6 +2,7 @@ import keyboards_buttons
 import queries_to_bd
 import payments
 import sending
+import telebot
 
 def call_processed(bot, call):
     # Если сообщение из чата с ботом
@@ -18,9 +19,9 @@ def call_processed(bot, call):
 
         if call.data == "subs_back_1":
             text_out = "Управление подписками"
-            reply_markup_out = keyboards_buttons.create_inline_kb({"manage_subscriptions": "Смотреть подписки"})
+            reply_markup_out = keyboards_buttons.create_inline_kb({"see_subscriptions": "Смотреть подписки"})
 
-        elif call.data == "manage_subscriptions" or call.data == "subs_back_2":
+        elif call.data == "see_subscriptions" or call.data == "subs_back_2":
             text_out = "Какая подписка интересует?"
             dict_of_user_subscriptions["subs_back_1"] = "Назад"
             reply_markup_out = keyboards_buttons.create_inline_kb(dict_of_user_subscriptions)

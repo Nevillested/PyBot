@@ -71,3 +71,9 @@ def create_inline_kb(dict_of_buttons):
     for key, value in dict_of_buttons.items():
         reply_to.add(telebot.types.InlineKeyboardButton(text=value, callback_data=key))
     return reply_to
+
+#клавитура для выбора частоты получения подписки
+def subscription_frequency():
+    reply_to = telebot.types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=False)
+    reply_to.add("Каждый час","Каждый день","Каждую неделю","Каждый месяц","Каждый год")
+    return reply_to
