@@ -194,7 +194,8 @@ def start_message(message):
     except Exception as e:
         print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
 
-try:
-    MypyBot.polling()
-except Exception as e:
-    print('Произошла ошибка: \n' + str(e))
+while True:
+    try:
+        MypyBot.polling()
+    except Exception as e:
+        print('Произошла ошибка: \n' + str(e))
