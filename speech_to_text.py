@@ -8,7 +8,7 @@ def voice_processing(message, bot, lang):
     with open('assets/temp/voice_in.ogg', 'wb') as new_file:
         new_file.write(downloaded_file)
 
-    process = subprocess.run(['ffmpeg','-y', '-i', r'assets/temp/voice_in.ogg', r'assets/temp/voice_in.wav'])
+    process = subprocess.run(['ffmpeg','-y', '-i', r'/home/duck/Documents/GitHub/PyBot/assets/temp/voice_in.ogg', r'/home/duck/Documents/GitHub/PyBot/assets/temp/voice_in.wav'])
 
     if lang == 'en':
         rec_lang = "en-EN"
@@ -17,7 +17,7 @@ def voice_processing(message, bot, lang):
 
     r = sr.Recognizer()
 
-    hellow=sr.AudioFile('assets/temp/voice_in.wav')
+    hellow=sr.AudioFile('/home/duck/Documents/GitHub/PyBot/assets/temp/voice_in.wav')
     with hellow as source:
         audio = r.record(source)
     try:

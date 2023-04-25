@@ -172,7 +172,7 @@ def callback_inline(call):
     except Exception as e:
         print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
 
-#хэндер простых сообщений
+#хэндер простых сообщений   
 @MypyBot.message_handler(content_types=CONTENT_TYPES)
 def start_message(message):
     try:
