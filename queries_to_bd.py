@@ -49,7 +49,7 @@ def insert_user_story_in(data_from_message):
     data_in = ''
 
     if (data_from_message.content_type =='text'):
-        data_in = data_from_message.text
+        data_in = (data_from_message.text).replace("'","")
     elif (data_from_message.content_type =='location'):
         data_in = str(data_from_message.location.latitude)+';'+str(data_from_message.location.longitude)
 

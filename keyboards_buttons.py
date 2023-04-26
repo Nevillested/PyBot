@@ -13,7 +13,7 @@ def main_menu(chat_id):
     else:
         last_item = "/send_to_admin"
     reply_to.add("/help", "/stick", "/pikcha", "/maid", "/anekdot", "/rand", "/encrypt", "/decrypt", "/speech_to_text", "/text_to_speech","/get_translate_jp",
-    "/get_kanji", "/delete_space", "/get_quiz", "/get_weather", "/get_reactor_pikcha", "/get_qr_code", "/inline_mode", "/managesubscriptions", "/prices", last_item)
+    "/get_kanji", "/delete_space", "/get_quiz", "/get_weather", "/get_reactor_pikcha", "/get_qr_code", "/inline_mode", "/managesubscriptions", "/prices", "/music", last_item)
     return reply_to
 
 #клавиатура для шифрования - выбор языка

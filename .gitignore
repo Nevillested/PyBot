@@ -156,3 +156,4 @@ assets/ffmpeg.exe
 __pycache__/
 Env/
 run.sh
+assets/music

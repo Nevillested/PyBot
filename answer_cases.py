@@ -1,4 +1,5 @@
 ﻿import keyboards_buttons
+import music_processing
 import common_methods
 import queries_to_bd
 from datetime import datetime
@@ -62,7 +63,8 @@ def cases_trigger(bot, cur_message):
             s17 = "/inline_mode - инлайн режимы\n"
             s18 = "/managesubscriptions - управление подписками\n"
             s19 = "/prices - прайс лист\n"
-            result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12+s13+s14+s15+s16+s17+s18+s19
+            s20 = "/music - небольшой сборник музыки\n"
+            result_out = s0+s1+s2+s3+s4+s5+s6+s7+s8+s9+s10+s11+s12+s13+s14+s15+s16+s17+s18+s19+s20
             result_out += admin
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif (last_msg_user == "/main_menu"):
@@ -338,6 +340,18 @@ def cases_trigger(bot, cur_message):
             content_type_out = "text"
             result_out = "Прайс-лист"
             reply_out = keyboards_buttons.create_inline_kb({"payment_one_btn": "Потому что я такой хорошенький - 100р","payment_two_btn":"На тяжелую жизнь бездомного разработчика - 150р","payment_three_btn":"На развитие бота, чтобы он делал вашу жизнь лучше - 200р", "payment_shinobu":"На фигурки с лучшей девочкой ~~~р"})
+    elif last_msg_user == "/music":
+            content_type_out = "text"
+            result_out = "Давай поищем песню, вдруг она у меня есть.Пиши название"
+            reply_out = telebot.types.ReplyKeyboardRemove()
+    elif last_msg_bot == "Давай поищем песню, вдруг она у меня есть.Пиши название":
+            result_out = music_processing.get_path_of_song(last_msg_user.replace("'",""))
+            reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
+            if result_out is None:
+                content_type_out = "text"
+                result_out = "Мы ничего не нашли, соре"
+            else:
+                content_type_out = "audio"
     else:
         content_type_out = "text"
         result_out = ChatGpt.get_result_from_chatgpt(last_msg_user)
