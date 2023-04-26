@@ -1,4 +1,5 @@
 import keyboards_buttons
+import music_processing
 import common_methods
 import callback_data
 import queries_to_bd
@@ -86,6 +87,9 @@ child_thread = threading.Thread(target=time_schedule_bot)
 child_thread.start()
 
 #далее ниже идет выполнение кода в основном потоке
+
+#обновление словаря с файлами музыки
+dict_of_music = music_processing.getDictofFiles('/home/duck/Documents/GitHub/PyBot/assets/music')
 
 MypyBot = telebot.TeleBot(my_cfg.telegram_token, parse_mode = None)
 
