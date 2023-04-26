@@ -345,13 +345,8 @@ def cases_trigger(bot, cur_message):
             result_out = "Давай поищем песню, вдруг она у меня есть.Пиши название"
             reply_out = telebot.types.ReplyKeyboardRemove()
     elif last_msg_bot == "Давай поищем песню, вдруг она у меня есть.Пиши название":
-            result_out = music_processing.get_path_of_song(last_msg_user.replace("'",""))
+            result_out, content_type_out = music_processing.get_data_of_song(last_msg_user.replace("'",""))
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
-            if result_out is None:
-                content_type_out = "text"
-                result_out = "Мы ничего не нашли, соре"
-            else:
-                content_type_out = "audio"
     else:
         content_type_out = "text"
         result_out = ChatGpt.get_result_from_chatgpt(last_msg_user)

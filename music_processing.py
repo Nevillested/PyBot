@@ -31,14 +31,25 @@ def getDictofFiles(dirName):
 def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
-def get_path_of_song(name_of_song):
-    path_of_song = None
+def get_data_of_song(name_of_song):
+    result_out = None
+    content_type_out = None
     #обновление словаря с файлами музыки
     dict_of_music = getDictofFiles('/home/duck/Documents/GitHub/PyBot/assets/music')
     for key, value in dict_of_music.items():
-        result_of_compare = similar(key, name_of_song) *100
-        print(key, ' : ', result_of_compare)
+        result_of_compare = similar(name_of_song, key) * 100
         if result_of_compare > 70:
-            path_of_song = value
+            result_out = value
+            content_type_out = "audio"
             break
-    return path_of_song
+
+    if result_out is not None:
+        file_stats = os.stat(result_out)
+        if file_stats.st_size / (1024 * 1024) > 50:
+            result_out = "Соре, этот файл весит больше 50 мб, телега не позволяет отправлять такие файлы"
+            content_type_out = "text"
+    else:
+        result_out = "Мы ничего не нашли, соре"
+        content_type_out = "text"
+
+    return result_out, content_type_out
