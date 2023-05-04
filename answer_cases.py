@@ -347,6 +347,16 @@ def cases_trigger(bot, cur_message):
     elif last_msg_bot == "Давай поищем песню, вдруг она у меня есть.Пиши название":
             result_out, content_type_out = music_processing.get_data_of_song(last_msg_user.replace("'",""))
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
+
+
+
+    elif last_msg_user == "/test":
+            content_type_out = "text"
+            result_out = "null"
+            reply_out = keyboards_buttons.music_alphabet()
+
+
+
     else:
         content_type_out = "text"
         result_out = ChatGpt.get_result_from_chatgpt(last_msg_user)

@@ -1,4 +1,5 @@
 import keyboards_buttons
+import music_processing
 import common_methods
 import callback_data
 import queries_to_bd
@@ -11,16 +12,41 @@ import sending
 import datetime
 import my_cfg
 import time
+import random
 
 #Метод для шедулера - это будет дочерний поток
 def time_schedule_bot():
     while True:
 
-        time.sleep(60)
-
+        time.sleep(1)
         cur_date_time = datetime.datetime.now()
+        
+        #if (cur_date_time.second % 2 == 0):
+        #    
+        #    #отправка рандомного сердечка
+        #    try:
+        #        cur_send_mode = 'default_mode'
+        #        cur_type_data = 'text'
+        #        heart_string = '❤️🤍💗💚💙💕💝💘💖💞🤎❣️🖤💓♥️🧡❤️'
+        #        cur_text_data = random.choice(heart_string), None, None, None
+        #        sending.send_msg(bot             = MypyBot,
+        #                         send_mode       = cur_send_mode,
+        #                         chat_id_out     = 83729683,
+        #                         type_data_out   = cur_type_data,
+        #                         text_data_out   = cur_text_data)
 
-        if (cur_date_time.minute == 00):
+        #        cur_text_data = random.choice(heart_string), None, None, None
+        #        sending.send_msg(bot             = MypyBot,
+        #                         send_mode       = cur_send_mode,
+        #                         chat_id_out     = my_cfg.id_owner,
+        #                         type_data_out   = cur_type_data,
+        #                         text_data_out   = cur_text_data)
+        #    except Exception as e:
+        #        print('Heart is not sending')
+                
+        #    print('Отработка ежесекундного шедулера')
+        
+        if (cur_date_time.minute == 00 and cur_date_time.second == 00):
             
             #отправка пикчи
             list_users_id = queries_to_bd.get_users_id_of_current_subscription('Пикча с Шинобу')
@@ -56,7 +82,7 @@ def time_schedule_bot():
 
             print('Отработка ежечасного шедулера')
         
-        if (cur_date_time.hour == 22 and cur_date_time.minute == 00):
+        if (cur_date_time.hour == 22 and cur_date_time.minute == 00 and cur_date_time.second == 00):
             
             #отправка праздника
             today_holiday = queries_to_bd.get_holiday()
@@ -86,6 +112,7 @@ child_thread = threading.Thread(target=time_schedule_bot)
 child_thread.start()
 
 #далее ниже идет выполнение кода в основном потоке
+music_processing.prepare_data()
 
 MypyBot = telebot.TeleBot(my_cfg.telegram_token, parse_mode = None)
 
@@ -175,7 +202,7 @@ def callback_inline(call):
 #хэндер простых сообщений   
 @MypyBot.message_handler(content_types=CONTENT_TYPES)
 def start_message(message):
-    try:
+    #try:
         #if message.via_bot != True:
             print(f"Пришло сообщение от: {message.from_user.username}\nТип сообщения: {str(message.content_type)}\nТекст сообщения: {message.text}\n")
             
@@ -191,8 +218,8 @@ def start_message(message):
             #отправляет результат
             sending.send_msg(bot, send_mode, message, chat_id, msg_id, type_data, text_data, poll_data, photo_data, sticker_data, audio_data, doc_data)
             
-    except Exception as e:
-        print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
+    #except Exception as e:
+        #print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
 
 while True:
     try:

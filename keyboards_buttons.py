@@ -1,4 +1,5 @@
 from datetime import timedelta, date
+import music_processing
 import queries_to_bd
 import telebot
 import sending
@@ -72,8 +73,18 @@ def create_inline_kb(dict_of_buttons):
         reply_to.add(telebot.types.InlineKeyboardButton(text=value, callback_data=key))
     return reply_to
 
-#клавитура для выбора частоты получения подписки
+#клавитура для выбора частоты получения подписки - в тесте
 def subscription_frequency():
     reply_to = telebot.types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=False)
     reply_to.add("Каждый час","Каждый день","Каждую неделю","Каждый месяц","Каждый год")
+    return reply_to
+
+#клавитура для мызки - алфавитная клавиатура
+def music_alphabet():
+    alphabet_music_dict = {}
+    list_of_music_files = music_processing.getListOfMusicFiles()
+    list_of_first_char_files = {}
+    for file_name in list_of_music_files:
+        print(file_name)
+    reply_out = create_inline_kb(alphabet_music_dict)
     return reply_to
