@@ -15,6 +15,7 @@ import random
 import datetime
 import time
 
+music_processing.prepare_data()
 
 MypyBot = telebot.TeleBot(my_cfg.telegram_token, parse_mode = None)
 

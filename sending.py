@@ -101,7 +101,7 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
             bot.send_document(chat_id_to_send, result)
 
         else:
-            status = 'Не удалось отправить ваше сообщение. Свяжитесь с админом и расскажите об ошибке плз\nТип сообщения: '+str(content_type_out)
+            status = 'Не удалось отправить ваше сообщение. Свяжитесь с админом напрямую @g1ts0 и расскажите об ошибке плз\nТип сообщения: '+str(content_type_out)
         
         #уведомляет отправляющего пользователя о статусе сообщения
         bot.send_message(from_send.chat.id, status) 

@@ -4,9 +4,8 @@ import sending
 from difflib import SequenceMatcher
 import my_cfg
 
-
 music_path = '/home/duck/Documents/GitHub/PyBot/assets/music'
-allFiles = list()
+list_of_full_path_all_files = list()
 
 #получение списка с путями всех файлов в текущей директории
 def getListOfPathFiles(current_path):
@@ -79,4 +78,5 @@ def getListOfMusicFiles():
 
 #подготовка данных по музыке
 def prepare_data(bot):
-    None
+    #создаем список с путями всех файлов в текущей директориим
+    list_of_full_path_all_files = getListOfPathFiles(music_path)
