@@ -1,11 +1,12 @@
-import time
+import keyboards_buttons
+import common_methods
+import queries_to_bd
 import datetime
+import sending
+import time
 
 #Метод для шедулера - это будет дочерний поток
-def time_schedule_bot():
-    while True:
-
-        time.sleep(1)
+def time_schedule_bot(MypyBot):
         cur_date_time = datetime.datetime.now()
 
         #if (cur_date_time.second % 2 == 0):

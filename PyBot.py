@@ -6,18 +6,15 @@ import queries_to_bd
 import answer_cases
 import inline_mode
 import threading
-import scheduler
+import send_scheduler
 import inspect
 import telebot
 import sending
 import my_cfg
 import random
+import datetime
+import time
 
-#создаем дочерний поток на шедулер и запускаем его
-child_thread = threading.Thread(target=scheduler.time_schedule_bot)
-child_thread.start()
-
-#далее ниже идет выполнение кода в основном потоке
 music_processing.prepare_data()
 
 MypyBot = telebot.TeleBot(my_cfg.telegram_token, parse_mode = None)
@@ -127,8 +124,16 @@ def start_message(message):
     except Exception as e:
         print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
 
-while True:
-    try:
-        MypyBot.polling()
-    except Exception as e:
-        print('Произошла ошибка: \n' + str(e))
+#шедулер
+def scheduler():
+    while True:
+        try:
+            send_scheduler.time_schedule_bot(MypyBot)
+            time.sleep(1)            
+        except Exception as e:
+            print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
+
+
+child_thread = threading.Thread(target=scheduler)
+child_thread.start()
+MypyBot.polling(none_stop=True)
