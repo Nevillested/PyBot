@@ -98,6 +98,9 @@ def call_processed(bot, call):
                              type_data_out   = cur_type_data,
                              audio_data_out  = audio_data)
 
+        elif call.data.__contains__("_music_menu_one_"):
+            text_out = "Выбери символ (букву или цифру), с которой начинается название исполняющей группы"
+            reply_markup_out = keyboards_buttons.music_alphabet()
 
 
         else:
