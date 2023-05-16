@@ -340,20 +340,14 @@ def cases_trigger(bot, cur_message):
             content_type_out = "text"
             result_out = "Прайс-лист"
             reply_out = keyboards_buttons.create_inline_kb({"payment_one_btn": "Потому что я такой хорошенький - 100р","payment_two_btn":"На тяжелую жизнь бездомного разработчика - 150р","payment_three_btn":"На развитие бота, чтобы он делал вашу жизнь лучше - 200р", "payment_shinobu":"На фигурки с лучшей девочкой ~~~р"})
+
+
+
+
     elif last_msg_user == "/music":
-            content_type_out = "text"
-            result_out = "Давай поищем песню, вдруг она у меня есть.Пиши название"
-            reply_out = telebot.types.ReplyKeyboardRemove()
-    elif last_msg_bot == "Давай поищем песню, вдруг она у меня есть.Пиши название":
-            result_out, content_type_out = music_processing.get_data_of_song(last_msg_user.replace("'",""))
-            reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
-
-
-
-    elif last_msg_user == "/test":
-            content_type_out = "text"
-            result_out = "null"
-            reply_out = keyboards_buttons.music_alphabet()
+        content_type_out = "text"
+        reply_out = keyboards_buttons.music_alphabet()
+        result_out = "Выбери символ (букву или цифру), с которой начинается название исполняющей группы"
 
 
 

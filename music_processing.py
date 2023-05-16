@@ -1,10 +1,14 @@
 import os
+import keyboards_buttons
+import sending
 from difflib import SequenceMatcher
+import my_cfg
+
 
 music_path = '/home/duck/Documents/GitHub/PyBot/assets/music'
-list_of_file_names_started_abc = list()
 allFiles = list()
 
+#получение списка с путями всех файлов в текущей директории
 def getListOfPathFiles(current_path):
     listOfFile = os.listdir(current_path)
     for entry in listOfFile:
@@ -15,8 +19,8 @@ def getListOfPathFiles(current_path):
             allFiles.append(fullPath)
     return allFiles
 
+#получение словаря, в котором ключ = имя файла, значение = путь к нему
 def getDictofFiles():
-    #получение списка с путями всех файлов в текущей директории
     list_of_files = getListOfPathFiles(music_path)
     dict = {}
 
@@ -31,13 +35,14 @@ def getDictofFiles():
 
     return dict
 
+#сравнение двух строк
 def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
+#получение данных по имени файла
 def get_data_of_song(name_of_song):
     result_out = None
     content_type_out = None
-    #обновление словаря с файлами музыки
     dict_of_music = getDictofFiles()
     for key, value in dict_of_music.items():
         result_of_compare = similar(name_of_song, key) * 100
@@ -57,9 +62,7 @@ def get_data_of_song(name_of_song):
 
     return result_out, content_type_out
 
-
 def getListOfMusicFiles():
-    #получение списка с наименованиями всех файлов в текущей директории
     list_of_files = getListOfPathFiles(music_path)
     files_names = list()
 
@@ -74,6 +77,6 @@ def getListOfMusicFiles():
 
     return files_names
 
-
-def prepare_data():
+#подготовка данных по музыке
+def prepare_data(bot):
     None

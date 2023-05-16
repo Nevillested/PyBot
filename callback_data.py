@@ -3,6 +3,8 @@ import queries_to_bd
 import payments
 import sending
 import telebot
+import os
+import music_processing
 
 def call_processed(bot, call):
     # Если сообщение из чата с ботом
@@ -54,6 +56,49 @@ def call_processed(bot, call):
         elif call.data.__contains__("payment"):
             text_out = "Ура, транжирим!"
             payments.command_pay(call.message, bot, call.data)
+
+        elif call.data.__contains__("_music_abc_group_"):
+            text_out = "Выбери исполняющую группу"
+            reply_markup_out = keyboards_buttons.music_group_list(call.data)
+
+        elif call.data.__contains__("_music_group_"):
+            text_out = "Выбери альбом"
+            reply_markup_out = keyboards_buttons.albums_of_group_list(call.data)
+
+        elif call.data.__contains__("_music_album_"):
+            text_out = "Выбери песню"
+            reply_markup_out = keyboards_buttons.songs_of_album_list(call.data)
+
+        elif call.data.__contains__("_music_song_"):
+            text_out = "Держи"
+            path_of_song = (call.data).replace('_music_song_','')
+            idx_of_last_slash = path_of_song.rindex('/') + 1
+            name_of_song = path_of_song[idx_of_last_slash:len(path_of_song)]
+            path_of_song = music_processing.music_path + r'/' + path_of_song[0:idx_of_last_slash]
+
+            folders = os.listdir(path_of_song)
+            full_song_path = ''
+            for song in folders:
+                idx_of_LAST_TOCHKA = song.rindex('.')
+                cur_song_name = song[0:idx_of_LAST_TOCHKA]
+                for char in cur_song_name:
+                    for num in '1234567890 ':
+                        if cur_song_name.__contains__(num):
+                            cur_song_name = cur_song_name.replace(num,'')
+                if cur_song_name.lower() == name_of_song.lower():
+                    full_song_path = path_of_song + song
+            cur_send_mode = 'default_mode'
+            cur_type_data = 'audio'
+            result_out = full_song_path
+            audio_data = result_out, None
+
+            sending.send_msg(bot             = bot,
+                             send_mode       = cur_send_mode,
+                             chat_id_out     = chat_id_out,
+                             type_data_out   = cur_type_data,
+                             audio_data_out  = audio_data)
+
+
 
         else:
             text_out = "Нажата какая-то кнопка"

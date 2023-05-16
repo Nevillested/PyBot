@@ -6,6 +6,7 @@ import my_cfg
 def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, type_data_out=None, text_data_out=None, poll_data_out=None, photo_data_out=None, sticker_data_out=None, audio_data_out=None, doc_data_out=None, inline_data_out=None, payment_data_out=None, edit_msg_data_out=None):
     
     #простой режим отправки сообщений
+    result_out = ''
     if send_mode == 'default_mode':
         if type_data_out == "text":
             result_out =  text_data_out[0]

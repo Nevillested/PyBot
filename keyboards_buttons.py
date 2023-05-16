@@ -4,6 +4,7 @@ import queries_to_bd
 import telebot
 import sending
 import my_cfg
+import os
 
 #клавиатура основного меню
 def main_menu(chat_id):
@@ -66,6 +67,12 @@ def weather_place():
     reply_to.add(current_place, "/main_menu")
     return reply_to
 
+#клавитура для выбора частоты получения подписки - в тесте
+def subscription_frequency():
+    reply_to = telebot.types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=False)
+    reply_to.add("Каждый час","Каждый день","Каждую неделю","Каждый месяц","Каждый год")
+    return reply_to
+
 #метод для создания инлайн-клавиатуры. На вход получает словарь из пары "ид кнопки-название кнопки", а на выходе отдает саму клавиатуру
 def create_inline_kb(dict_of_buttons):
     reply_to = telebot.types.InlineKeyboardMarkup()
@@ -73,18 +80,129 @@ def create_inline_kb(dict_of_buttons):
         reply_to.add(telebot.types.InlineKeyboardButton(text=value, callback_data=key))
     return reply_to
 
-#клавитура для выбора частоты получения подписки - в тесте
-def subscription_frequency():
-    reply_to = telebot.types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=False)
-    reply_to.add("Каждый час","Каждый день","Каждую неделю","Каждый месяц","Каждый год")
+#клавитура для музыки - алфавитная клавиатура
+def music_alphabet():
+    abc_buttons = {}
+    folders = os.listdir(music_processing.music_path)
+    for s in folders:
+        if (s[0]).upper() not in abc_buttons:
+            abc_buttons['_music_abc_group_' + (s[0]).upper()] = (s[0]).upper()
+    sorted_abc_buttons = dict(sorted(abc_buttons.items(), key=lambda item: item[1]))
+
+    reply_to = telebot.types.InlineKeyboardMarkup(row_width=5)
+    local_cnt = 1
+    global_cnt = 0
+    len_of_dict = len(sorted_abc_buttons)
+
+    for key, value in sorted_abc_buttons.items():
+
+        if local_cnt == 1:
+            tmp_btn_1 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
+
+        elif local_cnt == 2:
+            tmp_btn_2 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
+
+        elif local_cnt == 3:
+            tmp_btn_3 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
+
+        elif local_cnt == 4:
+            tmp_btn_4 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
+
+        elif local_cnt == 5:
+            tmp_btn_5 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
+            reply_to.add(tmp_btn_1, tmp_btn_2, tmp_btn_3, tmp_btn_4, tmp_btn_5)
+            tmp_btn_1 = None
+            tmp_btn_2 = None
+            tmp_btn_3 = None
+            tmp_btn_4 = None
+            tmp_btn_5 = None
+            local_cnt = 0
+
+
+        global_cnt = global_cnt + 1
+
+        if str(global_cnt) == str(len_of_dict):
+            if local_cnt == 1:
+                reply_to.add(tmp_btn_1)
+            elif local_cnt == 2:
+                reply_to.add(tmp_btn_1, tmp_btn_2)
+            elif local_cnt == 3:
+                reply_to.add(tmp_btn_1, tmp_btn_2, tmp_btn_3)
+            elif local_cnt == 4:
+                reply_to.add(tmp_btn_1, tmp_btn_2, tmp_btn_3, tmp_btn_4)
+            elif local_cnt == 5:
+                reply_to.add(tmp_btn_1, tmp_btn_2, tmp_btn_3, tmp_btn_4, tmp_btn_5)
+        local_cnt = local_cnt + 1
     return reply_to
 
-#клавитура для мызки - алфавитная клавиатура
-def music_alphabet():
-    alphabet_music_dict = {}
-    list_of_music_files = music_processing.getListOfMusicFiles()
-    list_of_first_char_files = {}
-    for file_name in list_of_music_files:
-        print(file_name)
-    reply_out = create_inline_kb(alphabet_music_dict)
+#клавитура для музыки - список исполнителей сгруппированных по общему первому знаку
+def music_group_list(call_data):
+    first_char = call_data.replace('_music_abc_group_','')
+
+    group_name_buttons = {}
+    folders = os.listdir(music_processing.music_path)
+    for s in folders:
+        if (s[0]).upper() == first_char.upper():
+            group_name_buttons['_music_group_' + s] = s
+    sorted_abc_buttons = dict(sorted(group_name_buttons.items(), key=lambda item: item[1]))
+
+    reply_to = telebot.types.InlineKeyboardMarkup(row_width=2)
+    local_cnt = 1
+    global_cnt = 0
+    len_of_dict = len(sorted_abc_buttons)
+
+    for key, value in sorted_abc_buttons.items():
+
+        if local_cnt == 1:
+            tmp_btn_1 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
+
+        elif local_cnt == 2:
+            tmp_btn_2 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
+            reply_to.add(tmp_btn_1, tmp_btn_2)
+            tmp_btn_1 = None
+            tmp_btn_2 = None
+            local_cnt = 0
+
+        global_cnt = global_cnt + 1
+
+        if str(global_cnt) == str(len_of_dict):
+            if local_cnt == 1:
+                reply_to.add(tmp_btn_1)
+        local_cnt = local_cnt + 1
+    return reply_to
+
+#клавитура для музыки - список альбомов определенного исполнителя
+def albums_of_group_list(call_data):
+    group_name = call_data.replace('_music_group_','')
+
+    albums_name_buttons = {}
+    musical_group_path = music_processing.music_path + r'/' + group_name
+    folders = os.listdir(musical_group_path)
+    for album_name in folders:
+        albums_name_buttons['_music_album_' + group_name + r'/' + album_name] = album_name
+    sorted_abc_buttons = dict(sorted(albums_name_buttons.items(), key=lambda item: item[1]))
+
+    reply_to = create_inline_kb(sorted_abc_buttons)
+    return reply_to
+
+#клавитура для музыки - список песен определенного альбома и исполнителя
+def songs_of_album_list(call_data):
+    group_album_name = call_data.replace('_music_album_','')
+    songs_name_buttons = {}
+    songs_path = music_processing.music_path + r'/' + group_album_name
+
+    folder = os.listdir(songs_path)
+
+    for song_name in folder:
+        idx_of_LAST_TOCHKA = song_name.rindex('.')
+        cur_song_name = song_name[0:idx_of_LAST_TOCHKA]
+        for char in cur_song_name:
+            for num in '1234567890 ':
+                if cur_song_name.__contains__(num):
+                    cur_song_name = cur_song_name.replace(num,'')
+        songs_name_buttons['_music_song_' + group_album_name + r'/' + cur_song_name ] = song_name
+
+    sorted_abc_buttons = dict(sorted(songs_name_buttons.items(), key=lambda item: item[1]))
+
+    reply_to = create_inline_kb(sorted_abc_buttons)
     return reply_to
