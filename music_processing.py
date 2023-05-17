@@ -3,6 +3,7 @@ import keyboards_buttons
 import sending
 from difflib import SequenceMatcher
 import my_cfg
+import common_methods
 
 music_path = '/home/duck/Documents/GitHub/PyBot/assets/music'
 list_data_of_music_files = list()
@@ -63,9 +64,9 @@ def prepare_data():
         item_three = unique_item[find_nth(unique_item,r'/',2)+1:unique_item.rindex('.')]
 
         item_four  = (replace_invalid_telegram_chr(item_zero)).upper()
-        item_five  = (item_four + r'/' + replace_invalid_telegram_chr(item_one)).upper()
-        item_six   = (item_five + r'/' + replace_invalid_telegram_chr(item_two)).upper()
-        item_seven = ((item_six + r'/' + replace_invalid_telegram_chr(item_three)).upper())
+        item_five  = common_methods.translit((item_four + r'/' + replace_invalid_telegram_chr(item_one)).upper())
+        item_six   = common_methods.translit((item_five + r'/' + replace_invalid_telegram_chr(item_two)).upper())
+        item_seven = common_methods.translit((item_six + r'/' + replace_invalid_telegram_chr(item_three)).upper())
 
         while True:
             if len(item_seven.encode('utf-8'))+12 > 64:

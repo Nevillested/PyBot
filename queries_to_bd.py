@@ -142,7 +142,7 @@ def insert_edited_msg_by_bot(data_from_message):
                           , a.chat_id
                           , a.message_id
                           , a.MESSAGE_TYPE
-                          , '""" + msg_text + """'
+                          , '""" + msg_text.replace("'","''") + """'
                           , a.MESSAGE_VERSION + 1
                        from (select *
                                from outcome

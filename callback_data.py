@@ -72,19 +72,27 @@ def call_processed(bot, call):
         elif call.data.__contains__("_music_song_"):
             id_song = (call.data).replace('_music_song_','')
             full_song_path = ''
+            path_folder_of_song = ''
+            text_out = ''
+            cur_send_mode = 'default_mode'
             for item in music_processing.list_data_of_music_files:
                 if item[7] == id_song:
-                    full_song_path = music_processing.music_path + r'/' + item[1] + r'/' + item[2] + r'/' + item[3] + '.m4a'
-            text_out = "Держи"
-            cur_send_mode = 'default_mode'
-            cur_type_data = 'audio'
-            result_out = full_song_path
-            audio_data = result_out, None
-            sending.send_msg(bot             = bot,
-                             send_mode       = cur_send_mode,
-                             chat_id_out     = chat_id_out,
-                             type_data_out   = cur_type_data,
-                             audio_data_out  = audio_data)
+                    files_name = os.listdir(music_processing.music_path + r'/' + item[1] + r'/' + item[2] + r'/')
+                    for name in files_name:
+                        if (name[0:name.rfind('.')]).lower() == (item[3]).lower():
+                            full_song_path = music_processing.music_path + r'/' + item[1] + r'/' + item[2] + r'/' + name
+            if (os.stat(full_song_path)).st_size / (1024 * 1024) < 50:
+                text_out = "Держи"
+                cur_type_data = 'audio'
+                result_out = full_song_path
+                audio_data = result_out, None
+                sending.send_msg(bot            = bot,
+                                send_mode       = cur_send_mode,
+                                chat_id_out     = chat_id_out,
+                                type_data_out   = cur_type_data,
+                                audio_data_out  = audio_data)
+            else:
+                text_out = "Соре, файл весит больше 50 мб, телега не позволяетботам отправлять такие файлы."
 
         elif call.data.__contains__("_music_menu_one_"):
             text_out = "Выбери символ (букву или цифру), с которой начинается название исполняющей группы"
