@@ -83,32 +83,25 @@ def create_inline_kb(dict_of_buttons):
 #клавитура для музыки - алфавитная клавиатура
 def music_alphabet():
     abc_buttons = {}
-
     #создаем словарь с уникальными ключ-значение, где ключ - ID кнопки, а значение - текст кнопки
     for item in music_processing.list_data_of_music_files:
         if (item[0]).upper() not in abc_buttons:
             abc_buttons['_music_abc_group_' + (item[4]).upper()] = item[0]
     sorted_abc_buttons = dict(sorted(abc_buttons.items(), key=lambda item: item[1]))
-
     reply_to = telebot.types.InlineKeyboardMarkup(row_width=5)
     local_cnt = 1
     global_cnt = 0
     len_of_dict = len(sorted_abc_buttons)
 
     for key, value in sorted_abc_buttons.items():
-
         if local_cnt == 1:
             tmp_btn_1 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
-
         elif local_cnt == 2:
             tmp_btn_2 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
-
         elif local_cnt == 3:
             tmp_btn_3 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
-
         elif local_cnt == 4:
             tmp_btn_4 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
-
         elif local_cnt == 5:
             tmp_btn_5 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
             reply_to.add(tmp_btn_1, tmp_btn_2, tmp_btn_3, tmp_btn_4, tmp_btn_5)
@@ -118,10 +111,7 @@ def music_alphabet():
             tmp_btn_4 = None
             tmp_btn_5 = None
             local_cnt = 0
-
-
         global_cnt = global_cnt + 1
-
         if str(global_cnt) == str(len_of_dict):
             if local_cnt == 1:
                 reply_to.add(tmp_btn_1)
@@ -143,15 +133,13 @@ def music_group_list(call_data):
     #создаем словарь с уникальными ключ-значение, где ключ - ID кнопки, а значение - текст кнопки
     dict_of_names_group = {}
     for item in music_processing.list_data_of_music_files:
-        if ((item[4])).upper() == first_char.upper() and (item[4]) not in dict_of_names_group:
+        if (item[4]) == first_char and '_music_group_' + item[5] not in dict_of_names_group:
             dict_of_names_group['_music_group_' + (item[5])] = item[1]
     sorted_dict_of_names_group = dict(sorted(dict_of_names_group.items(), key=lambda item: item[1]))
-
     reply_to = telebot.types.InlineKeyboardMarkup(row_width=2)
     local_cnt = 1
     global_cnt = 0
     len_of_dict = len(sorted_dict_of_names_group)
-
     for key, value in sorted_dict_of_names_group.items():
         if local_cnt == 1:
             tmp_btn_1 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
@@ -161,9 +149,7 @@ def music_group_list(call_data):
             tmp_btn_1 = None
             tmp_btn_2 = None
             local_cnt = 0
-
         global_cnt = global_cnt + 1
-
         if str(global_cnt) == str(len_of_dict):
             if local_cnt == 1:
                 reply_to.add(tmp_btn_1)
@@ -174,35 +160,59 @@ def music_group_list(call_data):
 #клавитура для музыки - список альбомов определенного исполнителя
 def albums_of_group_list(call_data):
     group_name = call_data.replace('_music_group_','')
-
-    albums_name_buttons = {}
-    musical_group_path = music_processing.music_path + r'/' + group_name
-    folders = os.listdir(musical_group_path)
-    for album_name in folders:
-        albums_name_buttons['_music_album_' + group_name + r'/' + album_name] = album_name
-    sorted_abc_buttons = dict(sorted(albums_name_buttons.items(), key=lambda item: item[1]))
-
-    reply_to = create_inline_kb(sorted_abc_buttons)
+    dict_of_names_albums = {}
+    for item in music_processing.list_data_of_music_files:
+        if (item[5]) == group_name and '_music_album_' + item[6] not in dict_of_names_albums:
+            dict_of_names_albums['_music_album_' + (item[6])] = item[2]
+    sorted_dict_of_names_albums = dict(sorted(dict_of_names_albums.items(), key=lambda item: item[1]))
+    reply_to = telebot.types.InlineKeyboardMarkup(row_width=2)
+    local_cnt = 1
+    global_cnt = 0
+    len_of_dict = len(sorted_dict_of_names_albums)
+    for key, value in sorted_dict_of_names_albums.items():
+        if local_cnt == 1:
+            tmp_btn_1 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
+        elif local_cnt == 2:
+            tmp_btn_2 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
+            reply_to.add(tmp_btn_1, tmp_btn_2)
+            tmp_btn_1 = None
+            tmp_btn_2 = None
+            local_cnt = 0
+        global_cnt = global_cnt + 1
+        if str(global_cnt) == str(len_of_dict):
+            if local_cnt == 1:
+                reply_to.add(tmp_btn_1)
+        local_cnt = local_cnt + 1
+    reply_to.add(telebot.types.InlineKeyboardButton(text='Назад', callback_data='_music_menu_two_' + group_name))
     return reply_to
 
 #клавитура для музыки - список песен определенного альбома и исполнителя
 def songs_of_album_list(call_data):
     group_album_name = call_data.replace('_music_album_','')
-    songs_name_buttons = {}
-    songs_path = music_processing.music_path + r'/' + group_album_name
 
-    folder = os.listdir(songs_path)
+    dict_of_names_songs = {}
 
-    for song_name in folder:
-        idx_of_LAST_TOCHKA = song_name.rindex('.')
-        cur_song_name = song_name[0:idx_of_LAST_TOCHKA]
-        for char in cur_song_name:
-            for num in '1234567890 ':
-                if cur_song_name.__contains__(num):
-                    cur_song_name = cur_song_name.replace(num,'')
-        songs_name_buttons['_music_song_' + group_album_name + r'/' + cur_song_name ] = song_name
-
-    sorted_abc_buttons = dict(sorted(songs_name_buttons.items(), key=lambda item: item[1]))
-
-    reply_to = create_inline_kb(sorted_abc_buttons)
+    for item in music_processing.list_data_of_music_files:
+        if (item[6]) == group_album_name and '_music_song_' + item[7] not in dict_of_names_songs:
+            dict_of_names_songs['_music_song_' + (item[7])] = item[3]
+    sorted_dict_of_names_songs = dict(sorted(dict_of_names_songs.items(), key=lambda item: item[1]))
+    reply_to = telebot.types.InlineKeyboardMarkup(row_width=2)
+    local_cnt = 1
+    global_cnt = 0
+    len_of_dict = len(sorted_dict_of_names_songs)
+    for key, value in sorted_dict_of_names_songs.items():
+        if local_cnt == 1:
+            tmp_btn_1 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
+        elif local_cnt == 2:
+            tmp_btn_2 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
+            reply_to.add(tmp_btn_1, tmp_btn_2)
+            tmp_btn_1 = None
+            tmp_btn_2 = None
+            local_cnt = 0
+        global_cnt = global_cnt + 1
+        if str(global_cnt) == str(len_of_dict):
+            if local_cnt == 1:
+                reply_to.add(tmp_btn_1)
+        local_cnt = local_cnt + 1
+    reply_to.add(telebot.types.InlineKeyboardButton(text='Назад', callback_data='_music_menu_three_' + group_album_name))
     return reply_to

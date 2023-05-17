@@ -70,28 +70,16 @@ def call_processed(bot, call):
             reply_markup_out = keyboards_buttons.songs_of_album_list(call.data)
 
         elif call.data.__contains__("_music_song_"):
-            text_out = "Держи"
-            path_of_song = (call.data).replace('_music_song_','')
-            idx_of_last_slash = path_of_song.rindex('/') + 1
-            name_of_song = path_of_song[idx_of_last_slash:len(path_of_song)]
-            path_of_song = music_processing.music_path + r'/' + path_of_song[0:idx_of_last_slash]
-
-            folders = os.listdir(path_of_song)
+            id_song = (call.data).replace('_music_song_','')
             full_song_path = ''
-            for song in folders:
-                idx_of_LAST_TOCHKA = song.rindex('.')
-                cur_song_name = song[0:idx_of_LAST_TOCHKA]
-                for char in cur_song_name:
-                    for num in '1234567890 ':
-                        if cur_song_name.__contains__(num):
-                            cur_song_name = cur_song_name.replace(num,'')
-                if cur_song_name.lower() == name_of_song.lower():
-                    full_song_path = path_of_song + song
+            for item in music_processing.list_data_of_music_files:
+                if item[7] == id_song:
+                    full_song_path = music_processing.music_path + r'/' + item[1] + r'/' + item[2] + r'/' + item[3] + '.m4a'
+            text_out = "Держи"
             cur_send_mode = 'default_mode'
             cur_type_data = 'audio'
             result_out = full_song_path
             audio_data = result_out, None
-
             sending.send_msg(bot             = bot,
                              send_mode       = cur_send_mode,
                              chat_id_out     = chat_id_out,
@@ -101,7 +89,17 @@ def call_processed(bot, call):
         elif call.data.__contains__("_music_menu_one_"):
             text_out = "Выбери символ (букву или цифру), с которой начинается название исполняющей группы"
             reply_markup_out = keyboards_buttons.music_alphabet()
-
+        elif call.data.__contains__("_music_menu_two_"):
+            text_out = "Выбери исполняющую группу"
+            call_data = (call.data).replace('_music_menu_two_','')
+            call_data = call_data[0:music_processing.find_nth(call_data,r'/',1)]
+            reply_markup_out = keyboards_buttons.music_group_list(call_data)
+        elif call.data.__contains__("_music_menu_three_"):
+            text_out = "Выбери альбом"
+            call_data = (call.data).replace('_music_menu_three_','_music_group_')
+            call_data = call_data[0:music_processing.find_nth(call_data,r'/',2)]
+            print('456 '+call_data)
+            reply_markup_out = keyboards_buttons.albums_of_group_list(call_data)
 
         else:
             text_out = "Нажата какая-то кнопка"

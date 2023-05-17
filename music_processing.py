@@ -18,84 +18,6 @@ def getListOfPathFiles(current_path):
         else:
             allFiles.append(fullPath)
     return allFiles
-"""
-#получение словаря, в котором ключ = имя файла, значение = путь к нему
-def getDictofFiles():
-    list_of_files = getListOfPathFiles(music_path)
-    dict = {}
-
-    for item in list_of_files:
-        idx_from = ''
-        idx_to = len(item)
-        for idx, char in enumerate(item):
-            if char == "/":
-                idx_from = idx
-        cur_file_name = ((item[idx_from+1:idx_to]).lower()).replace("'","")
-        dict[cur_file_name] = item
-
-    return dict
-
-#сравнение двух строк
-def similar(a, b):
-    return SequenceMatcher(None, a, b).ratio()
-
-#получение данных по имени файла
-def get_data_of_song(name_of_song):
-    result_out = None
-    content_type_out = None
-    dict_of_music = getDictofFiles()
-    for key, value in dict_of_music.items():
-        result_of_compare = similar(name_of_song, key) * 100
-        if result_of_compare > 70:
-            result_out = value
-            content_type_out = "audio"
-            break
-
-    if result_out is not None:
-        file_stats = os.stat(result_out)
-        if file_stats.st_size / (1024 * 1024) > 50:
-            result_out = "Соре, этот файл весит больше 50 мб, телега не позволяет отправлять такие файлы"
-            content_type_out = "text"
-    else:
-        result_out = "Мы ничего не нашли, соре"
-        content_type_out = "text"
-
-    return result_out, content_type_out
-
-def getListOfMusicFiles():
-    list_of_files = getListOfPathFiles(music_path)
-    files_names = list()
-
-    for item in list_of_files:
-        idx_from = ''
-        idx_to = len(item)
-        for idx, char in enumerate(item):
-            if char == "/":
-                idx_from = idx
-        cur_file_name = ((item[idx_from+1:idx_to]).lower()).replace("'","")
-        files_names.append(cur_file_name)
-
-    return files_names
-
-
-
-
-
-
-#создает отсортированный словарь с названиями групп, которые начинаются с буквы, которую выбрал пользователь
-def getDictOfSortedAbcMusicButtons(first_char):
-
-    dict_of_names_group = {}
-    folders = os.listdir(music_path)
-    for music_group in folders:
-        if (music_group[0]).upper() == first_char.upper():
-            clean_music_group = replace_invalid_telegram_chr(music_group)
-            dict_of_names_group['_music_group_' + clean_music_group] = music_group
-    sort_dict_of_names_group = dict(sorted(dict_of_names_group.items(), key=lambda item: item[1]))
-    for item in dict_of_names_group:
-        print(item)
-    return sort_dict_of_names_group
-"""
 
 #убирает все знаки, которые не подходят для создания call_back_data button
 def replace_invalid_telegram_chr(current_string):
@@ -135,14 +57,19 @@ def prepare_data():
     for path_of_file in list_of_full_path_all_files:
         unique_item = path_of_file.replace(r'/home/duck/Documents/GitHub/PyBot/assets/music/','')
 
-        item_zero = (unique_item[0]).upper()
-        item_one = unique_item[0:find_nth(unique_item,r'/',1)]
-        item_two = unique_item[find_nth(unique_item,r'/',1)+1:find_nth(unique_item,r'/',2)]
+        item_zero  = (unique_item[0]).upper()
+        item_one   = unique_item[0:find_nth(unique_item,r'/',1)]
+        item_two   = unique_item[find_nth(unique_item,r'/',1)+1:find_nth(unique_item,r'/',2)]
         item_three = unique_item[find_nth(unique_item,r'/',2)+1:unique_item.rindex('.')]
 
-        item_four = replace_invalid_telegram_chr(item_zero)
-        item_five = replace_invalid_telegram_chr(item_one)
-        item_six = replace_invalid_telegram_chr(item_two)
-        item_seven = replace_invalid_telegram_chr(item_three)
+        item_four  = (replace_invalid_telegram_chr(item_zero)).upper()
+        item_five  = (item_four + r'/' + replace_invalid_telegram_chr(item_one)).upper()
+        item_six   = (item_five + r'/' + replace_invalid_telegram_chr(item_two)).upper()
+        item_seven = ((item_six + r'/' + replace_invalid_telegram_chr(item_three)).upper())
 
+        while True:
+            if len(item_seven.encode('utf-8'))+12 > 64:
+                item_seven = item_seven[0:len(item_seven)-1]
+            else:
+                break
         list_data_of_music_files.append([item_zero, item_one, item_two, item_three, item_four, item_five, item_six, item_seven])
