@@ -200,19 +200,28 @@ def songs_of_album_list(call_data):
     local_cnt = 1
     global_cnt = 0
     len_of_dict = len(sorted_dict_of_names_songs)
-    for key, value in sorted_dict_of_names_songs.items():
-        if local_cnt == 1:
-            tmp_btn_1 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
-        elif local_cnt == 2:
-            tmp_btn_2 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
-            reply_to.add(tmp_btn_1, tmp_btn_2)
-            tmp_btn_1 = None
-            tmp_btn_2 = None
-            local_cnt = 0
-        global_cnt = global_cnt + 1
-        if str(global_cnt) == str(len_of_dict):
+
+
+    current_key = ''
+    try:
+        for key, value in sorted_dict_of_names_songs.items():
+            current_key = key
             if local_cnt == 1:
-                reply_to.add(tmp_btn_1)
-        local_cnt = local_cnt + 1
-    reply_to.add(telebot.types.InlineKeyboardButton(text='Назад', callback_data='_music_menu_three_' + group_album_name))
+                tmp_btn_1 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
+            elif local_cnt == 2:
+                tmp_btn_2 = telebot.types.InlineKeyboardButton(text=value, callback_data=key)
+                reply_to.add(tmp_btn_1, tmp_btn_2)
+                tmp_btn_1 = None
+                tmp_btn_2 = None
+                local_cnt = 0
+            global_cnt = global_cnt + 1
+            if str(global_cnt) == str(len_of_dict):
+                if local_cnt == 1:
+                    reply_to.add(tmp_btn_1)
+            local_cnt = local_cnt + 1
+        reply_to.add(telebot.types.InlineKeyboardButton(text='Назад', callback_data='_music_menu_three_' + group_album_name))
+    except:
+        print('при добавлении клавиатуры произошла ошибка')
+        print(current_key)
+
     return reply_to
