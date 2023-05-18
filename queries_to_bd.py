@@ -7,15 +7,15 @@ conn.autocommit = True
 cur = conn.cursor()
 
 #проверяет пользователя в бд, если есть-обновляет данные, если нет-добавляет данные
-def check_user(data_FROM_message):
+def check_user(data_from_message):
 
-    chat_id = str(data_FROM_message.chat.id)
-    first_name = data_FROM_message.FROM_user.first_name or ''
-    username = data_FROM_message.FROM_user.username or ''
-    last_name = data_FROM_message.FROM_user.last_name or ''
-    language_code = data_FROM_message.FROM_user.language_code or ''
-    is_premium = str(data_FROM_message.FROM_user.is_premium) or ''
-    is_bot = str(data_FROM_message.FROM_user.is_bot) or ''
+    chat_id = str(data_from_message.chat.id)
+    first_name = data_from_message.from_user.first_name or ''
+    username = data_from_message.from_user.username or ''
+    last_name = data_from_message.from_user.last_name or ''
+    language_code = data_from_message.from_user.language_code or ''
+    is_premium = str(data_from_message.from_user.is_premium) or ''
+    is_bot = str(data_from_message.from_user.is_bot) or ''
 
     cur.execute("""
     MERGE INTO users u
@@ -40,18 +40,18 @@ def check_user(data_FROM_message):
     """)
 
 #сохраняет прилетевшие данные в переписке с пользователем и ботом
-def insert_user_story_in(data_FROM_message):
+def insert_user_story_in(data_from_message):
 
-    chat_id = str(data_FROM_message.chat.id)
-    message_id = str(data_FROM_message.message_id)
-    username = data_FROM_message.FROM_user.username  or ''
-    content_type = str(data_FROM_message.content_type)  or ''
+    chat_id = str(data_from_message.chat.id)
+    message_id = str(data_from_message.message_id)
+    username = data_from_message.from_user.username  or ''
+    content_type = str(data_from_message.content_type)  or ''
     data_in = ''
 
-    if (data_FROM_message.content_type =='text'):
-        data_in = (data_FROM_message.text).replace("'","'||''''||'")
-    elif (data_FROM_message.content_type =='location'):
-        data_in = str(data_FROM_message.location.latitude)+';'+str(data_FROM_message.location.longitude)
+    if (data_from_message.content_type =='text'):
+        data_in = (data_from_message.text).replace("'","'||''''||'")
+    elif (data_from_message.content_type =='location'):
+        data_in = str(data_from_message.location.latitude)+';'+str(data_from_message.location.longitude)
 
     cur.execute("""
     INSERT INTO income ( chat_id,
@@ -92,11 +92,11 @@ def insert_user_story_out(content_type_out, clob_data_out, chat_id):
     """)
 
 #добавляет новую версию сообщения отредактированного пользователем
-def insert_edited_msg_by_user(data_FROM_message):
+def insert_edited_msg_by_user(data_from_message):
 
-    msg_text = str(data_FROM_message[0])
-    chat_id = str(data_FROM_message[1])
-    message_id = str(data_FROM_message[2])
+    msg_text = str(data_from_message[0])
+    chat_id = str(data_from_message[1])
+    message_id = str(data_from_message[2])
 
     cur.execute("""
     INSERT INTO income( dt_ins
@@ -122,11 +122,11 @@ def insert_edited_msg_by_user(data_FROM_message):
     """)
 
 #добавляет новую версию сообщения отредактированного ботом
-def insert_edited_msg_by_bot(data_FROM_message):
+def insert_edited_msg_by_bot(data_from_message):
 
-    msg_text = str(data_FROM_message[0])
-    chat_id = str(data_FROM_message[1])
-    message_id = str(data_FROM_message[2])
+    msg_text = str(data_from_message[0])
+    chat_id = str(data_from_message[1])
+    message_id = str(data_from_message[2])
 
     cur.execute("""
     INSERT INTO outcome( dt_ins
@@ -152,10 +152,10 @@ def insert_edited_msg_by_bot(data_FROM_message):
     """)
 
 #выдает последнюю версию отредактированного сообщения пользователем
-def get_last_ver_msg(data_FROM_message):
+def get_last_ver_msg(data_from_message):
 
-    chat_id = str(data_FROM_message[0])
-    message_id = str(data_FROM_message[1])
+    chat_id = str(data_from_message[0])
+    message_id = str(data_from_message[1])
 
     cur.execute("""
     SELECT a.MESSAGE_DATA
@@ -176,19 +176,19 @@ def get_last_ver_msg(data_FROM_message):
     return result_string
 
 #сохраняет данные при переписке между пользователями
-def save_resending_data(id_FROM, id_to, data_type, data_send):
+def save_resending_data(id_from, id_to, data_type, data_send):
 
     cur.execute("""
     INSERT INTO resending_data (send_from, send_to, type_data, send_data)
-    VALUES (""" + str(id_FROM) + """, """ + str(id_to) + """, '""" + str(data_type) + """', '""" + str(data_send) + """')
+    VALUES (""" + str(id_from) + """, """ + str(id_to) + """, '""" + str(data_type) + """', '""" + str(data_send) + """')
     """)
 
 #сохраняет данные inline mode
-def save_inline_data(id_FROM, text_query):
+def save_inline_data(id_from, text_query):
 
     cur.execute("""
     INSERT INTO inline_mode_data (query_FROM, query_text)
-    VALUES (""" + str(id_FROM) + """, '""" + str(text_query) + """')
+    VALUES (""" + str(id_from) + """, '""" + str(text_query) + """')
     """)
 
 #получает последнее свое отправленное сообщение
@@ -233,10 +233,10 @@ def get_prelast_user_msg(chat_id):
     return result_string
 
 #создает строку для наполнения данных для шифрования/дешифрования
-def create_session_cezar(data_FROM_message):
+def create_session_cezar(data_from_message):
 
-    chat_id = str(data_FROM_message.chat.id) or ''
-    method = str(data_FROM_message.text.replace("/", "")) or ''
+    chat_id = str(data_from_message.chat.id) or ''
+    method = str(data_from_message.text.replace("/", "")) or ''
 
     cur.execute("""
     INSERT INTO cezar (chat_id, method)
@@ -244,10 +244,10 @@ def create_session_cezar(data_FROM_message):
     """)
 
 #добавляет язык обработки данных для шифрования/дешифрования
-def update_lang_session_cezar(data_FROM_message):
+def update_lang_session_cezar(data_from_message):
 
-    chat_id = str(data_FROM_message.chat.id) or ''
-    lang = str(data_FROM_message.text.lower()) or ''
+    chat_id = str(data_from_message.chat.id) or ''
+    lang = str(data_from_message.text.lower()) or ''
 
     cur.execute("""
     UPDATE CEZAR
@@ -265,10 +265,10 @@ def update_lang_session_cezar(data_FROM_message):
 
 
 #добавляет ключ для шифрования/дешифрования
-def update_key_session_cezar(data_FROM_message):
+def update_key_session_cezar(data_from_message):
 
-    chat_id = str(data_FROM_message.chat.id) or ''
-    key = str(data_FROM_message.text) or ''
+    chat_id = str(data_from_message.chat.id) or ''
+    key = str(data_from_message.text) or ''
 
     cur.execute("""
     UPDATE CEZAR
@@ -285,10 +285,10 @@ def update_key_session_cezar(data_FROM_message):
     """)
 
 #добавляет текст для шифрования/дешифрования
-def update_messaage_in_session_cezar(data_FROM_message):
+def update_messaage_in_session_cezar(data_from_message):
 
-    chat_id = str(data_FROM_message.chat.id) or ''
-    messaage_in = str(data_FROM_message.text) or ''
+    chat_id = str(data_from_message.chat.id) or ''
+    messaage_in = str(data_from_message.text) or ''
 
     cur.execute("""
     UPDATE CEZAR
@@ -305,9 +305,9 @@ def update_messaage_in_session_cezar(data_FROM_message):
     """)
 
 #выдает данные для шифрования
-def get_data_cezar(data_FROM_message):
+def get_data_cezar(data_from_message):
 
-    chat_id = str(data_FROM_message.chat.id) or ''
+    chat_id = str(data_from_message.chat.id) or ''
 
     cur.execute("""
     SELECT lang
@@ -349,7 +349,7 @@ def get_users_id():
     list_of_id = []
     cur.execute("""
     SELECT chat_id
-    FROM users
+      FROM users
     """)
 
     rows = cur.fetchall()
@@ -369,8 +369,8 @@ def get_holiday():
 
     cur.execute("""
     SELECT text_holiday
-    FROM international_holiday
-    WHERE DATE_TRUNC('day', date_holiday) = DATE_TRUNC('day', now())
+      FROM international_holiday
+     WHERE DATE_TRUNC('day', date_holiday) = DATE_TRUNC('day', now())
     """)
 
     tuple_data = cur.fetchone()
@@ -382,10 +382,10 @@ def get_holiday():
 
 
 #создает новую сессию распознавания текста, добавляет язык
-def create_session_voice(data_FROM_message):
+def create_session_voice(data_from_message):
 
-    chat_id = str(data_FROM_message.chat.id) or ''
-    lang = str(data_FROM_message.text) or ''
+    chat_id = str(data_from_message.chat.id) or ''
+    lang = str(data_from_message.text) or ''
 
     cur.execute("""
     INSERT INTO voices (chat_id, lang)
@@ -393,12 +393,12 @@ def create_session_voice(data_FROM_message):
     """)
 
 #выдает язык распознавания текста
-def get_lang_voice(data_FROM_message):
+def get_lang_voice(data_from_message):
 
     cur.execute("""
     SELECT lang
       FROM voices
-     WHERE chat_id = """ + str(data_FROM_message.chat.id) + """
+     WHERE chat_id = """ + str(data_from_message.chat.id) + """
      ORDER BY dt_ins DESC
      LIMIT 1
     """)
@@ -407,14 +407,14 @@ def get_lang_voice(data_FROM_message):
     return tuple_data[0]
 
 #сохраняет распознанный текст
-def insert_result_recognize_speech(data_FROM_message, result_recog):
+def insert_result_recognize_speech(data_from_message, result_recog):
 
     cur.execute("""
     UPDATE voices
        SET result_text = """ + result_recog + """
      WHERE id = ( SELECT id
                     FROM voices
-                   WHERE chat_id = """ + str(data_FROM_message.chat.id) + """
+                   WHERE chat_id = """ + str(data_from_message.chat.id) + """
                    ORDER BY dt_ins DESC
                    LIMIT 1
                 )
