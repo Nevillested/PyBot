@@ -7,25 +7,25 @@ conn.autocommit = True
 cur = conn.cursor()
 
 #проверяет пользователя в бд, если есть-обновляет данные, если нет-добавляет данные
-def check_user(data_from_message):
+def check_user(data_FROM_message):
 
-    chat_id = str(data_from_message.chat.id)
-    first_name = data_from_message.from_user.first_name or ''
-    username = data_from_message.from_user.username or ''
-    last_name = data_from_message.from_user.last_name or ''
-    language_code = data_from_message.from_user.language_code or ''
-    is_premium = str(data_from_message.from_user.is_premium) or ''
-    is_bot = str(data_from_message.from_user.is_bot) or ''
+    chat_id = str(data_FROM_message.chat.id)
+    first_name = data_FROM_message.FROM_user.first_name or ''
+    username = data_FROM_message.FROM_user.username or ''
+    last_name = data_FROM_message.FROM_user.last_name or ''
+    language_code = data_FROM_message.FROM_user.language_code or ''
+    is_premium = str(data_FROM_message.FROM_user.is_premium) or ''
+    is_bot = str(data_FROM_message.FROM_user.is_bot) or ''
 
     cur.execute("""
     MERGE INTO users u
-    USING (select """ + chat_id + """        as chat_id,
-                 '""" + first_name + """'    as first_name,
-                 '""" + username + """'      as username,
-                 '""" + last_name + """'     as last_name,
-                 '""" + language_code + """' as language_code,
-                 '""" + is_premium + """'    as is_premium,
-                 '""" + is_bot + """'        as is_bot) s
+    USING (SELECT """ + chat_id + """        AS chat_id,
+                 '""" + first_name + """'    AS first_name,
+                 '""" + username + """'      AS username,
+                 '""" + last_name + """'     AS last_name,
+                 '""" + language_code + """' AS language_code,
+                 '""" + is_premium + """'    AS is_premium,
+                 '""" + is_bot + """'        AS is_bot) s
     ON u.chat_id = s.chat_id
     WHEN NOT MATCHED THEN
       INSERT (chat_id,first_name,username,last_name,language_code,is_premium,is_bot)
@@ -40,26 +40,26 @@ def check_user(data_from_message):
     """)
 
 #сохраняет прилетевшие данные в переписке с пользователем и ботом
-def insert_user_story_in(data_from_message):
+def insert_user_story_in(data_FROM_message):
 
-    chat_id = str(data_from_message.chat.id)
-    message_id = str(data_from_message.message_id)
-    username = data_from_message.from_user.username  or ''
-    content_type = str(data_from_message.content_type)  or ''
+    chat_id = str(data_FROM_message.chat.id)
+    message_id = str(data_FROM_message.message_id)
+    username = data_FROM_message.FROM_user.username  or ''
+    content_type = str(data_FROM_message.content_type)  or ''
     data_in = ''
 
-    if (data_from_message.content_type =='text'):
-        data_in = (data_from_message.text).replace("'","")
-    elif (data_from_message.content_type =='location'):
-        data_in = str(data_from_message.location.latitude)+';'+str(data_from_message.location.longitude)
+    if (data_FROM_message.content_type =='text'):
+        data_in = (data_FROM_message.text).replace("'","'||''''||'")
+    elif (data_FROM_message.content_type =='location'):
+        data_in = str(data_FROM_message.location.latitude)+';'+str(data_FROM_message.location.longitude)
 
     cur.execute("""
-    insert into income ( chat_id,
-                             message_id,
-                             MESSAGE_TYPE,
-                             MESSAGE_DATA
-                           )
-    values (  """ + chat_id + """,
+    INSERT INTO income ( chat_id,
+                         message_id,
+                         MESSAGE_TYPE,
+                         MESSAGE_DATA
+                       )
+    VALUES (  """ + chat_id + """,
               """ + message_id + """,
              '""" + content_type + """',
              '""" + data_in + """'
@@ -67,107 +67,106 @@ def insert_user_story_in(data_from_message):
     """)
 
 #сохраняет улетевшие данные пользователю в переписке с ботом
-def insert_user_story_out(content_type_out, clob_data_out, chat_id, message_id):
+def insert_user_story_out(content_type_out, clob_data_out, chat_id):
 
     chat_id = str(chat_id) or ''
-    message_id =str(message_id) or ''
     content_type = str(content_type_out) or ''
-    data_in = (str(clob_data_out)).replace("'","''") or ''
+    data_out = (str(clob_data_out)).replace("'","'||''''||'") or ''
 
     cur.execute("""
-    insert into outcome ( chat_id,
+    INSERT INTO outcome ( chat_id,
                           message_id,
                           message_type,
                           message_data
                         )
-    select """ + chat_id + """,
-           max(a.message_id) + 1,
+    SELECT """ + chat_id + """,
+           MAX(a.message_id) + 1,
            '""" + content_type + """',
-           '""" + data_in + """'
-    from (select message_id
-            from income
-           union all
-          select message_id
-            from outcome
-         ) as a
+           '""" + data_out + """'
+    FROM (SELECT message_id
+            FROM income
+           UNION ALL
+          SELECT message_id
+            FROM outcome
+         ) AS a
     """)
 
 #добавляет новую версию сообщения отредактированного пользователем
-def insert_edited_msg_by_user(data_from_message):
+def insert_edited_msg_by_user(data_FROM_message):
 
-    msg_text = str(data_from_message[0])
-    chat_id = str(data_from_message[1])
-    message_id = str(data_from_message[2])
+    msg_text = str(data_FROM_message[0])
+    chat_id = str(data_FROM_message[1])
+    message_id = str(data_FROM_message[2])
 
     cur.execute("""
-    insert into income( dt_ins
-                          , dt_upd
-                          , chat_id
-                          , message_id
-                          , MESSAGE_TYPE
-                          , MESSAGE_DATA
-                          , MESSAGE_VERSION)
-                     select a.dt_ins
-                          , current_timestamp
-                          , a.chat_id
-                          , a.message_id
-                          , a.MESSAGE_TYPE
-                          , '""" + msg_text + """'
-                          , a.MESSAGE_VERSION + 1
-                       from (select *
-                               from income
-                              where chat_id = """ + chat_id + """
-                                and message_id = """ + message_id + """
-                               order by MESSAGE_VERSION desc
-                               limit 1) a
+    INSERT INTO income( dt_ins
+                      , dt_upd
+                      , chat_id
+                      , message_id
+                      , message_type
+                      , message_data
+                      , message_version)
+                 SELECT a.dt_ins
+                      , current_timestamp
+                      , a.chat_id
+                      , a.message_id
+                      , a.message_type
+                      , '""" + msg_text + """'
+                      , a.message_version + 1
+                   FROM (SELECT *
+                           FROM income
+                          WHERE chat_id = """ + chat_id + """
+                            AND message_id = """ + message_id + """
+                           ORDER BY message_version DESC
+                           LIMIT 1) a
     """)
 
 #добавляет новую версию сообщения отредактированного ботом
-def insert_edited_msg_by_bot(data_from_message):
+def insert_edited_msg_by_bot(data_FROM_message):
 
-    msg_text = str(data_from_message[0])
-    chat_id = str(data_from_message[1])
-    message_id = str(data_from_message[2])
+    msg_text = str(data_FROM_message[0])
+    chat_id = str(data_FROM_message[1])
+    message_id = str(data_FROM_message[2])
 
     cur.execute("""
-    insert into outcome( dt_ins
-                          , dt_upd
-                          , chat_id
-                          , message_id
-                          , MESSAGE_TYPE
-                          , MESSAGE_DATA
-                          , MESSAGE_VERSION)
-                     select a.dt_ins
-                          , current_timestamp
-                          , a.chat_id
-                          , a.message_id
-                          , a.MESSAGE_TYPE
-                          , '""" + msg_text.replace("'","''") + """'
-                          , a.MESSAGE_VERSION + 1
-                       from (select *
-                               from outcome
-                              where chat_id = """ + chat_id + """
-                                and message_id = """ + message_id + """
-                               order by MESSAGE_VERSION desc
-                               limit 1) a
+    INSERT INTO outcome( dt_ins
+                       , dt_upd
+                       , chat_id
+                       , message_id
+                       , MESSAGE_TYPE
+                       , MESSAGE_DATA
+                       , MESSAGE_VERSION)
+                  SELECT a.dt_ins
+                       , current_timestamp
+                       , a.chat_id
+                       , a.message_id
+                       , a.MESSAGE_TYPE
+                       , '""" + msg_text.replace("'","''") + """'
+                       , a.MESSAGE_VERSION + 1
+                    FROM (SELECT *
+                            FROM outcome
+                           WHERE chat_id = """ + chat_id + """
+                             AND message_id = """ + message_id + """
+                           ORDER BY MESSAGE_VERSION DESC
+                          LIMIT 1) a
     """)
 
 #выдает последнюю версию отредактированного сообщения пользователем
-def get_last_ver_msg(data_from_message):
+def get_last_ver_msg(data_FROM_message):
 
-    chat_id = str(data_from_message[0])
-    message_id = str(data_from_message[1])
+    chat_id = str(data_FROM_message[0])
+    message_id = str(data_FROM_message[1])
 
     cur.execute("""
-    select a.MESSAGE_DATA
-      from ( select MESSAGE_DATA,
-                    ROW_NUMBER () OVER (ORDER BY MESSAGE_VERSION desc) as rn
-               from income
-              where chat_id = """ + chat_id + """
-                and message_id = """ + message_id + """
-              order by MESSAGE_VERSION desc
-           ) as a
-     where a.rn = 2
+    SELECT a.MESSAGE_DATA
+      FROM ( SELECT MESSAGE_DATA,
+                    ROW_NUMBER () OVER (ORDER BY MESSAGE_VERSION DESC) AS rn
+               FROM income
+              WHERE chat_id = """ + chat_id + """
+                AND message_id = """ + message_id + """
+              ORDER BY MESSAGE_VERSION DESC
+           ) AS a
+     WHERE a.rn = 2
     """)
 
     result_tuple = cur.fetchone()
@@ -177,32 +176,32 @@ def get_last_ver_msg(data_from_message):
     return result_string
 
 #сохраняет данные при переписке между пользователями
-def save_resending_data(id_from, id_to, data_type, data_send):
+def save_resending_data(id_FROM, id_to, data_type, data_send):
 
     cur.execute("""
-    insert into resending_data (send_from, send_to, type_data, send_data)
-    values (""" + str(id_from) + """, """ + str(id_to) + """, '""" + str(data_type) + """', '""" + str(data_send) + """')
+    INSERT INTO resending_data (send_from, send_to, type_data, send_data)
+    VALUES (""" + str(id_FROM) + """, """ + str(id_to) + """, '""" + str(data_type) + """', '""" + str(data_send) + """')
     """)
 
 #сохраняет данные inline mode
-def save_inline_data(id_from, text_query):
+def save_inline_data(id_FROM, text_query):
 
     cur.execute("""
-    insert into inline_mode_data (query_from, query_text)
-    values (""" + str(id_from) + """, '""" + str(text_query) + """')
+    INSERT INTO inline_mode_data (query_FROM, query_text)
+    VALUES (""" + str(id_FROM) + """, '""" + str(text_query) + """')
     """)
 
 #получает последнее свое отправленное сообщение
 def get_last_bot_msg(chat_id):
 
     cur.execute("""
-    select a.MESSAGE_DATA
-      from ( select MESSAGE_DATA
+    SELECT a.MESSAGE_DATA
+      FROM ( SELECT MESSAGE_DATA
                   , row_number() OVER(ORDER BY dt_ins DESC) rn
-               from outcome a
-              where chat_id = """ + str(chat_id) + """
-              order by dt_ins desc) as a
-     where a.rn = 1""")
+               FROM outcome a
+              WHERE chat_id = """ + str(chat_id) + """
+              ORDER BY dt_ins DESC) AS a
+     WHERE a.rn = 1""")
     result_tuple = cur.fetchone()
     result_string = ''
 
@@ -216,13 +215,13 @@ def get_last_bot_msg(chat_id):
 def get_prelast_user_msg(chat_id):
 
     cur.execute("""
-    select a.MESSAGE_DATA
-      from (select MESSAGE_DATA,
-                   ROW_NUMBER () OVER (ORDER BY dt_ins desc) as rn
-              from income a
-             where chat_id = """ + str(chat_id) + """
-           ) as a
-     where a.rn = 2
+    SELECT a.MESSAGE_DATA
+      FROM (SELECT MESSAGE_DATA,
+                   ROW_NUMBER () OVER (ORDER BY dt_ins DESC) AS rn
+              FROM income a
+             WHERE chat_id = """ + str(chat_id) + """
+           ) AS a
+     WHERE a.rn = 2
     """)
     result_tuple = cur.fetchone()
 
@@ -234,21 +233,21 @@ def get_prelast_user_msg(chat_id):
     return result_string
 
 #создает строку для наполнения данных для шифрования/дешифрования
-def create_session_cezar(data_from_message):
+def create_session_cezar(data_FROM_message):
 
-    chat_id = str(data_from_message.chat.id) or ''
-    method = str(data_from_message.text.replace("/", "")) or ''
+    chat_id = str(data_FROM_message.chat.id) or ''
+    method = str(data_FROM_message.text.replace("/", "")) or ''
 
     cur.execute("""
-    insert into cezar (chat_id, method)
-    values (""" + chat_id + """, '""" + method + """')
+    INSERT INTO cezar (chat_id, method)
+    VALUES (""" + chat_id + """, '""" + method + """')
     """)
 
 #добавляет язык обработки данных для шифрования/дешифрования
-def update_lang_session_cezar(data_from_message):
+def update_lang_session_cezar(data_FROM_message):
 
-    chat_id = str(data_from_message.chat.id) or ''
-    lang = str(data_from_message.text.lower()) or ''
+    chat_id = str(data_FROM_message.chat.id) or ''
+    lang = str(data_FROM_message.text.lower()) or ''
 
     cur.execute("""
     UPDATE CEZAR
@@ -266,10 +265,10 @@ def update_lang_session_cezar(data_from_message):
 
 
 #добавляет ключ для шифрования/дешифрования
-def update_key_session_cezar(data_from_message):
+def update_key_session_cezar(data_FROM_message):
 
-    chat_id = str(data_from_message.chat.id) or ''
-    key = str(data_from_message.text) or ''
+    chat_id = str(data_FROM_message.chat.id) or ''
+    key = str(data_FROM_message.text) or ''
 
     cur.execute("""
     UPDATE CEZAR
@@ -286,10 +285,10 @@ def update_key_session_cezar(data_from_message):
     """)
 
 #добавляет текст для шифрования/дешифрования
-def update_messaage_in_session_cezar(data_from_message):
+def update_messaage_in_session_cezar(data_FROM_message):
 
-    chat_id = str(data_from_message.chat.id) or ''
-    messaage_in = str(data_from_message.text) or ''
+    chat_id = str(data_FROM_message.chat.id) or ''
+    messaage_in = str(data_FROM_message.text) or ''
 
     cur.execute("""
     UPDATE CEZAR
@@ -306,16 +305,16 @@ def update_messaage_in_session_cezar(data_from_message):
     """)
 
 #выдает данные для шифрования
-def get_data_cezar(data_from_message):
+def get_data_cezar(data_FROM_message):
 
-    chat_id = str(data_from_message.chat.id) or ''
+    chat_id = str(data_FROM_message.chat.id) or ''
 
     cur.execute("""
-    select lang
+    SELECT lang
          , key
          , method
          , messaage_in
-      from cezar
+      FROM cezar
      WHERE CHAT_ID = """ + chat_id + """
        AND ID = (SELECT A.ID
                    FROM (SELECT ID
@@ -335,8 +334,8 @@ def get_data_cezar(data_from_message):
 def get_users():
 
     cur.execute("""
-    select STRING_AGG('ID чата `' || chat_id ||'`, ник/имя ' || coalesce(case when username is not null then '@'||username end, first_name||' '||last_name), '\n')
-    from users""")
+    SELECT STRING_AGG('ID чата `' || chat_id ||'`, ник/имя ' || coalesce(case when username is not null then '@'||username end, first_name||' '||last_name), '\n')
+    FROM users""")
     tuple_data = cur.fetchone()
 
     result = common_methods.convertTuple(tuple_data)
@@ -349,8 +348,8 @@ def get_users_id():
 
     list_of_id = []
     cur.execute("""
-    select chat_id
-    from users
+    SELECT chat_id
+    FROM users
     """)
 
     rows = cur.fetchall()
@@ -369,9 +368,9 @@ def get_users_id():
 def get_holiday():
 
     cur.execute("""
-    select text_holiday
-    from international_holiday
-    where date_trunc('day', date_holiday) = date_trunc('day', now())
+    SELECT text_holiday
+    FROM international_holiday
+    WHERE DATE_TRUNC('day', date_holiday) = DATE_TRUNC('day', now())
     """)
 
     tuple_data = cur.fetchone()
@@ -383,41 +382,41 @@ def get_holiday():
 
 
 #создает новую сессию распознавания текста, добавляет язык
-def create_session_voice(data_from_message):
+def create_session_voice(data_FROM_message):
 
-    chat_id = str(data_from_message.chat.id) or ''
-    lang = str(data_from_message.text) or ''
+    chat_id = str(data_FROM_message.chat.id) or ''
+    lang = str(data_FROM_message.text) or ''
 
     cur.execute("""
-    insert into voices (chat_id, lang)
-    values (""" + chat_id + """, '""" + lang + """')
+    INSERT INTO voices (chat_id, lang)
+    VALUES (""" + chat_id + """, '""" + lang + """')
     """)
 
 #выдает язык распознавания текста
-def get_lang_voice(data_from_message):
+def get_lang_voice(data_FROM_message):
 
     cur.execute("""
-    select lang
-    from voices
-    where chat_id = """ + str(data_from_message.chat.id) + """
-    order by dt_ins desc
-    limit 1
+    SELECT lang
+      FROM voices
+     WHERE chat_id = """ + str(data_FROM_message.chat.id) + """
+     ORDER BY dt_ins DESC
+     LIMIT 1
     """)
     tuple_data = cur.fetchone()
 
     return tuple_data[0]
 
 #сохраняет распознанный текст
-def insert_result_recognize_speech(data_from_message, result_recog):
+def insert_result_recognize_speech(data_FROM_message, result_recog):
 
     cur.execute("""
-    update voices
-       set result_text = """ + result_recog + """
-     where id = ( select id
-                    from voices
-                    where chat_id = """ + str(data_from_message.chat.id) + """
-                    order by dt_ins desc
-                    limit 1
+    UPDATE voices
+       SET result_text = """ + result_recog + """
+     WHERE id = ( SELECT id
+                    FROM voices
+                   WHERE chat_id = """ + str(data_FROM_message.chat.id) + """
+                   ORDER BY dt_ins DESC
+                   LIMIT 1
                 )
     """)
 
@@ -425,7 +424,7 @@ def insert_result_recognize_speech(data_from_message, result_recog):
 def get_joke():
 
     cur.execute("""
-    select 'Анекдотов пока нет, соре'
+    SELECT 'Анекдотов пока нет, соре'
     """)
     tuple_data = cur.fetchone()
 
@@ -436,10 +435,10 @@ def get_joke():
 def get_compliment():
 
     cur.execute("""
-    select text
-    from compliments
-    order by random()
-    limit 1
+    SELECT text
+      FROM compliments
+     ORDER BY RANDOM()
+     LIMIT 1
     """)
     tuple_data = cur.fetchone()
 
@@ -450,12 +449,12 @@ def get_compliment():
 def get_translate_jp(user_text):
 
     cur.execute("""
-    select coalesce(
-                    ( select STRING_AGG ('Без кандзи: '||jap_word_without_kanji||
+    SELECT coalesce(
+                    ( SELECT STRING_AGG ('Без кандзи: '||jap_word_without_kanji||
                                          '\nС Кандзи: '||coalesce(jap_word_with_kanji,'отсутствует')||
                                          '\nПеревод: '||rus_word, '\n\n') res
-                        from jap_dict
-                       where lower(rus_word) like '%""" + user_text.lower() +"""%'
+                        FROM jap_dict
+                       WHERE lower(rus_word) like '%""" + user_text.lower() +"""%'
                     ), 'Мы ничего не нашли'
                    )
     """)
@@ -470,12 +469,12 @@ def get_translate_jp(user_text):
 def get_kanji(user_number):
 
     cur.execute("""
-    select STRING_AGG ('Кандзи: '||kanji||
+    SELECT STRING_AGG ('Кандзи: '||kanji||
                        '\nЧтения: '||reading||
                        '\nПеревод: '||rus_word, '\n\n') res
-      from jap_kanji
-     where id <= 10 * """+user_number+"""
-       and id > 10 * """+user_number+""" - 10
+      FROM jap_kanji
+     WHERE id <= 10 * """+user_number+"""
+       AND id > 10 * """+user_number+""" - 10
     """)
 
     result_tuple = cur.fetchone()
@@ -488,14 +487,14 @@ def get_kanji(user_number):
 def get_last_num_decade_kanji(chat_id):
 
     cur.execute("""
-    select lag_msg
-      from ( select LAG(message_data,1) OVER ( ORDER BY id desc ) lag_msg,
+    SELECT lag_msg
+      FROM ( SELECT LAG(message_data,1) OVER ( ORDER BY id DESC ) lag_msg,
                     message_data,
                     chat_id
-               from income
-           ) as a
-     where lower(a.message_data) = 'по номеру десятка!'
-       and a.chat_id = """ + str(chat_id) + """
+               FROM income
+           ) AS a
+     WHERE lower(a.message_data) = 'по номеру десятка!'
+       AND a.chat_id = """ + str(chat_id) + """
     """)
     result_tuple = cur.fetchone()
 
@@ -511,34 +510,34 @@ def get_decade_kanji_quiz(num_decade):
 
     list_of_rows = []
 
-    cur.execute("""with
-                     all_vars as (
-                       select a.kanji
+    cur.execute("""WITH
+                     all_vars AS (
+                       SELECT a.kanji
                             , a.reading
                             , a.rus_word
                             , a.rn
-                         from (select a.*
-                                    , ROW_NUMBER () OVER (ORDER BY random()) as rn
-                                 from jap_kanji a
-                                where a.id <= 10 * """+num_decade+"""
-                                  and a.id > 10 * """+num_decade+""" -10
-                                order by random()
+                         FROM (SELECT a.*
+                                    , ROW_NUMBER () OVER (ORDER BY RANDOM()) AS rn
+                                 FROM jap_kanji a
+                                WHERE a.id <= 10 * """+num_decade+"""
+                                  AND a.id > 10 * """+num_decade+""" -10
+                                ORDER BY RANDOM()
                               ) a
-                        where rn <= 4
+                        WHERE rn <= 4
                        ),
-                       rand_true_val as(
-                         select *
-                           from all_vars
-                          where rn = 1
+                       rand_true_val AS(
+                         SELECT *
+                           FROM all_vars
+                          WHERE rn = 1
                        )
                        /*берем правильный ответ*/
-                       select kanji, 'Чтение: '||reading||'. Перевод: '||rus_word,rn from rand_true_val
+                       SELECT kanji, 'Чтение: '||reading||'. Перевод: '||rus_word,rn FROM rand_true_val
                        /*объединяем со всеми, которые имеются*/
-                       union all
-                       select a.kanji, 'Чтение: '||a.reading||'. Перевод: '||a.rus_word,rn from (select *
-                                                                                                 from all_vars
-                                                                                                order by random()
-                                                                                              ) as a
+                       UNION ALL
+                       SELECT a.kanji, 'Чтение: '||a.reading||'. Перевод: '||a.rus_word,rn FROM (SELECT *
+                                                                                                 FROM all_vars
+                                                                                                ORDER BY RANDOM()
+                                                                                              ) AS a
     """)
     list_of_rows = cur.fetchall()
     return list_of_rows
@@ -547,23 +546,28 @@ def get_decade_kanji_quiz(num_decade):
 def get_all_kanji_quiz():
     list_of_rows = []
 
-    cur.execute("""with
-                     all_vars as (
-                       select a.kanji
+    cur.execute("""WITH
+                     all_vars AS (
+                       SELECT a.kanji
                             , a.reading
                             , a.rus_word
                             , a.id
-                            , ROW_NUMBER () OVER (ORDER BY random()) as rn
-                         from jap_kanji as a order by RANDOM() limit 4
+                            , ROW_NUMBER () OVER (ORDER BY RANDOM()) AS rn
+                         FROM jap_kanji AS a
+                        ORDER BY RANDOM()
+                        LIMIT 4
                        )
                        /*берем правильный ответ*/
-                       select kanji, 'Чтение: '||reading||'. Перевод: '||rus_word,rn from all_vars where rn = 1
+                       SELECT kanji, 'Чтение: '||reading||'. Перевод: '||rus_word,rn
+                         FROM all_vars
+                        WHERE rn = 1
                        /*объединяем со всеми, которые имеются*/
-                       union all
-                       select a.kanji, 'Чтение: '||a.reading||'. Перевод: '||a.rus_word, rn from (select *
-                                                                                                  from all_vars
-                                                                                                 order by random()
-                                                                                               ) as a
+                       UNION ALL
+                       SELECT a.kanji, 'Чтение: '||a.reading||'. Перевод: '||a.rus_word, rn
+                         FROM (SELECT *
+                                 FROM all_vars
+                                ORDER BY RANDOM()
+                              ) AS a
     """)
     list_of_rows = cur.fetchall()
     return list_of_rows
@@ -573,10 +577,10 @@ def get_subscriptions_user(chat_id):
     list_of_rows = []
     dict_of_subscriptions_user = {}
     cur.execute("""
-    select chat_id ||'_' ||id as  btn_id
+    SELECT chat_id ||'_' ||id AS  btn_id
          , subscription_name
-      from subscriptions
-     where chat_id = """ + str(chat_id) + """
+      FROM subscriptions
+     WHERE chat_id = """ + str(chat_id) + """
     """)
     list_of_rows = cur.fetchall()
     for item in list_of_rows:
@@ -587,12 +591,12 @@ def get_subscriptions_user(chat_id):
 #возвращает статус подписки пользователя
 def get_cur_subscription_status(id_subscription):
     cur.execute("""
-    select a.active_flg
-      from (select a.*
-                 , a.chat_id ||'_' ||a.id as btn_id
-              from subscriptions as a
-           ) as a
-     where a.btn_id = '""" + id_subscription + """'
+    SELECT a.active_flg
+      FROM (SELECT a.*
+                 , a.chat_id ||'_' ||a.id AS btn_id
+              FROM subscriptions AS a
+           ) AS a
+     WHERE a.btn_id = '""" + id_subscription + """'
     """)
     result_tuple = cur.fetchone()
 
@@ -606,9 +610,9 @@ def get_cur_subscription_status(id_subscription):
 #изменяет статус подписки
 def change_user_subscription_status(id_subscription, status):
     cur.execute("""
-    update subscriptions
-       set active_flg = """+ str(status) + """
-     where chat_id ||'_' ||id = '""" + id_subscription + """'
+    UPDATE subscriptions
+       SET active_flg = """+ str(status) + """
+     WHERE chat_id ||'_' ||id = '""" + id_subscription + """'
     """)
 
 #выдает список пользователей для активной подписки
@@ -616,10 +620,10 @@ def get_users_id_of_current_subscription(name_of_subscription):
 
     list_of_id = []
     cur.execute("""
-    select chat_id
-      from subscriptions
-     where subscription_name = '""" + name_of_subscription + """'
-       and active_flg = 1
+    SELECT chat_id
+      FROM subscriptions
+     WHERE subscription_name = '""" + name_of_subscription + """'
+       AND active_flg = 1
     """)
 
     rows = cur.fetchall()
@@ -638,10 +642,10 @@ def get_users_id_of_current_subscription(name_of_subscription):
 def save_data_for_payment(payment_data_out):
 
     cur.execute("""
-    insert into payments (chat_id,
+    INSERT INTO payments (chat_id,
                           title,
                           descr)
-    values (""" + str(payment_data_out[0]) + """,
+    VALUES ( """ + str(payment_data_out[0]) + """,
             '""" + str(payment_data_out[1]) + """',
             '""" + str(payment_data_out[2]) + """')
     """)
@@ -650,16 +654,16 @@ def save_data_for_payment(payment_data_out):
 def upd_data_for_payment(payment_data_in):
 
     cur.execute("""
-    update payments
-    set currency                   = '""" +str(payment_data_in.successful_payment.currency)+ """',
+    UPDATE payments
+    SET currency                   = '""" +str(payment_data_in.successful_payment.currency)+ """',
         total_amount               = """ +str(payment_data_in.successful_payment.total_amount)+ """,
         telegram_payment_charge_id = '""" +str(payment_data_in.successful_payment.telegram_payment_charge_id)+ """',
         provider_payment_charge_id = '""" +str(payment_data_in.successful_payment.provider_payment_charge_id)+ """'
-        where id = (select id
-                      from payments
-                     where chat_id = """+str(payment_data_in.chat.id)+"""
-                     order by dt_ins desc
-                     limit 1
+        WHERE id = (SELECT id
+                      FROM payments
+                     WHERE chat_id = """+str(payment_data_in.chat.id)+"""
+                     ORDER BY dt_ins DESC
+                     LIMIT 1
                    )
     """)
 
@@ -669,12 +673,12 @@ def gen_music_data(list_data_of_music_files):
     #наполянем данными по существующим группам-альбомам-песням
     for item in list_data_of_music_files:
         sql_stmt = """
-        insert into music_files (FIRST_CHAR_PERFORMER_DISPLAY_NAME,
+        INSERT INTO music_files (FIRST_CHAR_PERFORMER_DISPLAY_NAME,
                                  PERFORMER_DISPLAY_NAME,
                                  ALBUM_DISPLAY_NAME,
                                  SONG_DISPLAY_NAME,
                                  PATH_TO_FILE)
-        values ('""" + (str(item[0])).replace("'","'||''''||'") + """',
+        VALUES ('""" + (str(item[0])).replace("'","'||''''||'") + """',
                 '""" + (str(item[1])).replace("'","'||''''||'")  + """',
                 '""" + (str(item[2])).replace("'","'||''''||'") + """',
                 '""" + (str(item[3])).replace("'","'||''''||'")  + """',
@@ -687,9 +691,9 @@ def gen_music_data(list_data_of_music_files):
 #выдает словарь с уникальными первыми буквами названий групп и их айдишниками
 def get_abc_dict():
     cur.execute("""
-    select distinct first_char_performer_display_name,
+    SELECT DISTINCT first_char_performer_display_name,
                     first_char_performer_id
-               from music_files
+               FROM music_files
     """)
     rows = cur.fetchall()
     abc_dict = {}
@@ -700,10 +704,10 @@ def get_abc_dict():
 #выдает словарь с уникальными названиями групп и их айдишниками
 def get_performer_dict(char_id):
     cur.execute("""
-    select distinct performer_display_name,
+    SELECT DISTINCT performer_display_name,
                     performer_display_id
-               from music_files
-              where first_char_performer_id = '""" + char_id + """'
+               FROM music_files
+              WHERE first_char_performer_id = '""" + char_id + """'
     """)
     rows = cur.fetchall()
     performer_dict = {}
@@ -714,10 +718,10 @@ def get_performer_dict(char_id):
 #выдает словарь с уникальными названиями альбомов и их айдишниками
 def get_albums_dict(performer_id):
     cur.execute("""
-    select distinct album_display_name,
+    SELECT DISTINCT album_display_name,
                     album_display_id
-               from music_files
-              where performer_display_id = '""" + performer_id + """'
+               FROM music_files
+              WHERE performer_display_id = '""" + performer_id + """'
     """)
     rows = cur.fetchall()
     albums_dict = {}
@@ -728,10 +732,10 @@ def get_albums_dict(performer_id):
 #выдает словарь с уникальными названиями песен и их айдишниками
 def get_songs_dict(album_id):
     cur.execute("""
-    select distinct song_display_name,
+    SELECT DISTINCT song_display_name,
                     song_display_id
-               from music_files
-              where album_display_id = '""" + album_id + """'
+               FROM music_files
+              WHERE album_display_id = '""" + album_id + """'
     """)
     rows = cur.fetchall()
     songs_dict = {}
@@ -742,9 +746,9 @@ def get_songs_dict(album_id):
 #выдает путь к песне
 def get_song_path(song_id):
     cur.execute("""
-    select path_to_file
-      from music_files
-     where song_display_id = '""" + song_id + """'
+    SELECT path_to_file
+      FROM music_files
+     WHERE song_display_id = '""" + song_id + """'
     """)
     result_tuple = cur.fetchone()
     result_string = ''
@@ -752,12 +756,12 @@ def get_song_path(song_id):
         result_string = common_methods.convertTuple(result_tuple)
     return result_string
 
-#получаем айди первого знака группы по айдишнику прилетевшей группы
+#получаем айди первого знака группы по айдишнику прилетевшей группы - необходимо для кнопки "назад" из меню с альбомами
 def get_reverse_performer(id):
     cur.execute("""
-    select distinct first_char_performer_id
-      from music_files
-     where performer_display_id = '""" + id + """'
+    SELECT DISTINCT first_char_performer_id
+      FROM music_files
+     WHERE performer_display_id = '""" + id + """'
     """)
     result_tuple = cur.fetchone()
     result_string = ''
@@ -765,12 +769,12 @@ def get_reverse_performer(id):
         result_string = common_methods.convertTuple(result_tuple)
     return result_string
 
-#получаем айди альбома по айдишнику прилетевшей песни
+#получаем айди альбома по айдишнику прилетевшей песни - необходимо для кнопки "назад" из меню с песнями
 def get_reverse_album(id):
     cur.execute("""
-    select distinct performer_display_id
-      from music_files
-     where album_display_id = '""" + id + """'
+    SELECT DISTINCT performer_display_id
+      FROM music_files
+     WHERE album_display_id = '""" + id + """'
     """)
     result_tuple = cur.fetchone()
     result_string = ''

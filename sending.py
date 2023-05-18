@@ -47,7 +47,7 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
             bot.send_document(chat_id_out, document = open(result_out, 'rb'), reply_markup = reply_out)
 
         #сохраняет улетевшие данные пользователю
-        queries_to_bd.insert_user_story_out(type_data_out, result_out, chat_id_out, msg_id_out)
+        queries_to_bd.insert_user_story_out(type_data_out, result_out, chat_id_out)
             
             
     #режим отправки соообщений другому пользователю

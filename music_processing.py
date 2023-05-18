@@ -47,4 +47,5 @@ def prepare_data():
         item_four = path_of_file
         list_data_of_music_files.append([item_zero, item_one, item_two, item_three, item_four])
 
-    queries_to_bd.gen_music_data(list_data_of_music_files)
+    #раскомментировать, если появится новая музыка по директории '/home/duck/Documents/GitHub/PyBot/assets/music'
+    #queries_to_bd.gen_music_data(list_data_of_music_files)

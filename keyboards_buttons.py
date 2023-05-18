@@ -67,12 +67,6 @@ def weather_place():
     reply_to.add(current_place, "/main_menu")
     return reply_to
 
-#клавитура для выбора частоты получения подписки - в тесте
-def subscription_frequency():
-    reply_to = telebot.types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=False)
-    reply_to.add("Каждый час","Каждый день","Каждую неделю","Каждый месяц","Каждый год")
-    return reply_to
-
 #метод для создания инлайн-клавиатуры. На вход получает словарь из пары "ид кнопки-название кнопки", а на выходе отдает саму клавиатуру
 def create_inline_kb(dict_of_buttons):
     reply_to = telebot.types.InlineKeyboardMarkup()
@@ -196,4 +190,10 @@ def songs_of_album_list(call_data):
                 reply_to.add(tmp_btn_1)
         local_cnt = local_cnt + 1
     reply_to.add(telebot.types.InlineKeyboardButton(text='Назад', callback_data='mus_back_three_' + call_data))
+    return reply_to
+
+#клавитура для выбора частоты получения подписки - в тесте
+def subscription_frequency():
+    reply_to = telebot.types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=False)
+    reply_to.add("Каждый час","Каждый день","Каждую неделю","Каждый месяц","Каждый год")
     return reply_to
