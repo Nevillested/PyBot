@@ -5,6 +5,7 @@ import sending
 import telebot
 import os
 import music_processing
+import threading
 
 def call_processed(bot, call):
     # Если сообщение из чата с ботом
@@ -78,11 +79,12 @@ def call_processed(bot, call):
                 cur_type_data = 'audio'
                 result_out = full_song_path
                 audio_data = result_out, None
-                sending.send_msg(bot             = bot,
-                                 send_mode       = cur_send_mode,
-                                 chat_id_out     = chat_id_out,
-                                 type_data_out   = cur_type_data,
-                                 audio_data_out  = audio_data)
+                send_audio_thread = threading.Thread(target=sending.send_msg(bot             = bot,
+                                                                             send_mode       = cur_send_mode,
+                                                                             chat_id_out     = chat_id_out,
+                                                                             type_data_out   = cur_type_data,
+                                                                             audio_data_out  = audio_data))
+                send_audio_thread.start()
             else:
                 text_out = "Соре, файл весит больше 50 мб, телега не позволяет ботам отправлять такие файлы."
 
