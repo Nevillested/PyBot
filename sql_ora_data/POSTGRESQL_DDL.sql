@@ -189,3 +189,147 @@ COMMENT ON COLUMN payments.total_amount IS 'Сумма платежа';
 COMMENT ON COLUMN payments.telegram_payment_charge_id IS 'ID платежа телеги';
 COMMENT ON COLUMN payments.provider_payment_charge_id IS 'ID платежа платежной системы';
 COMMENT ON TABLE payments  IS 'Данные платежей';
+--------------------------------------------------------
+--  DDL for Table music_files
+--------------------------------------------------------
+CREATE TABLE music_files(ID SERIAL,
+			 FIRST_CHAR_PERFORMER_DISPLAY_NAME text,
+                         FIRST_CHAR_PERFORMER_ID text,
+                         PERFORMER_DISPLAY_NAME text,
+                         PERFORMER_DISPLAY_ID text,
+                         ALBUM_DISPLAY_NAME text,
+                         ALBUM_DISPLAY_ID text,
+                         SONG_DISPLAY_NAME text,
+                         SONG_DISPLAY_ID text,
+			 PATH_TO_FILE text
+                        );
+                          
+COMMENT ON COLUMN music_files.ID is 'ID строки';
+COMMENT ON COLUMN music_files.FIRST_CHAR_PERFORMER_DISPLAY_NAME is 'Первая буква названия исполнителя';
+COMMENT ON COLUMN music_files.FIRST_CHAR_PERFORMER_ID is 'ID первой буквы названия исполнителя';
+COMMENT ON COLUMN music_files.PERFORMER_DISPLAY_NAME is 'Название исполнителя';
+COMMENT ON COLUMN music_files.PERFORMER_DISPLAY_ID is 'ID исполнителя';
+COMMENT ON COLUMN music_files.ALBUM_DISPLAY_NAME is 'Название альбома';
+COMMENT ON COLUMN music_files.ALBUM_DISPLAY_ID is 'ID альбома';
+COMMENT ON COLUMN music_files.SONG_DISPLAY_NAME is 'Название песни';
+COMMENT ON COLUMN music_files.SONG_DISPLAY_ID IS 'ID песни';
+COMMENT ON COLUMN music_files.PATH_TO_FILE is 'Путь к песне';
+COMMENT ON TABLE music_files IS 'Данные музыки';
+--------------------------------------------------------
+--  DDL for procedure set_music_id
+--------------------------------------------------------
+CREATE OR REPLACE procedure set_music_id()
+language plpgsql
+as $$
+declare
+rec                                 record;
+l_first_char_performer_id           text;
+l_first_char_performer_display_name text := '';
+l_performer_display_id              text;
+l_performer_display_name            text := '';
+l_album_display_id                  text;
+l_album_display_name                text := ''; 
+begin
+  execute 'ALTER SEQUENCE music_files_id_seq RESTART WITH 1';
+  update music_files set first_char_performer_id = null, performer_display_id = null, album_display_id = null, song_display_id = null;
+  for rec in (select id,
+			         first_char_performer_display_name,
+                     first_char_performer_id,
+                     performer_display_name,
+                     performer_display_id,
+                     album_display_name,
+                     album_display_id,
+                     song_display_name,
+                     song_display_id,
+				     path_to_file
+                from music_files
+               order by path_to_file asc)
+  loop
+	if l_first_char_performer_display_name is null or 
+	   l_performer_display_name is null or
+	   l_album_display_name is null
+      then
+        l_first_char_performer_display_name := rec.first_char_performer_display_name;
+	    l_performer_display_name            := rec.performer_display_name;
+	    l_album_display_name                := rec.album_display_name;
+		l_first_char_performer_id           := make_uid('first_char_performer_id');
+		l_performer_display_id              := make_uid('performer_display_id');
+		l_album_display_id                  := make_uid('album_display_id');
+	end if;
+	
+    if rec.first_char_performer_display_name = l_first_char_performer_display_name
+	  then 
+	    update music_files set first_char_performer_id = l_first_char_performer_id where id = rec.id;
+	  else
+	    l_first_char_performer_display_name := rec.first_char_performer_display_name;
+		l_first_char_performer_id           := make_uid('first_char_performer_id');
+	    update music_files set first_char_performer_id = l_first_char_performer_id where id = rec.id;
+	end if;
+	
+    if rec.performer_display_name = l_performer_display_name
+	  then 
+	    update music_files set performer_display_id = l_performer_display_id where id = rec.id;
+	  else
+	    l_performer_display_name := rec.performer_display_name;
+		l_performer_display_id   := make_uid('performer_display_id');
+	    update music_files set performer_display_id = l_performer_display_id where id = rec.id;
+	end if;
+	
+	if rec.album_display_name = l_album_display_name
+	  then
+	    update music_files set album_display_id = l_album_display_id where id = rec.id;
+	  else
+	    l_album_display_name := rec.album_display_name;
+		l_album_display_id   := make_uid('album_display_id');
+	    update music_files set album_display_id = l_album_display_id where id = rec.id;
+	end if;
+	
+	update music_files set song_display_id = make_uid('song_display_id') where id = rec.id;
+	
+  end loop;
+end;
+$$;
+--------------------------------------------------------
+--  DDL for FUNCTION make_uid
+--------------------------------------------------------
+CREATE OR REPLACE FUNCTION make_uid(p_column_name text)
+RETURNS text
+language plpgsql
+as
+$$
+declare
+  result   text;
+  done     bool;
+  chars    text[] := '{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z}';
+  length   integer := 10;
+  i        integer := 0;
+  cnt      integer;
+  sql_stmt text := 'select count(*) from music_files where '||p_column_name||'=';
+BEGIN
+
+  done := false;
+  IF p_column_name = 'first_char_performer_id'
+    THEN result := 'mus_abc_';
+  ELSIF p_column_name = 'performer_display_id'
+    THEN RESULT := 'mus_per_';
+  ELSIF p_column_name = 'album_display_id'
+    THEN RESULT := 'mus_alb_';
+  ELSIF p_column_name = 'song_display_id'
+    THEN RESULT := 'mus_son_';
+  END IF;
+	
+  WHILE NOT done LOOP
+    for i in 1..length loop
+      result := result || chars[1+random()*(array_length(chars, 1)-1)];
+    end loop;
+
+    sql_stmt := sql_stmt ||''''||result||'''';
+    execute sql_stmt into cnt;
+    if cnt = 0
+      then done := true;
+    end if;
+
+  END LOOP;
+  RETURN result;
+END;
+$$;

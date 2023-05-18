@@ -662,3 +662,118 @@ def upd_data_for_payment(payment_data_in):
                      limit 1
                    )
     """)
+
+def gen_music_data(list_data_of_music_files):
+    #очищаем таблицу
+    cur.execute("""truncate table music_files""")
+    #наполянем данными по существующим группам-альбомам-песням
+    for item in list_data_of_music_files:
+        sql_stmt = """
+        insert into music_files (FIRST_CHAR_PERFORMER_DISPLAY_NAME,
+                                 PERFORMER_DISPLAY_NAME,
+                                 ALBUM_DISPLAY_NAME,
+                                 SONG_DISPLAY_NAME,
+                                 PATH_TO_FILE)
+        values ('""" + (str(item[0])).replace("'","'||''''||'") + """',
+                '""" + (str(item[1])).replace("'","'||''''||'")  + """',
+                '""" + (str(item[2])).replace("'","'||''''||'") + """',
+                '""" + (str(item[3])).replace("'","'||''''||'")  + """',
+                '""" + (str(item[4])).replace("'","'||''''||'")  + """')
+        """
+        cur.execute(sql_stmt)
+    #создаем айдишники
+    cur.execute("CALL set_music_id();")
+
+#выдает словарь с уникальными первыми буквами названий групп и их айдишниками
+def get_abc_dict():
+    cur.execute("""
+    select distinct first_char_performer_display_name,
+                    first_char_performer_id
+               from music_files
+    """)
+    rows = cur.fetchall()
+    abc_dict = {}
+    for item in rows:
+        abc_dict[item[1]] = item[0]
+    return abc_dict
+
+#выдает словарь с уникальными названиями групп и их айдишниками
+def get_performer_dict(char_id):
+    cur.execute("""
+    select distinct performer_display_name,
+                    performer_display_id
+               from music_files
+              where first_char_performer_id = '""" + char_id + """'
+    """)
+    rows = cur.fetchall()
+    performer_dict = {}
+    for item in rows:
+        performer_dict[item[1]] = item[0]
+    return performer_dict
+
+#выдает словарь с уникальными названиями альбомов и их айдишниками
+def get_albums_dict(performer_id):
+    cur.execute("""
+    select distinct album_display_name,
+                    album_display_id
+               from music_files
+              where performer_display_id = '""" + performer_id + """'
+    """)
+    rows = cur.fetchall()
+    albums_dict = {}
+    for item in rows:
+        albums_dict[item[1]] = item[0]
+    return albums_dict
+
+#выдает словарь с уникальными названиями песен и их айдишниками
+def get_songs_dict(album_id):
+    cur.execute("""
+    select distinct song_display_name,
+                    song_display_id
+               from music_files
+              where album_display_id = '""" + album_id + """'
+    """)
+    rows = cur.fetchall()
+    songs_dict = {}
+    for item in rows:
+        songs_dict[item[1]] = item[0]
+    return songs_dict
+
+#выдает путь к песне
+def get_song_path(song_id):
+    cur.execute("""
+    select path_to_file
+      from music_files
+     where song_display_id = '""" + song_id + """'
+    """)
+    result_tuple = cur.fetchone()
+    result_string = ''
+    if result_tuple != None:
+        result_string = common_methods.convertTuple(result_tuple)
+    return result_string
+
+#получаем айди первого знака группы по айдишнику прилетевшей группы
+def get_reverse_performer(id):
+    cur.execute("""
+    select distinct first_char_performer_id
+      from music_files
+     where performer_display_id = '""" + id + """'
+    """)
+    result_tuple = cur.fetchone()
+    result_string = ''
+    if result_tuple != None:
+        result_string = common_methods.convertTuple(result_tuple)
+    return result_string
+
+#получаем айди альбома по айдишнику прилетевшей песни
+def get_reverse_album(id):
+    cur.execute("""
+    select distinct performer_display_id
+      from music_files
+     where album_display_id = '""" + id + """'
+    """)
+    result_tuple = cur.fetchone()
+    result_string = ''
+    if result_tuple != None:
+        result_string = common_methods.convertTuple(result_tuple)
+    return result_string

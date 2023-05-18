@@ -82,11 +82,7 @@ def create_inline_kb(dict_of_buttons):
 
 #клавитура для музыки - алфавитная клавиатура
 def music_alphabet():
-    abc_buttons = {}
-    #создаем словарь с уникальными ключ-значение, где ключ - ID кнопки, а значение - текст кнопки
-    for item in music_processing.list_data_of_music_files:
-        if (item[0]).upper() not in abc_buttons:
-            abc_buttons['_music_abc_group_' + (item[4]).upper()] = item[0]
+    abc_buttons = queries_to_bd.get_abc_dict()
     sorted_abc_buttons = dict(sorted(abc_buttons.items(), key=lambda item: item[1]))
     reply_to = telebot.types.InlineKeyboardMarkup(row_width=5)
     local_cnt = 1
@@ -126,15 +122,9 @@ def music_alphabet():
         local_cnt = local_cnt + 1
     return reply_to
 
-#клавитура для музыки - список исполнителей сгруппированных по общему первому знаку
+#клавитура для музыки - список исполнителей
 def music_group_list(call_data):
-    first_char = call_data.replace('_music_abc_group_','')
-
-    #создаем словарь с уникальными ключ-значение, где ключ - ID кнопки, а значение - текст кнопки
-    dict_of_names_group = {}
-    for item in music_processing.list_data_of_music_files:
-        if (item[4]) == first_char and '_music_group_' + item[5] not in dict_of_names_group:
-            dict_of_names_group['_music_group_' + (item[5])] = item[1]
+    dict_of_names_group = queries_to_bd.get_performer_dict(call_data)
     sorted_dict_of_names_group = dict(sorted(dict_of_names_group.items(), key=lambda item: item[1]))
     reply_to = telebot.types.InlineKeyboardMarkup(row_width=2)
     local_cnt = 1
@@ -154,16 +144,12 @@ def music_group_list(call_data):
             if local_cnt == 1:
                 reply_to.add(tmp_btn_1)
         local_cnt = local_cnt + 1
-    reply_to.add(telebot.types.InlineKeyboardButton(text='Назад', callback_data='_music_menu_one_'))
+    reply_to.add(telebot.types.InlineKeyboardButton(text='Назад', callback_data='mus_back_one_' + call_data))
     return reply_to
 
-#клавитура для музыки - список альбомов определенного исполнителя
+#клавитура для музыки - список альбомов
 def albums_of_group_list(call_data):
-    group_name = call_data.replace('_music_group_','')
-    dict_of_names_albums = {}
-    for item in music_processing.list_data_of_music_files:
-        if (item[5]) == group_name and '_music_album_' + item[6] not in dict_of_names_albums:
-            dict_of_names_albums['_music_album_' + (item[6])] = item[2]
+    dict_of_names_albums = queries_to_bd.get_albums_dict(call_data)
     sorted_dict_of_names_albums = dict(sorted(dict_of_names_albums.items(), key=lambda item: item[1]))
     reply_to = telebot.types.InlineKeyboardMarkup(row_width=2)
     local_cnt = 1
@@ -183,18 +169,12 @@ def albums_of_group_list(call_data):
             if local_cnt == 1:
                 reply_to.add(tmp_btn_1)
         local_cnt = local_cnt + 1
-    reply_to.add(telebot.types.InlineKeyboardButton(text='Назад', callback_data='_music_menu_two_' + group_name))
+    reply_to.add(telebot.types.InlineKeyboardButton(text='Назад', callback_data='mus_back_two_' + call_data))
     return reply_to
 
-#клавитура для музыки - список песен определенного альбома и исполнителя
+#клавитура для музыки - список песен
 def songs_of_album_list(call_data):
-    group_album_name = call_data.replace('_music_album_','')
-
-    dict_of_names_songs = {}
-
-    for item in music_processing.list_data_of_music_files:
-        if (item[6]) == group_album_name and '_music_song_' + item[7] not in dict_of_names_songs:
-            dict_of_names_songs['_music_song_' + (item[7])] = item[3]
+    dict_of_names_songs = queries_to_bd.get_songs_dict(call_data)
     sorted_dict_of_names_songs = dict(sorted(dict_of_names_songs.items(), key=lambda item: item[1]))
     reply_to = telebot.types.InlineKeyboardMarkup(row_width=2)
     local_cnt = 1
@@ -215,5 +195,5 @@ def songs_of_album_list(call_data):
             if local_cnt == 1:
                 reply_to.add(tmp_btn_1)
         local_cnt = local_cnt + 1
-    reply_to.add(telebot.types.InlineKeyboardButton(text='Назад', callback_data='_music_menu_three_' + group_album_name))
+    reply_to.add(telebot.types.InlineKeyboardButton(text='Назад', callback_data='mus_back_three_' + call_data))
     return reply_to

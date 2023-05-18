@@ -57,31 +57,23 @@ def call_processed(bot, call):
             text_out = "Ура, транжирим!"
             payments.command_pay(call.message, bot, call.data)
 
-        elif call.data.__contains__("_music_abc_group_"):
+        elif call.data.startswith("mus_abc_"):
             text_out = "Выбери исполняющую группу"
             reply_markup_out = keyboards_buttons.music_group_list(call.data)
 
-        elif call.data.__contains__("_music_group_"):
+        elif call.data.startswith("mus_per_"):
             text_out = "Выбери альбом"
             reply_markup_out = keyboards_buttons.albums_of_group_list(call.data)
 
-        elif call.data.__contains__("_music_album_"):
+        elif call.data.startswith("mus_alb_"):
             text_out = "Выбери песню"
             reply_markup_out = keyboards_buttons.songs_of_album_list(call.data)
 
-        elif call.data.__contains__("_music_song_"):
-            id_song = (call.data).replace('_music_song_','')
-            full_song_path = ''
-            path_folder_of_song = ''
-            text_out = ''
+        elif call.data.startswith("mus_son_"):
+            full_song_path = queries_to_bd.get_song_path(call.data)
             cur_send_mode = 'default_mode'
-            for item in music_processing.list_data_of_music_files:
-                if item[7] == id_song:
-                    files_name = os.listdir(music_processing.music_path + r'/' + item[1] + r'/' + item[2] + r'/')
-                    for name in files_name:
-                        if (name[0:name.rfind('.')]).lower() == (item[3]).lower():
-                            full_song_path = music_processing.music_path + r'/' + item[1] + r'/' + item[2] + r'/' + name
-            if (os.stat(full_song_path)).st_size / (1024 * 1024) < 50:
+            file_size = (os.stat(full_song_path)).st_size / (1024 * 1024)
+            if file_size < 50:
                 text_out = "Держи"
                 cur_type_data = 'audio'
                 result_out = full_song_path
@@ -92,21 +84,23 @@ def call_processed(bot, call):
                                 type_data_out   = cur_type_data,
                                 audio_data_out  = audio_data)
             else:
-                text_out = "Соре, файл весит больше 50 мб, телега не позволяетботам отправлять такие файлы."
+                text_out = "Соре, файл весит больше 50 мб, телега не позволяет ботам отправлять такие файлы."
 
-        elif call.data.__contains__("_music_menu_one_"):
+
+        elif call.data.startswith("mus_back_one_"):
             text_out = "Выбери символ (букву или цифру), с которой начинается название исполняющей группы"
             reply_markup_out = keyboards_buttons.music_alphabet()
-        elif call.data.__contains__("_music_menu_two_"):
+
+        elif call.data.startswith("mus_back_two_"):
             text_out = "Выбери исполняющую группу"
-            call_data = (call.data).replace('_music_menu_two_','')
-            call_data = call_data[0:music_processing.find_nth(call_data,r'/',1)]
+            call_data = (call.data).replace('mus_back_two_','')
+            call_data = queries_to_bd.get_reverse_performer(call_data)
             reply_markup_out = keyboards_buttons.music_group_list(call_data)
-        elif call.data.__contains__("_music_menu_three_"):
+
+        elif call.data.startswith("mus_back_three_"):
             text_out = "Выбери альбом"
-            call_data = (call.data).replace('_music_menu_three_','_music_group_')
-            call_data = call_data[0:music_processing.find_nth(call_data,r'/',2)]
-            print('456 '+call_data)
+            call_data = (call.data).replace('mus_back_three_','')
+            call_data = queries_to_bd.get_reverse_album(call_data)
             reply_markup_out = keyboards_buttons.albums_of_group_list(call_data)
 
         else:
