@@ -129,7 +129,7 @@ def scheduler():
     while True:
         try:
             send_scheduler.time_schedule_bot(MypyBot)
-            time.sleep(1)            
+            time.sleep(1)
         except Exception as e:
             print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
 

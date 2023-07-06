@@ -25,7 +25,8 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
             reply_markup_out = photo_data_out[1]
             caption_out = photo_data_out[2]
             parse_mode_out = photo_data_out[3]
-            bot.send_photo(chat_id_out, photo = open(result_out, 'rb'), reply_markup = reply_markup_out, caption = caption_out, parse_mode = parse_mode_out)
+            has_spoiler_out = photo_data_out[4]
+            bot.send_photo(chat_id_out, photo = open(result_out, 'rb'), reply_markup = reply_markup_out, caption = caption_out, parse_mode = parse_mode_out, has_spoiler = has_spoiler_out)
 
         elif type_data_out == "audio":
             result_out = audio_data_out[0]
@@ -107,7 +108,7 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
         bot.send_message(from_send.chat.id, status) 
 
         #сохраняет данные, теоретически улетевшие пользователю
-        queries_to_bd.insert_user_story_out(content_type_out, status, from_send.chat.id, cur_msg.message_id + 1)
+        queries_to_bd.insert_user_story_out(content_type_out, status, from_send.chat.id)
         queries_to_bd.save_resending_data(from_send.chat.id, chat_id_to_send, content_type_out, result)
     
     #инлайн режим

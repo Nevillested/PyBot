@@ -27,6 +27,7 @@ def cases_trigger(bot, cur_message):
     send_mode = 'default_mode'
     caption_out = ""
     result_out = ""
+    spoiler_out = ""
     reply_out = telebot.types.ReplyKeyboardMarkup()
     chat_id = cur_message.chat.id
     msg_id = cur_message.message_id + 1
@@ -81,11 +82,13 @@ def cases_trigger(bot, cur_message):
             result_out = common_methods.get_pikcha()
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
             caption_out = "Ну ты и изврат"
+            spoiler_out = False
     elif last_msg_user == "/maid":
             content_type_out = "photo"
             maids_dir = "/home/duck/Documents/GitHub/PyBot/assets/maids/"
             result_out = maids_dir + random.choice(os.listdir(maids_dir))
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
+            spoiler_out = False
     elif last_msg_user == "/anekdot":
             content_type_out = "text"
             result_out = queries_to_bd.get_joke()
@@ -138,7 +141,7 @@ def cases_trigger(bot, cur_message):
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
     elif last_msg_user.__contains__("лучшая девочка") or last_msg_user.__contains__("шинобу"):
             sentences = ["Шинобу лучшая девочка, товарищ старший лейтенант!", "Шинобу.", "Однозначно Шинобу!", "Лучшая девочка-та, ради кого я создан, это Шинобу!", "Шинобу", "Солышко мое Шинобу", "А я уже кидал пикчу с Шинобу?", "А я уже кидал стикос с Шинобу?"]
-            value = random.randint(0,len(sentences))
+            value = random.randint(0,len(sentences) -1)
             content_type_out = "text"
             result_out = sentences[value]
             reply_out = keyboards_buttons.main_menu(cur_message.chat.id)
@@ -359,7 +362,7 @@ def cases_trigger(bot, cur_message):
     type_data    = content_type_out
     text_data    = result_out, reply_out, parse_mode_out, reply_msg_id_out
     poll_data    = result_out, poll_type_out, correct_answer_id_out,  answer_desc_out, reply_out
-    photo_data   = result_out, reply_out, caption_out, parse_mode_out
+    photo_data   = result_out, reply_out, caption_out, parse_mode_out, spoiler_out
     sticker_data = result_out, reply_out
     audio_data   = result_out, reply_out
     doc_data     = result_out, reply_out

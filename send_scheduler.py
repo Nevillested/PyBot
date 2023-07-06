@@ -35,14 +35,15 @@ def time_schedule_bot(MypyBot):
         #    print('Отработка ежесекундного шедулера')
 
         if (cur_date_time.minute == 00 and cur_date_time.second == 00):
-
             #отправка пикчи
             list_users_id = queries_to_bd.get_users_id_of_current_subscription('Пикча с Шинобу')
             for item in list_users_id:
                 try:
                     cur_send_mode = 'default_mode'
                     cur_type_data = 'photo'
-                    cur_photo_data = common_methods.get_pikcha(), None, 'Ежечасное солнышко\n' + "||Управление подписками:\n/managesubscriptions||" , 'MarkdownV2'
+                    cur_spoiler   = True
+                    reply_markup  = keyboards_buttons.create_inline_kb({"save_shinobu": "💾"})
+                    cur_photo_data = common_methods.get_pikcha(), reply_markup, 'Ежечасное солнышко\n' + "||Управление подписками:\n/managesubscriptions||" , 'MarkdownV2', cur_spoiler
                     sending.send_msg(bot             = MypyBot,
                                      send_mode       = cur_send_mode,
                                      chat_id_out     = item,

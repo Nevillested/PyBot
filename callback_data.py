@@ -7,6 +7,12 @@ import os
 import music_processing
 import threading
 
+#def payments_buttons(call_data):
+
+#def music_buttons(call_data):
+
+#def subscriptions_buttons():
+
 def call_processed(bot, call):
     # Если сообщение из чата с ботом
     if call.message:
@@ -58,13 +64,29 @@ def call_processed(bot, call):
             text_out = "Ура, транжирим!"
             payments.command_pay(call.message, bot, call.data)
 
-        elif call.data.startswith("mus_abc_"):
-            text_out = "Выбери исполняющую группу"
-            reply_markup_out = keyboards_buttons.music_group_list(call.data)
+        elif call.data.startswith("mus_back_one_"):
+            text_out = "Выбери символ (букву или цифру), с которой начинается название исполняющей группы"
+            reply_markup_out = keyboards_buttons.music_alphabet()
 
-        elif call.data.startswith("mus_per_"):
+        elif call.data.startswith("mus_abc_") or call.data.startswith("mus_back_two_"):
+            text_out = "Выбери исполняющую группу"
+            call_data = ''
+            if call.data.startswith("mus_abc_"):
+                call_data = call.data
+            else:
+                call_data = (call.data).replace('mus_back_two_','')
+                call_data = queries_to_bd.get_reverse_performer(call_data)
+            reply_markup_out = keyboards_buttons.music_group_list(call_data)
+
+        elif call.data.startswith("mus_per_") or call.data.startswith("mus_back_three_"):
             text_out = "Выбери альбом"
-            reply_markup_out = keyboards_buttons.albums_of_group_list(call.data)
+            call_data = ''
+            if call.data.startswith("mus_per_"):
+                call_data = call.data
+            else:
+                call_data = (call.data).replace('mus_back_three_','')
+                call_data = queries_to_bd.get_reverse_album(call_data)
+            reply_markup_out = keyboards_buttons.albums_of_group_list(call_data)
 
         elif call.data.startswith("mus_alb_"):
             text_out = "Выбери песню"
@@ -88,21 +110,8 @@ def call_processed(bot, call):
             else:
                 text_out = "Соре, файл весит больше 50 мб, телега не позволяет ботам отправлять такие файлы."
 
-        elif call.data.startswith("mus_back_one_"):
-            text_out = "Выбери символ (букву или цифру), с которой начинается название исполняющей группы"
-            reply_markup_out = keyboards_buttons.music_alphabet()
-
-        elif call.data.startswith("mus_back_two_"):
-            text_out = "Выбери исполняющую группу"
-            call_data = (call.data).replace('mus_back_two_','')
-            call_data = queries_to_bd.get_reverse_performer(call_data)
-            reply_markup_out = keyboards_buttons.music_group_list(call_data)
-
-        elif call.data.startswith("mus_back_three_"):
-            text_out = "Выбери альбом"
-            call_data = (call.data).replace('mus_back_three_','')
-            call_data = queries_to_bd.get_reverse_album(call_data)
-            reply_markup_out = keyboards_buttons.albums_of_group_list(call_data)
+        elif call.data == "save_shinobu" or call.data == "subs_back_2":
+            text_out = "сохронил"
 
         else:
             text_out = "Нажата какая-то кнопка"

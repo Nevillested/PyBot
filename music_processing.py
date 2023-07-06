@@ -44,7 +44,7 @@ def prepare_data():
         item_one   = unique_item[0:find_nth(unique_item,r'/',1)]
         item_two   = unique_item[find_nth(unique_item,r'/',1)+1:find_nth(unique_item,r'/',2)]
         item_three = unique_item[find_nth(unique_item,r'/',2)+1:unique_item.rindex('.')]
-        item_four = path_of_file
+        item_four  = path_of_file
         list_data_of_music_files.append([item_zero, item_one, item_two, item_three, item_four])
 
     #раскомментировать, если появится новая музыка по директории '/home/duck/Documents/GitHub/PyBot/assets/music'
