@@ -197,10 +197,9 @@ def get_last_bot_msg(chat_id):
     cur.execute("""
     SELECT a.MESSAGE_DATA
       FROM ( SELECT MESSAGE_DATA
-                  , row_number() OVER(ORDER BY dt_ins DESC) rn
+                  , row_number() OVER(ORDER BY id DESC) rn
                FROM outcome a
-              WHERE chat_id = """ + str(chat_id) + """
-              ORDER BY dt_ins DESC) AS a
+              WHERE chat_id = """ + str(chat_id) + """) AS a
      WHERE a.rn = 1""")
     result_tuple = cur.fetchone()
     result_string = ''
@@ -209,6 +208,26 @@ def get_last_bot_msg(chat_id):
         for item in result_tuple:
             result_string = result_string + str(item)
 
+    return result_string
+
+#получает последнее свое отправленное сообщение
+def get_last_bot_msg_id(chat_id):
+
+    cur.execute("""
+    SELECT a.message_id
+      FROM ( SELECT message_id
+                  , row_number() OVER(ORDER BY id DESC) rn
+               FROM outcome a
+              WHERE chat_id = """ + str(chat_id) + """) AS a
+     WHERE a.rn = 1""")
+    result_tuple = cur.fetchone()
+    result_string = ''
+
+    if result_tuple != None:
+        for item in result_tuple:
+            result_string = result_string + str(item)
+
+    result_string = int(result_string)
     return result_string
 
 #получает предпоследнее сообщение пользователя
@@ -502,7 +521,6 @@ def get_last_num_decade_kanji(chat_id):
 
     if result_tuple != None:
         result_string = common_methods.convertTuple(result_tuple)
-    print(result_string)
     return result_string
 
 #возвращает данные для квиза но номеру десятка
@@ -577,7 +595,7 @@ def get_subscriptions_user(chat_id):
     list_of_rows = []
     dict_of_subscriptions_user = {}
     cur.execute("""
-    SELECT chat_id ||'_' ||id AS  btn_id
+    SELECT 'id_1_' ||id AS  btn_id
          , subscription_name
       FROM subscriptions
      WHERE chat_id = """ + str(chat_id) + """
@@ -593,7 +611,7 @@ def get_cur_subscription_status(id_subscription):
     cur.execute("""
     SELECT a.active_flg
       FROM (SELECT a.*
-                 , a.chat_id ||'_' ||a.id AS btn_id
+                 , 'id_1_' ||a.id AS btn_id
               FROM subscriptions AS a
            ) AS a
      WHERE a.btn_id = '""" + id_subscription + """'
@@ -608,11 +626,11 @@ def get_cur_subscription_status(id_subscription):
     return result_string
 
 #изменяет статус подписки
-def change_user_subscription_status(id_subscription, status):
+def change_user_subscription_status(subs_id, status):
     cur.execute("""
     UPDATE subscriptions
        SET active_flg = """+ str(status) + """
-     WHERE chat_id ||'_' ||id = '""" + id_subscription + """'
+     WHERE id = """ + str(subs_id) + """
     """)
 
 #выдает список пользователей для активной подписки
@@ -781,3 +799,239 @@ def get_reverse_album(id):
     if result_tuple != None:
         result_string = common_methods.convertTuple(result_tuple)
     return result_string
+
+#создает напоминалку
+def create_new_notification(chat_id, notification_name):
+    if notification_name.find("'") > 0:
+        notification_name = notification_name.replace("'","\"")
+    cursor_text = """call public.new_notification(""" + str(chat_id) + """,'""" + notification_name + """');"""
+    cur.execute(cursor_text)
+
+#обновляет таблицу с напоминалками
+def update_notification(chat_id = None, repeat_flg = None, repeat_value = None, year_num = None, month_num = None, weekday_num = None, day_num = None, hour_num = None, minute_num = None, activity_flg = None):
+    current_field_for_update = ''
+    current_value = ''
+    cursor_txt = ''
+
+    if repeat_flg == None:
+        if activity_flg != None:
+            current_field_for_update = 'ACTIVITY_FLG'
+            current_value = activity_flg
+        elif year_num != None:
+            current_field_for_update = 'YEAR_NUM'
+            current_value = year_num
+        elif month_num != None:
+            current_field_for_update = 'MONTH_NUM'
+            current_value = month_num
+        elif weekday_num != None:
+            current_field_for_update = 'WEEKDAY_NUM'
+            current_value = weekday_num
+        elif day_num != None:
+            current_field_for_update = 'DAY_NUM'
+            current_value = day_num
+        elif hour_num != None:
+            current_field_for_update = 'HOUR_NUM'
+            current_value = hour_num
+        elif minute_num != None:
+            current_field_for_update = 'MINUTE_NUM'
+            current_value = minute_num
+
+        cursor_txt = """UPDATE NOTIFICATIONS
+                       SET """ + current_field_for_update + """ = """ + str(current_value)  + """
+                     WHERE ID = (SELECT a.ID
+                                   FROM (SELECT ID,
+                                                ROW_NUMBER () OVER (ORDER BY DT_CREATED DESC) AS rn
+                                           FROM NOTIFICATIONS
+                                          WHERE activity_flg = 0
+                                            AND CHAT_ID = """ + str(chat_id) + """
+                                       ) as a
+                                 WHERE a.RN = 1
+                               )"""
+    else:
+        cur.execute("""call public.reset_repeat_not(""" + str(chat_id) + """);""")
+        if repeat_flg == 0:
+            cursor_txt = """UPDATE NOTIFICATIONS
+                          SET repeat_flg = 0
+                     WHERE ID = (SELECT a.ID
+                                   FROM (SELECT ID,
+                                                ROW_NUMBER () OVER (ORDER BY DT_CREATED DESC) AS rn
+                                           FROM NOTIFICATIONS
+                                          WHERE activity_flg = 0
+                                            AND CHAT_ID = """ + str(chat_id) + """
+                                       ) as a
+                                 WHERE a.RN = 1
+                               )"""
+        else:
+            if repeat_value == "minute":
+                current_field_for_update = 'EVERY_MINUTE_FLG'
+            elif repeat_value == "hour":
+                current_field_for_update = 'EVERY_HOUR_FLG'
+            elif repeat_value == "day":
+                current_field_for_update = 'EVERY_DAY_FLG'
+            elif repeat_value == "week":
+                current_field_for_update = 'EVERY_WEEK_FLG'
+            elif repeat_value == "month":
+                current_field_for_update = 'EVERY_MONTH_FLG'
+            elif repeat_value == "year":
+                current_field_for_update = 'EVERY_YEAR_FLG'
+            cursor_txt = """UPDATE NOTIFICATIONS
+                          SET """ + current_field_for_update + """ = 1,
+                              repeat_flg = 1
+                     WHERE ID = (SELECT a.ID
+                                   FROM (SELECT ID,
+                                                ROW_NUMBER () OVER (ORDER BY DT_CREATED DESC) AS rn
+                                           FROM NOTIFICATIONS
+                                          WHERE activity_flg = 0
+                                            AND CHAT_ID = """ + str(chat_id) + """
+                                       ) as a
+                                 WHERE a.RN = 1
+                               )"""
+    cur.execute(cursor_txt)
+
+#получает год, который ввел пользователь. Необходим для корректной генерации количества месяцев в году
+def get_year_of_edit_not(chat_id):
+    cursor_txt = """
+    select year_num
+      from notifications
+      where id = (select id
+                    from notifications
+                   where chat_id = """ + str(chat_id)  + """
+                     and activity_flg = 0
+                   order by id desc
+                   limit  1) """
+    cur.execute(cursor_txt)
+    result_tuple = cur.fetchone()
+    result_string = ''
+    if result_tuple != None:
+        result_string = common_methods.convertTuple(result_tuple)
+    return result_string
+
+#получает месяц, который ввел пользователь. Необходим для корректной генерации количества дней в месяце
+def get_month_of_edit_not(chat_id):
+    cursor_txt = """
+    select month_num
+      from notifications
+      where id = (select id
+                    from notifications
+                   where chat_id = """ + str(chat_id)  + """
+                     and activity_flg = 0
+                   order by id desc
+                   limit  1) """
+    cur.execute(cursor_txt)
+    result_tuple = cur.fetchone()
+    result_string = ''
+    if result_tuple != None:
+        result_string = common_methods.convertTuple(result_tuple)
+    return result_string
+    return result_string
+
+#получает день, который ввел пользователь. Необходим для корректной генерации часов в дне
+def get_day_of_edit_not(chat_id):
+    cursor_txt = """
+    select day_num
+      from notifications
+      where id = (select id
+                    from notifications
+                   where chat_id = """ + str(chat_id)  + """
+                     and activity_flg = 0
+                   order by id desc
+                   limit  1) """
+    cur.execute(cursor_txt)
+    result_tuple = cur.fetchone()
+    result_string = ''
+    if result_tuple != None:
+        result_string = common_methods.convertTuple(result_tuple)
+    return result_string
+
+#получает час, который ввел пользователь. Необходим для корректной генерации количества минут в часе.
+def get_hour_of_edit_not(chat_id):
+    cursor_txt = """
+    select hour_num
+      from notifications
+      where id = (select id
+                    from notifications
+                   where chat_id = """ + str(chat_id)  + """
+                     and activity_flg = 0
+                   order by id desc
+                   limit  1) """
+    cur.execute(cursor_txt)
+    result_tuple = cur.fetchone()
+    result_string = ''
+    if result_tuple != None:
+        result_string = common_methods.convertTuple(result_tuple)
+    return result_string
+
+#получает час, который ввел пользователь. Необходим для корректной генерации количества минут в часе.
+def get_hour_of_edit_not(chat_id):
+    cursor_txt = """
+    select hour_num
+      from notifications
+      where id = (select id
+                    from notifications
+                   where chat_id = """ + str(chat_id)  + """
+                     and activity_flg = 0
+                   order by id desc
+                   limit  1) """
+    cur.execute(cursor_txt)
+    result_tuple = cur.fetchone()
+    result_string = ''
+    if result_tuple != None:
+        result_string = common_methods.convertTuple(result_tuple)
+    return result_string
+
+def check_correct_not(chat_id):
+    cursor_txt = """select 'Все верно?'||'$'||
+                           'Название напоминалки: '||notif_name||'$'||
+                           'Год: '||year_num||'$'||
+                           'Месяц: '||month_num||'$'||
+                           'День: '||day_num||'$'||
+                           'Часы: '||hour_num||'$'||
+                           'Минуты: '||minute_num||'$'||
+                           'Повторять: '||case when repeat_flg = 1 then 'да' else 'нет' end||'$'||
+                           case when every_year_flg is not null then 'Периодичность повторения - каждый год'||'$' ELSE '' END||
+                           case when every_month_flg is not null then 'Периодичность повторения - каждый месяц'||'$' ELSE '' END||
+                           case when every_week_flg is not null then 'Периодичность повторения - каждую неделю'||'$' ELSE '' END||
+                           case when every_day_flg is not null then 'Периодичность повторения - каждый день'||'$' ELSE '' END||
+                           case when every_hour_flg is not null then 'Периодичность повторения - каждый час'||'$' ELSE '' END||
+                           case when every_minute_flg is not null then 'Периодичность повторения - каждую минуту'||'$' ELSE '' END
+                      from notifications
+                     where chat_id = """ + str(chat_id) + """
+                       and activity_flg = 0
+                     order by id desc
+                     limit 1 """
+    cur.execute(cursor_txt)
+    result_tuple = cur.fetchone()
+    result_string = ''
+    if result_tuple != None:
+        result_string = common_methods.convertTuple(result_tuple)
+    return result_string
+
+#получает все напоминалки юзера
+def get_user_notifications(chat_id):
+    cursor_txt = """select id,             notif_name,      activity_flg,   dt_created,     dt_updated,     repeat_flg,
+                           every_year_flg, every_month_flg, every_week_flg, every_day_flg,  every_hour_flg, every_minute_flg,
+                           year_num,       month_num,       day_num,        hour_num,       minute_num
+                      from notifications
+                     where chat_id = """ + str(chat_id)
+    cur.execute(cursor_txt)
+    rows = cur.fetchall()
+
+    return rows
+
+#получает данные по определенной напоминалке
+def get_data_by_not_id(not_id):
+    result_text = ''
+    cur_index = 0
+    list_of_column_name = ['Внутренний ID', 'Название', 'Флаг активности', 'Дата создания', 'Дата обновления', 'Флаг повторности напоминания', 'Флаг ежегодной повторности', 'Флаг ежемесячной повторности', 'Флаг еженедельной повторности', 'Флаг ежедневной повторности', 'Флаг ежечасной повторности', 'Флаг ежеминутной повторности', 'Год', 'Месяц', 'День', 'Час', 'Минута']
+    cursor_txt = """select id,             notif_name,      activity_flg,   dt_created,     dt_updated,     repeat_flg,
+                           every_year_flg, every_month_flg, every_week_flg, every_day_flg,  every_hour_flg, every_minute_flg,
+                           year_num,       month_num,       day_num,        hour_num,       minute_num
+                      from notifications
+                     where id = """ + str(not_id)
+    cur.execute(cursor_txt)
+    list_of_column_values = cur.fetchone()
+    for column in (list_of_column_values):
+        if column != None:
+            result_text += (list_of_column_name[cur_index] + ": " + str(column) + "\n")
+        cur_index += 1
+    return result_text

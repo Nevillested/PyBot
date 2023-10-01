@@ -216,6 +216,65 @@ COMMENT ON COLUMN music_files.SONG_DISPLAY_ID IS 'ID песни';
 COMMENT ON COLUMN music_files.PATH_TO_FILE is 'Путь к песне';
 COMMENT ON TABLE music_files IS 'Данные музыки';
 --------------------------------------------------------
+--  DDL for Table notifications
+--------------------------------------------------------
+CREATE TABLE PUBLIC.NOTIFICATIONS (ID SERIAL, CHAT_ID bigint, NOTIF_NAME text, ACTIVITY_FLG int default 0, DT_CREATED timestamp DEFAULT current_timestamp, DT_UPDATED timestamp, repeat_flg int, EVERY_YEAR_FLG int, EVERY_MONTH_FLG int, EVERY_WEEK_FLG int, EVERY_DAY_FLG int, EVERY_HOUR_FLG int, EVERY_MINUTE_FLG int, YEAR_NUM int, MONTH_NUM int,  DAY_NUM int, HOUR_NUM int, MINUTE_NUM int);
+
+COMMENT ON COLUMN PUBLIC.NOTIFICATIONS.ID IS 'ID строки';
+COMMENT ON COLUMN PUBLIC.NOTIFICATIONS.CHAT_ID IS 'ID чата';
+COMMENT ON COLUMN PUBLIC.NOTIFICATIONS.NOTIF_NAME IS 'Название';
+COMMENT ON COLUMN PUBLIC.NOTIFICATIONS.ACTIVITY_FLG IS 'Флаг активности напоминалки';
+COMMENT ON COLUMN PUBLIC.NOTIFICATIONS.DT_CREATED IS 'Дата создания';
+COMMENT ON COLUMN PUBLIC.NOTIFICATIONS.DT_UPDATED IS 'Дата обновления';
+COMMENT ON COLUMN PUBLIC.NOTIFICATIONS.REPEAT_FLG IS 'Дата обновления';
+COMMENT ON COLUMN PUBLIC.NOTIFICATIONS.EVERY_YEAR_FLG IS 'Флаг повторения каждый год';
+COMMENT ON COLUMN PUBLIC.NOTIFICATIONS.EVERY_MONTH_FLG IS 'Флаг повторения каждый месяц';
+COMMENT ON COLUMN PUBLIC.NOTIFICATIONS.EVERY_WEEK_FLG IS 'Флаг повторения каждую неделю';
+COMMENT ON COLUMN PUBLIC.NOTIFICATIONS.EVERY_DAY_FLG IS 'Флаг повтороения каждый день';
+COMMENT ON COLUMN PUBLIC.NOTIFICATIONS.EVERY_HOUR_FLG IS 'Флаг повтороения каждый час';
+COMMENT ON COLUMN PUBLIC.NOTIFICATIONS.EVERY_MINUTE_FLG IS 'Флаг повтороения каждую минуту';
+COMMENT ON COLUMN PUBLIC.NOTIFICATIONS.YEAR_NUM IS 'Номер года';
+COMMENT ON COLUMN PUBLIC.NOTIFICATIONS.MONTH_NUM IS 'Номер месяца';
+COMMENT ON COLUMN PUBLIC.NOTIFICATIONS.DAY_NUM IS 'Номер дня месяца';
+COMMENT ON COLUMN PUBLIC.NOTIFICATIONS.HOUR_NUM IS 'Номер часа';
+COMMENT ON COLUMN PUBLIC.NOTIFICATIONS.MINUTE_NUM IS 'Номер минуты';
+COMMENT ON TABLE PUBLIC.NOTIFICATIONS IS 'Напоминалки юзеров';
+--------------------------------------------------------
+--  DDL for procedure new_notification
+--------------------------------------------------------
+CREATE OR REPLACE procedure new_notification(IN chat_id BIGINT, IN notif_name text)
+language plpgsql
+as $$
+declare
+begin
+  insert into public.notifications (chat_id, notif_name)
+  values (chat_id, notif_name);
+
+  commit;
+end;
+$$;
+--------------------------------------------------------
+--  DDL for procedure reset_repeat_not
+--------------------------------------------------------
+CREATE OR REPLACE procedure reset_repeat_not(IN p_chat_id BIGINT)
+language plpgsql
+as $$
+declare
+begin
+    -- subtracting the amount from the sender's account 
+    update notifications 
+    set repeat_flg = Null, EVERY_YEAR_FLG = Null, EVERY_MONTH_FLG = Null, EVERY_WEEK_FLG = Null, EVERY_DAY_FLG = Null, EVERY_HOUR_FLG = Null, EVERY_MINUTE_FLG= Null
+    where id = (select id
+from notifications
+  where chat_id = p_chat_id
+    and activity_flg = 0
+  order by id desc
+  limit  1);
+
+    commit;
+end;
+$$;
+--------------------------------------------------------
 --  DDL for procedure set_music_id
 --------------------------------------------------------
 CREATE OR REPLACE procedure set_music_id()

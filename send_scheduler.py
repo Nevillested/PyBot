@@ -19,16 +19,16 @@ def time_schedule_bot(MypyBot):
         #        cur_text_data = random.choice(heart_string), None, None, None
         #        sending.send_msg(bot             = MypyBot,
         #                         send_mode       = cur_send_mode,
-        #                         chat_id_out     = 83729683,
-        #                         type_data_out   = cur_type_data,
-        #                         text_data_out   = cur_text_data)
+        #                         chat_id         = 83729683,
+        #                         type_data       = cur_type_data,
+        #                         text_data       = cur_text_data)
 
         #        cur_text_data = random.choice(heart_string), None, None, None
         #        sending.send_msg(bot             = MypyBot,
         #                         send_mode       = cur_send_mode,
-        #                         chat_id_out     = my_cfg.id_owner,
-        #                         type_data_out   = cur_type_data,
-        #                         text_data_out   = cur_text_data)
+        #                         chat_id         = my_cfg.id_owner,
+        #                         type_data       = cur_type_data,
+        #                         text_data       = cur_text_data)
         #    except Exception as e:
         #        print('Heart is not sending')
 
@@ -42,13 +42,13 @@ def time_schedule_bot(MypyBot):
                     cur_send_mode = 'default_mode'
                     cur_type_data = 'photo'
                     cur_spoiler   = True
-                    reply_markup  = keyboards_buttons.create_inline_kb({"save_shinobu": "💾"})
+                    reply_markup  = None
                     cur_photo_data = common_methods.get_pikcha(), reply_markup, 'Ежечасное солнышко\n' + "||Управление подписками:\n/managesubscriptions||" , 'MarkdownV2', cur_spoiler
                     sending.send_msg(bot             = MypyBot,
                                      send_mode       = cur_send_mode,
-                                     chat_id_out     = item,
-                                     type_data_out   = cur_type_data,
-                                     photo_data_out  = cur_photo_data)
+                                     chat_id         = item,
+                                     type_data       = cur_type_data,
+                                     photo_data      = cur_photo_data)
 
                 except Exception as e:
                     print('Не отправлено сообщение этому пользователю: ' +str(item)+'. Текст ошибки:\n'+str(e))
@@ -58,13 +58,13 @@ def time_schedule_bot(MypyBot):
             for item in list_users_id:
                 try:
                     cur_type_data = 'text'
-                    reply_markup_out = keyboards_buttons.create_inline_kb({"see_subscriptions": "Смотреть подписки"})
+                    reply_markup_out = keyboards_buttons.create_inline_kb({"see_subscriptions": "Смотреть подписки"}, 1)
                     cur_text_data = queries_to_bd.get_compliment(), reply_markup_out, None, None
                     sending.send_msg(bot             = MypyBot,
                                      send_mode       = cur_send_mode,
-                                     chat_id_out     = item,
-                                     type_data_out   = cur_type_data,
-                                     text_data_out   = cur_text_data)
+                                     chat_id         = item,
+                                     type_data       = cur_type_data,
+                                     text_data       = cur_text_data)
 
                 except Exception as e:
                     print('Не отправлено сообщение этому пользователю: ' +str(item)+'. Текст ошибки:\n'+str(e))
@@ -82,13 +82,13 @@ def time_schedule_bot(MypyBot):
                     try:
                         cur_send_mode = 'default_mode'
                         cur_type_data = 'text'
-                        reply_markup_out = keyboards_buttons.create_inline_kb({"see_subscriptions": "Смотреть подписки"})
+                        reply_markup_out = keyboards_buttons.create_inline_kb({"see_subscriptions": "Смотреть подписки"}, 1)
                         cur_text_data = today_holiday, reply_markup_out, None, None
                         sending.send_msg(bot             = MypyBot,
                                          send_mode       = cur_send_mode,
-                                         chat_id_out     = item,
-                                         type_data_out   = cur_type_data,
-                                         text_data_out   = cur_text_data)
+                                         chat_id         = item,
+                                         type_data       = cur_type_data,
+                                         text_data       = cur_text_data)
 
                     except Exception as e:
                         print('Не отправлено сообщение этому пользователю: ' +str(item)+'. Текст ошибки:\n'+str(e))

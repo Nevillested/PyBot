@@ -3,58 +3,58 @@ from telebot.types import LabeledPrice
 import my_cfg
 
 #метод отправки сообщений с различными режимами
-def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, type_data_out=None, text_data_out=None, poll_data_out=None, photo_data_out=None, sticker_data_out=None, audio_data_out=None, doc_data_out=None, inline_data_out=None, payment_data_out=None, edit_msg_data_out=None):
+def send_msg(bot, send_mode, cur_msg=None, chat_id=None, msg_id=None, type_data=None, text_data=None, poll_data=None, photo_data=None, sticker_data=None, audio_data=None, doc_data=None, inline_data=None, payment_data=None, edit_msg_data=None):
     
     #простой режим отправки сообщений
     result_out = ''
     if send_mode == 'default_mode':
-        if type_data_out == "text":
-            result_out =  text_data_out[0]
-            reply_markup_out = text_data_out[1]
-            parse_mode_out =  text_data_out[2]
-            reply_message_out =  text_data_out[3]
-            bot.send_message(chat_id_out, result_out, reply_markup = reply_markup_out, parse_mode = parse_mode_out, reply_to_message_id = reply_message_out)
+        if type_data == "text":
+            result_out =  text_data[0]
+            reply_markup_out = text_data[1]
+            parse_mode_out =  text_data[2]
+            reply_message_out =  text_data[3]
+            bot.send_message(chat_id, result_out, reply_markup = reply_markup_out, parse_mode = parse_mode_out, reply_to_message_id = reply_message_out)
 
-        elif type_data_out == "sticker":
-            result_out = sticker_data_out[0]
-            reply_markup_out = sticker_data_out[1]
-            bot.send_sticker(chat_id_out, sticker = open(result_out, "rb"), reply_markup = reply_markup_out)
+        elif type_data == "sticker":
+            result_out = sticker_data[0]
+            reply_markup_out = sticker_data[1]
+            bot.send_sticker(chat_id, sticker = open(result_out, "rb"), reply_markup = reply_markup_out)
 
-        elif type_data_out == "photo":
-            result_out = photo_data_out[0]
-            reply_markup_out = photo_data_out[1]
-            caption_out = photo_data_out[2]
-            parse_mode_out = photo_data_out[3]
-            has_spoiler_out = photo_data_out[4]
-            bot.send_photo(chat_id_out, photo = open(result_out, 'rb'), reply_markup = reply_markup_out, caption = caption_out, parse_mode = parse_mode_out, has_spoiler = has_spoiler_out)
+        elif type_data == "photo":
+            result_out = photo_data[0]
+            reply_markup_out = photo_data[1]
+            caption_out = photo_data[2]
+            parse_mode_out = photo_data[3]
+            has_spoiler_out = photo_data[4]
+            bot.send_photo(chat_id, photo = open(result_out, 'rb'), reply_markup = reply_markup_out, caption = caption_out, parse_mode = parse_mode_out, has_spoiler = has_spoiler_out)
 
-        elif type_data_out == "audio":
-            result_out = audio_data_out[0]
-            reply_markup_out = audio_data_out[1]
-            bot.send_audio(chat_id_out, audio=open(result_out, 'rb'), reply_markup = reply_markup_out)
+        elif type_data == "audio":
+            result_out = audio_data[0]
+            reply_markup_out = audio_data[1]
+            bot.send_audio(chat_id, audio=open(result_out, 'rb'), reply_markup = reply_markup_out)
 
-        elif type_data_out == "poll":
-            result_out = (poll_data_out[0]).pop(0)
-            poll_options_out = poll_data_out[0]
-            type_out = poll_data_out[1]
-            correct_option_id_out = poll_data_out[2]
-            result = 'Кандзи: ' + poll_data_out[3]
-            reply_markup_out = poll_data_out[4]
-            bot.send_poll(chat_id_out, result, options = poll_options_out, correct_option_id  = correct_option_id_out, type = type_out, reply_markup = reply_markup_out)
+        elif type_data == "poll":
+            result_out = (poll_data[0]).pop(0)
+            poll_options_out = poll_data[0]
+            type_out = poll_data[1]
+            correct_option_id_out = poll_data[2]
+            result = 'Кандзи: ' + poll_data[3]
+            reply_markup_out = poll_data[4]
+            bot.send_poll(chat_id, result, options = poll_options_out, correct_option_id  = correct_option_id_out, type = type_out, reply_markup = reply_markup_out)
 
-        elif type_data_out == "document":
-            result_out = doc_data_out[0]
-            reply_out = doc_data_out[1]
-            bot.send_document(chat_id_out, document = open(result_out, 'rb'), reply_markup = reply_out)
+        elif type_data == "document":
+            result_out = doc_data[0]
+            reply_out = doc_data[1]
+            bot.send_document(chat_id, document = open(result_out, 'rb'), reply_markup = reply_out)
 
         #сохраняет улетевшие данные пользователю
-        queries_to_bd.insert_user_story_out(type_data_out, result_out, chat_id_out)
+        queries_to_bd.insert_user_story_out(type_data, result_out, chat_id)
             
             
     #режим отправки соообщений другому пользователю
     elif send_mode == 'resending_mode':
 
-        type_data_out = cur_msg.content_type
+        type_data = cur_msg.content_type
         content_type_out = cur_msg.content_type
         from_send = cur_msg
         chat_id_to_send = None
@@ -114,9 +114,9 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
     #инлайн режим
     elif send_mode == 'inline_mode':
 
-        query_data_out = inline_data_out[0]
-        results_out = inline_data_out[1]
-        cache_time_out = inline_data_out[2]
+        query_data_out = inline_data[0]
+        results_out = inline_data[1]
+        cache_time_out = inline_data[2]
         query_id_out = query_data_out.id
         query_from = query_data_out.from_user.id
         query_text = query_data_out.query
@@ -131,21 +131,21 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
     #платежный режим
     elif send_mode == 'payment_mode':
 
-        chat_id_out = payment_data_out[0]
-        title_out = payment_data_out[1]
-        description_out = payment_data_out[2]
-        invoice_payload_out = payment_data_out[3]
-        provider_token_out = payment_data_out[4]
-        currency_out = payment_data_out[5]
-        prices_out = [LabeledPrice(label='Выворачивай карманы, к оплате: ', amount=payment_data_out[6])]
-        photo_url_out = payment_data_out[7]
-        photo_height_out = payment_data_out[8]
-        photo_width_out = payment_data_out[9]
-        photo_size_out = payment_data_out[10]
-        is_flexible_out = payment_data_out[11]
-        start_parameter_out = payment_data_out[12]
-        max_tip_amount_out = payment_data_out[13]
-        suggested_tip_amounts_out = payment_data_out[14]
+        chat_id = payment_data[0]
+        title_out = payment_data[1]
+        description_out = payment_data[2]
+        invoice_payload_out = payment_data[3]
+        provider_token_out = payment_data[4]
+        currency_out = payment_data[5]
+        prices_out = [LabeledPrice(label='Выворачивай карманы, к оплате: ', amount=payment_data[6])]
+        photo_url_out = payment_data[7]
+        photo_height_out = payment_data[8]
+        photo_width_out = payment_data[9]
+        photo_size_out = payment_data[10]
+        is_flexible_out = payment_data[11]
+        start_parameter_out = payment_data[12]
+        max_tip_amount_out = payment_data[13]
+        suggested_tip_amounts_out = payment_data[14]
         provider_data_out = '''{
   "receipt": {
     "customer": {
@@ -156,7 +156,7 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
              "description": "'''+description_out+'''",
              "quantity": "1",
              "amount": {
-                 "value": "'''+str(payment_data_out[6]/100)+'''",
+                 "value": "'''+str(payment_data[6]/100)+'''",
                  "currency": "'''+currency_out+'''"
              },
              "vat_code": "1"
@@ -166,7 +166,7 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
 }'''
 
         #отправляет данные для платежа
-        bot.send_invoice(chat_id               = chat_id_out,
+        bot.send_invoice(chat_id               = chat_id,
                          title                 = title_out,
                          description           = description_out,
                          invoice_payload       = invoice_payload_out,
@@ -187,19 +187,19 @@ def send_msg(bot, send_mode, cur_msg=None, chat_id_out=None, msg_id_out=None, ty
                         )
         
         #сохраняет данные для платежа
-        queries_to_bd.save_data_for_payment(payment_data_out)
+        queries_to_bd.save_data_for_payment(payment_data)
     
     #режим редактирования сообщений
     elif send_mode == 'editing_msg':
         
-        chat_id_out      = edit_msg_data_out[0]
-        message_id_out   = edit_msg_data_out[1]
-        text_out         = edit_msg_data_out[2]
-        reply_markup_out = edit_msg_data_out[3]
-        btn_name_out     = edit_msg_data_out[4]
+        chat_id          = edit_msg_data[0]
+        message_id_out   = edit_msg_data[1]
+        text_out         = edit_msg_data[2]
+        reply_markup_out = edit_msg_data[3]
+        btn_name_out     = edit_msg_data[4]
         
-        bot.edit_message_text(chat_id=chat_id_out, message_id=message_id_out, text=text_out, reply_markup = reply_markup_out)
+        bot.edit_message_text(chat_id=chat_id, message_id=message_id_out, text=text_out, reply_markup = reply_markup_out)
 
         #Сохраняет в бд
-        edited_message = (text_out + ': ' + btn_name_out, chat_id_out, message_id_out)
+        edited_message = (text_out, chat_id, message_id_out)
         queries_to_bd.insert_edited_msg_by_bot(edited_message)

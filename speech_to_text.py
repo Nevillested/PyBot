@@ -16,7 +16,7 @@ def voice_processing(message, bot, lang):
         rec_lang = "ru-RU"
 
     r = sr.Recognizer()
-
+    s = ''
     hellow=sr.AudioFile('/home/duck/Documents/GitHub/PyBot/assets/temp/voice_in.wav')
     with hellow as source:
         audio = r.record(source)

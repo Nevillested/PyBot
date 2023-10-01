@@ -93,14 +93,14 @@ def query_text(query):
 #хэндер ивентов колбэкдаты инлайн кнопок
 @MypyBot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
-    try:
+    #try:
         print(f"{call.from_user.username} нажал кнопку {call.data}.\n")
         
         #метод обработки всех инлайн кнопок
         callback_data.call_processed(MypyBot, call) 
 
-    except Exception as e:
-        print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
+    #except Exception as e:
+        #print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
 
 #хэндер простых сообщений   
 @MypyBot.message_handler(content_types=CONTENT_TYPES)
@@ -116,13 +116,15 @@ def start_message(message):
             queries_to_bd.insert_user_story_in(message)
             
             #получение результатов для ответа пользователю
-            (bot, send_mode, chat_id, msg_id, type_data, text_data, poll_data, photo_data, sticker_data, audio_data, doc_data) = answer_cases.cases_trigger(MypyBot, message)
+            (bot_out, send_mode_out, chat_id_out, msg_id_out, type_data_out, text_data_out, poll_data_out, photo_data_out, sticker_data_out, audio_data_out, doc_data_out, edit_msg_data_out) = answer_cases.cases_trigger(MypyBot, message)
             
             #отправляет результат
-            sending.send_msg(bot, send_mode, message, chat_id, msg_id, type_data, text_data, poll_data, photo_data, sticker_data, audio_data, doc_data)
-            
+            sending.send_msg(bot           = bot_out,        send_mode    = send_mode_out,    cur_msg    = message,        chat_id   = chat_id_out, 
+                             msg_id        = msg_id_out,     type_data    = type_data_out,    text_data  = text_data_out,  poll_data = poll_data_out,
+                             photo_data    = photo_data_out, sticker_data = sticker_data_out, audio_data = audio_data_out, doc_data  = doc_data_out,
+                             edit_msg_data = edit_msg_data_out)
     except Exception as e:
-        print(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
+        ыprint(f'В {str(inspect.stack()[0][3])} произошла ошибка: \n' + str(e))
 
 #шедулер
 def scheduler():

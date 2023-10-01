@@ -35,7 +35,6 @@ def cases_trigger(bot, cur_message):
     #получает последнее свое отправленное сообщение
     last_msg_bot = queries_to_bd.get_last_bot_msg(cur_message.chat.id)
     last_msg_user = ""
-
     if cur_message.content_type == "text":
             last_msg_user = cur_message.text.lower()
     elif cur_message.content_type == "voice":
@@ -338,19 +337,46 @@ def cases_trigger(bot, cur_message):
     elif last_msg_user == "/managesubscriptions":
             content_type_out = "text"
             result_out = "Управление подписками"
-            reply_out = keyboards_buttons.create_inline_kb({"see_subscriptions": "Смотреть подписки"})
+            reply_out = keyboards_buttons.create_inline_kb({"id_1_see_subscriptions": "Смотреть подписки"}, 1)
     elif last_msg_user == "/prices":
             content_type_out = "text"
             result_out = "Прайс-лист"
-            reply_out = keyboards_buttons.create_inline_kb({"payment_one_btn": "Потому что я такой хорошенький - 100р","payment_two_btn":"На тяжелую жизнь бездомного разработчика - 150р","payment_three_btn":"На развитие бота, чтобы он делал вашу жизнь лучше - 200р", "payment_shinobu":"На фигурки с лучшей девочкой ~~~р"})
-
-
-
-
+            reply_out = keyboards_buttons.create_inline_kb(get_kb_payments)
     elif last_msg_user == "/music":
-        content_type_out = "text"
-        reply_out = keyboards_buttons.music_alphabet()
-        result_out = "Выбери символ (букву или цифру), с которой начинается название исполняющей группы"
+            content_type_out = "text"
+            reply_out = keyboards_buttons.music_alphabet()
+            result_out = "Выбери символ (букву или цифру), с которой начинается название исполняющей группы"
+    elif last_msg_user == "/notifications":
+            content_type_out = "text"
+            reply_out = keyboards_buttons.notif_common()
+            result_out = "Напоминалки"
+
+
+
+    elif last_msg_bot == "Как назовём?": #меню выбора года напоминалки
+            queries_to_bd.update_notification(cur_message.chat.id, last_msg_user)
+            content_type_out = "buttons"
+            send_mode = "editing_msg"
+            msg_id = queries_to_bd.get_last_bot_msg_id(cur_message.chat.id)
+            result_out = "В каком году?"
+            reply_out = keyboards_buttons.notif_year()
+
+
+    elif last_msg_bot == "Что напомнить? (пиши в чат)": #меню выбора года напоминалки
+            queries_to_bd.create_new_notification(cur_message.chat.id, last_msg_user)
+            content_type_out = "buttons"
+            send_mode = "editing_msg"
+            msg_id = queries_to_bd.get_last_bot_msg_id(cur_message.chat.id)
+            result_out = "В каком году?"
+            reply_out = keyboards_buttons.notif_year()
+
+
+
+
+
+
+
+
 
 
 
@@ -366,5 +392,6 @@ def cases_trigger(bot, cur_message):
     sticker_data = result_out, reply_out
     audio_data   = result_out, reply_out
     doc_data     = result_out, reply_out
+    edit_data    = cur_message.chat.id, msg_id, result_out, reply_out, None
 
-    return bot, send_mode, chat_id, msg_id, type_data, text_data, poll_data, photo_data, sticker_data, audio_data, doc_data
+    return bot, send_mode, chat_id, msg_id, type_data, text_data, poll_data, photo_data, sticker_data, audio_data, doc_data, edit_data
